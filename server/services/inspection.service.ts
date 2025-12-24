@@ -28,6 +28,13 @@ export const inspectionService = {
         }
       }
 
+      // 3. Ground vehicle if inspection failed
+      if (data.status === 'failed') {
+        await tx.update(assets)
+          .set({ status: 'maintenance', updatedAt: new Date() })
+          .where(eq(assets.id, data.assetId))
+      }
+
       return inspection
     })
   },

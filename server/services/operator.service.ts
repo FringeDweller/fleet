@@ -13,6 +13,10 @@ export const operatorService = {
 
     if (!asset) throw new Error('Asset not found')
 
+    if (asset.status !== 'active') {
+      throw new Error(`Asset is currently in '${asset.status}' status and cannot be operated.`)
+    }
+
     if (asset.requiredCertification) {
       // Check if operator has valid certification
       const cert = await db.query.certifications.findFirst({
