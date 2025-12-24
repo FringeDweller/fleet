@@ -3,9 +3,17 @@ const route = useRoute()
 const id = route.params.id as string
 const toast = useToast()
 
-const { data: wo, pending, refresh: refreshWo } = await useFetch(`/api/work-orders/${id}`)
-const { data: woParts, refresh: refreshParts } = await useFetch(`/api/work-orders/${id}/parts`)
+const { data: wo, pending, refresh: refreshWo } = await useFetch<any>(`/api/work-orders/${id}`)
+const { data: woParts, refresh: refreshParts } = await useFetch<any[]>(`/api/work-orders/${id}/parts`)
 const { parts: allParts, fetchParts, locations, fetchLocations } = useInventory()
+
+const checklist = ref<any[]>([])
+
+watch(wo, (newWo) => {
+  if (newWo?.checklist) {
+    checklist.value = JSON.parse(JSON.stringify(newWo.checklist))
+  }
+}, { immediate: true })
 
 const isAddPartModalOpen = ref(false)
 const isCompleteModalOpen = ref(false)
@@ -46,6 +54,10 @@ async function onRemovePart(woPartId: string) {
   }
 }
 
+const completionMileage = ref('')
+const completionHours = ref('')
+const laborCost = ref('0')
+
 async function onComplete() {
   if (!selectedLocationId.value) {
     toast.add({ title: 'Please select a location', color: 'error' })
@@ -55,7 +67,11 @@ async function onComplete() {
     await $fetch(`/api/work-orders/${id}/complete`, {
       method: 'POST',
       body: {
-        locationId: selectedLocationId.value
+        locationId: selectedLocationId.value,
+        checklist: checklist.value,
+        completionMileage: completionMileage.value,
+        completionHours: completionHours.value,
+        laborCost: laborCost.value
       }
     })
     toast.add({ title: 'Work Order completed', color: 'success' })
@@ -64,6 +80,11 @@ async function onComplete() {
   } catch (error: any) {
     toast.add({ title: 'Error completing work order', description: error.message, color: 'error' })
   }
+}
+
+const updateChecklistStatus = (index: number, status: string) => {
+  if (wo.value?.status === 'completed') return
+  checklist.value[index].status = status
 }
 
 const items = [
@@ -147,8 +168,40 @@ const getStatusColor = (status: string) => {
         
         <template #checklist>
           <UCard class="mt-4">
-             <div class="text-gray-500">Checklist items will appear here</div>
-             <pre class="text-xs mt-2 bg-gray-50 p-2 rounded">{{ wo.checklist }}</pre>
+             <div v-if="!checklist || checklist.length === 0" class="text-center p-8 text-gray-500">
+               No checklist items for this work order.
+             </div>
+             <div v-else class="space-y-6">
+                <div v-for="(item, index) in checklist" :key="index" class="border-b border-default pb-4">
+                  <p class="font-medium mb-2">{{ item.label }}</p>
+                  <div class="flex gap-2">
+                    <UButton
+                      label="Pass"
+                      :color="item.status === 'passed' ? 'success' : 'neutral'"
+                      variant="soft"
+                      class="flex-1"
+                      :disabled="wo?.status === 'completed'"
+                      @click="updateChecklistStatus(index, 'passed')"
+                    />
+                    <UButton
+                      label="Fail"
+                      :color="item.status === 'failed' ? 'error' : 'neutral'"
+                      variant="soft"
+                      class="flex-1"
+                      :disabled="wo?.status === 'completed'"
+                      @click="updateChecklistStatus(index, 'failed')"
+                    />
+                    <UButton
+                      label="N/A"
+                      :color="item.status === 'na' ? 'primary' : 'neutral'"
+                      variant="soft"
+                      class="flex-1"
+                      :disabled="wo?.status === 'completed'"
+                      @click="updateChecklistStatus(index, 'na')"
+                    />
+                  </div>
+                </div>
+             </div>
           </UCard>
         </template>
 
@@ -236,15 +289,26 @@ const getStatusColor = (status: string) => {
             <h3 class="text-base font-semibold">Complete Work Order</h3>
           </template>
           <div class="space-y-4">
-            <p>Please select the location parts were taken from:</p>
-            <UFormGroup label="Location">
+            <p>Please provide final details for completion:</p>
+            <UFormGroup label="Inventory Location (Parts Origin)">
               <USelect
                 v-model="selectedLocationId"
                 :options="locations.map(l => ({ label: l.name, value: l.id }))"
                 placeholder="Select location..."
               />
             </UFormGroup>
-            <div class="flex justify-end gap-3">
+            <div class="grid grid-cols-2 gap-4">
+              <UFormGroup label="Final Mileage">
+                <UInput v-model="completionMileage" type="number" placeholder="0.00" />
+              </UFormGroup>
+              <UFormGroup label="Final Hours">
+                <UInput v-model="completionHours" type="number" placeholder="0.00" />
+              </UFormGroup>
+            </div>
+            <UFormGroup label="Labor Cost ($)">
+              <UInput v-model="laborCost" type="number" step="0.01" />
+            </UFormGroup>
+            <div class="flex justify-end gap-3 pt-4">
               <UButton color="neutral" variant="ghost" @click="isCompleteModalOpen = false">Cancel</UButton>
               <UButton color="success" @click="onComplete">Complete Work Order</UButton>
             </div>

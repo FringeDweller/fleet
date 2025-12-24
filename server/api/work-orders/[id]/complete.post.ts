@@ -25,5 +25,16 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  return await workOrderService.completeWorkOrder(id, session.user.organizationId, session.user.id, body.locationId)
+  return await workOrderService.completeWorkOrder(
+    id, 
+    session.user.organizationId, 
+    session.user.id, 
+    body.locationId,
+    {
+      checklist: body.checklist,
+      completionMileage: body.completionMileage,
+      completionHours: body.completionHours,
+      laborCost: body.laborCost
+    }
+  )
 })

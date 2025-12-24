@@ -142,7 +142,12 @@ export const workOrderService = {
     })
   },
 
-  async completeWorkOrder(id: string, organizationId: string, userId: string, locationId: string) {
+  async completeWorkOrder(id: string, organizationId: string, userId: string, locationId: string, data: { 
+    checklist?: any[], 
+    completionMileage?: string, 
+    completionHours?: string,
+    laborCost?: string
+  } = {}) {
     return await db.transaction(async (tx) => {
       // 1. Get work order and parts
       const wo = await tx.query.workOrders.findFirst({
@@ -159,7 +164,7 @@ export const workOrderService = {
 
       // 2. Record stock movements for each part
       for (const p of woParts) {
-        // Record movement
+        // ... (existing stock movement code)
         await tx.insert(stockMovements).values({
           partId: p.partId,
           locationId,
@@ -205,12 +210,33 @@ export const workOrderService = {
           .where(eq(parts.id, p.partId))
       }
 
-      // 3. Update work order status
+      // 3. Update work order status and final readings
       const [updatedWo] = await tx
         .update(workOrders)
-        .set({ status: 'completed', updatedAt: new Date() })
+        .set({ 
+          status: 'completed', 
+          checklist: data.checklist || wo.checklist,
+          completionMileage: data.completionMileage,
+          completionHours: data.completionHours,
+          laborCost: data.laborCost,
+          updatedAt: new Date() 
+        })
         .where(eq(workOrders.id, id))
         .returning()
+      
+      // Also update costs after labor is added
+      await this._updateWorkOrderCosts(tx, id, organizationId)
+
+      // 4. Update asset with completion readings
+      if (data.completionMileage || data.completionHours) {
+        await tx.update(assets)
+          .set({
+            currentMileage: data.completionMileage,
+            currentHours: data.completionHours,
+            updatedAt: new Date()
+          })
+          .where(eq(assets.id, wo.assetId))
+      }
 
       return updatedWo
     })
