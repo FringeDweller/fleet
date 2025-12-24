@@ -5,6 +5,7 @@ export const useOperatorSession = () => {
   const { queueOperation, getItem, putItem } = useOfflineSync()
   const online = useOnline()
   const { user } = useUserSession()
+  const { startTracking, stopTracking } = useGps()
 
   const fetchActiveSession = async () => {
     if (!user.value) return
@@ -15,11 +16,13 @@ export const useOperatorSession = () => {
         activeSession.value = await $fetch('/api/operators/sessions/active')
         if (activeSession.value) {
           await putItem('operator-sessions', activeSession.value)
+          startTracking() // Start tracking if session found
         }
       } else {
         // Find active session in IndexedDB
         const sessions = await getItem('operator-sessions', 'active')
         activeSession.value = sessions
+        if (activeSession.value) startTracking()
       }
     } catch (error) {
       console.error('Failed to fetch active session', error)
@@ -38,6 +41,7 @@ export const useOperatorSession = () => {
         })
         activeSession.value = session
         await putItem('operator-sessions', session)
+        startTracking()
         return session
       } else {
         const session = {
@@ -49,6 +53,7 @@ export const useOperatorSession = () => {
         }
         await queueOperation('operator-sessions', 'create', session)
         activeSession.value = session
+        startTracking()
         return session
       }
     } finally {
@@ -74,6 +79,7 @@ export const useOperatorSession = () => {
         })
       }
       activeSession.value = null
+      stopTracking()
       // Clear active session from IDB or mark it closed
     } finally {
       loading.value = false

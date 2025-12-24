@@ -1,6 +1,6 @@
 import { db } from '../../utils/db'
 import { inspections, assets, users } from '../../database/schema'
-import { eq, and, desc, getTableColumns } from 'drizzle-orm'
+import { eq, and, desc, getTableColumns, sql } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
   const session = await getUserSession(event)
@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
     .select({
       ...getTableColumns(inspections),
       assetNumber: assets.assetNumber,
-      operatorName: users.name
+      operatorName: sql<string>`${users.firstName} || ' ' || ${users.lastName}`
     })
     .from(inspections)
     .leftJoin(assets, eq(inspections.assetId, assets.id))

@@ -6,7 +6,7 @@ const columns = [
   { key: 'assetNumber', label: 'Vehicle' },
   { key: 'operatorName', label: 'Operator' },
   { key: 'status', label: 'Status' },
-  { key: 'actions' }
+  { key: 'actions', label: '' }
 ]
 
 const getStatusColor = (status: string) => {
@@ -28,15 +28,15 @@ const getStatusColor = (status: string) => {
     <UCard>
       <UTable
         :rows="inspections || []"
-        :columns="columns"
+        :columns="columns as any"
         :loading="pending"
       >
         <template #createdAt-data="{ row }">
-          {{ new Date(row.createdAt).toLocaleString() }}
+          {{ new Date((row as any).createdAt).toLocaleString() }}
         </template>
         <template #status-data="{ row }">
-          <UBadge :color="getStatusColor(row.status)" variant="subtle" class="capitalize">
-            {{ row.status }}
+          <UBadge :color="getStatusColor((row as any).status)" variant="subtle" class="capitalize">
+            {{ (row as any).status }}
           </UBadge>
         </template>
         <template #actions-data="{ row }">
@@ -44,7 +44,7 @@ const getStatusColor = (status: string) => {
             icon="i-lucide-eye"
             variant="ghost"
             color="neutral"
-            :to="`/inspections/${row.id}`"
+            :to="`/inspections/${(row as any).id}`"
           />
         </template>
       </UTable>
