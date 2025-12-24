@@ -9,5 +9,5 @@ export default defineEventHandler(async (event) => {
     limit: z.coerce.number().optional()
   }).parse)
 
-  return await maintenanceScheduleService.list(user.organizationId, query)
+  return await maintenanceScheduleService.list(user.organizationId!, query)
 })

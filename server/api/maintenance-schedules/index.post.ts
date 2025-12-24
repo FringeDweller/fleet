@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
   // Ensure usage intervals are strings if present, for Drizzle decimal
   const data = {
     ...body,
-    organizationId: user.organizationId,
+    organizationId: user.organizationId!,
     usageIntervalKm: body.usageIntervalKm?.toString(),
     usageIntervalHours: body.usageIntervalHours?.toString()
   }

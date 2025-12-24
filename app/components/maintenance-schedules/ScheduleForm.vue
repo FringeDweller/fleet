@@ -19,12 +19,12 @@ onMounted(async () => {
 const state = reactive({
   name: props.initialData?.name || '',
   taskId: props.initialData?.taskId || '',
-  targetType: props.initialData?.categoryId ? 'category' : (props.initialData?.assetId ? 'asset' : 'asset'),
+  targetType: (props.initialData?.categoryId ? 'category' : 'asset') as 'asset' | 'category',
   assetId: props.initialData?.assetId || '',
   categoryId: props.initialData?.categoryId || '',
-  type: props.initialData?.type || 'time',
+  type: (props.initialData?.type || 'time') as 'time' | 'usage' | 'combined',
   timeInterval: props.initialData?.timeInterval || 0,
-  timeUnit: props.initialData?.timeUnit || 'months',
+  timeUnit: (props.initialData?.timeUnit || 'months') as 'days' | 'weeks' | 'months' | 'years',
   usageIntervalKm: props.initialData?.usageIntervalKm ? Number(props.initialData?.usageIntervalKm) : 0,
   usageIntervalHours: props.initialData?.usageIntervalHours ? Number(props.initialData?.usageIntervalHours) : 0,
   leadTimeDays: props.initialData?.leadTimeDays || 7,
@@ -136,7 +136,7 @@ async function onSubmit(event: FormSubmitEvent<any>) {
     </UFormGroup>
 
     <div class="flex justify-end gap-2">
-      <UButton label="Cancel" color="gray" variant="ghost" @click="$router.back()" />
+      <UButton label="Cancel" color="neutral" variant="ghost" @click="$router.back()" />
       <UButton type="submit" label="Save Schedule" color="primary" :loading="loading" />
     </div>
   </UForm>

@@ -28,6 +28,13 @@ const links = [[{
     open.value = false
   }
 }, {
+  label: 'Inventory',
+  icon: 'i-lucide-package',
+  to: '/inventory',
+  onSelect: () => {
+    open.value = false
+  }
+}, {
   label: 'Maintenance Tasks',
   icon: 'i-lucide-wrench',
   to: '/maintenance-tasks',

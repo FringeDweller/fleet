@@ -77,11 +77,101 @@ export interface Asset {
 }
 
 export interface AssetCategory {
+
   id: string
+
   name: string
+
   slug: string
+
   parentId: string | null
+
   organizationId: string
+
   createdAt: string
+
   updatedAt: string
+
+}
+
+
+
+export interface Part {
+
+  id: string
+
+  sku: string
+
+  name: string
+
+  description: string | null
+
+  unit: string
+
+  categoryId: string | null
+
+  reorderThreshold: string
+
+  reorderQuantity: string
+
+  quantityOnHand: string
+
+  unitCost: string
+
+  organizationId: string
+
+  createdAt: string
+
+  updatedAt: string
+
+  categoryName?: string
+
+  history?: StockMovement[]
+
+}
+
+
+
+export interface PartCategory {
+
+  id: string
+
+  name: string
+
+  description: string | null
+
+  organizationId: string
+
+  createdAt: string
+
+  updatedAt: string
+
+}
+
+
+
+export interface StockMovement {
+
+  id: string
+
+  partId: string
+
+  type: 'in' | 'out' | 'adjustment'
+
+  quantity: string
+
+  reason: string | null
+
+  referenceType: 'work_order' | 'purchase_order' | 'manual' | null
+
+  referenceId: string | null
+
+  userId: string
+
+  userName?: string
+
+  organizationId: string
+
+  createdAt: string
+
 }

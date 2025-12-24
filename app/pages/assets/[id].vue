@@ -3,12 +3,13 @@ const route = useRoute()
 const assetId = route.params.id as string
 
 const { data: asset, pending } = await useFetch(`/api/assets/${assetId}`)
+const { data: compatibleParts, pending: loadingParts } = await useFetch(`/api/inventory/compatibility/asset/${assetId}`)
 
 const items = [
   { label: 'Overview', slot: 'overview' },
   { label: 'Work Orders', slot: 'work-orders', disabled: true },
   { label: 'Maintenance', slot: 'maintenance', disabled: true },
-  { label: 'Parts', slot: 'parts', disabled: true },
+  { label: 'Parts', slot: 'parts' },
   { label: 'Inspections', slot: 'inspections', disabled: true },
   { label: 'Fuel', slot: 'fuel', disabled: true },
   { label: 'Documents', slot: 'documents', disabled: true },
@@ -67,6 +68,39 @@ const items = [
                 </div>
               </div>
             </div>
+          </UCard>
+        </template>
+        
+        <template #parts>
+          <UCard class="mt-4">
+            <template #header>
+              <div class="flex items-center justify-between">
+                <h3 class="text-lg font-semibold">Compatible Parts</h3>
+                <UButton icon="i-heroicons-plus" size="xs" color="primary" label="Link Part" disabled />
+              </div>
+            </template>
+
+            <UTable
+              :rows="compatibleParts || []"
+              :columns="[
+                { key: 'sku', label: 'SKU' },
+                { key: 'name', label: 'Name' },
+                { key: 'categoryName', label: 'Category' },
+                { key: 'quantityOnHand', label: 'On Hand' },
+                { key: 'actions' }
+              ] as any[]"
+              :loading="loadingParts"
+            >
+              <template #actions-data="{ row }">
+                <UButton
+                  :to="`/inventory/${(row as any).id}`"
+                  icon="i-heroicons-eye"
+                  size="xs"
+                  color="neutral"
+                  variant="ghost"
+                />
+              </template>
+            </UTable>
           </UCard>
         </template>
         

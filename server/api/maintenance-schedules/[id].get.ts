@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Missing ID' })
   }
 
-  const schedule = await maintenanceScheduleService.getById(id, user.organizationId)
+  const schedule = await maintenanceScheduleService.getById(id, user.organizationId!)
   
   if (!schedule) {
     throw createError({ statusCode: 404, message: 'Schedule not found' })

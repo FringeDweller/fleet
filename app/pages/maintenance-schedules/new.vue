@@ -12,10 +12,10 @@ const toast = useToast()
 async function onSubmit(data: any) {
   try {
     await createSchedule(data)
-    toast.add({ title: 'Schedule created', color: 'green' })
+    toast.add({ title: 'Schedule created', color: 'success' })
     router.push('/maintenance-schedules')
   } catch (e: any) {
-    toast.add({ title: 'Error creating schedule', description: e.message, color: 'red' })
+    toast.add({ title: 'Error creating schedule', description: e.message, color: 'error' })
   }
 }
 </script>

@@ -6,7 +6,7 @@ definePageMeta({
 const { schedules, loading, fetchSchedules } = useMaintenanceSchedules()
 
 const search = ref('')
-const columns = [
+const columns: any[] = [
   { key: 'name', label: 'Name' },
   { key: 'type', label: 'Type' },
   { key: 'targetName', label: 'Target' },
@@ -37,7 +37,7 @@ onMounted(() => {
           <UDashboardSidebarCollapse />
         </template>
         <template #right>
-          <UButton icon="i-lucide-calendar" label="Calendar" to="/maintenance-schedules/calendar" color="gray" variant="ghost" class="mr-2" />
+          <UButton icon="i-lucide-calendar" label="Calendar" to="/maintenance-schedules/calendar" color="neutral" variant="ghost" class="mr-2" />
           <UButton icon="i-lucide-plus" label="New Schedule" to="/maintenance-schedules/new" />
         </template>
       </UDashboardNavbar>
@@ -62,17 +62,17 @@ onMounted(() => {
         class="w-full"
       >
         <template #name-data="{ row }">
-          <NuxtLink :to="`/maintenance-schedules/${row.id}`" class="text-primary hover:underline font-medium">
-            {{ row.name }}
+          <NuxtLink :to="`/maintenance-schedules/${(row as any).id}`" class="text-primary hover:underline font-medium">
+            {{ (row as any).name }}
           </NuxtLink>
         </template>
         
         <template #lastPerformedAt-data="{ row }">
-          {{ row.lastPerformedAt ? new Date(row.lastPerformedAt).toLocaleDateString() : '-' }}
+          {{ (row as any).lastPerformedAt ? new Date((row as any).lastPerformedAt).toLocaleDateString() : '-' }}
         </template>
 
         <template #nextDueAt-data="{ row }">
-             {{ row.nextDueAt ? new Date(row.nextDueAt).toLocaleDateString() : '-' }}
+             {{ (row as any).nextDueAt ? new Date((row as any).nextDueAt).toLocaleDateString() : '-' }}
         </template>
       </UTable>
     </template>

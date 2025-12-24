@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
   if (body.usageIntervalKm !== undefined) data.usageIntervalKm = body.usageIntervalKm?.toString()
   if (body.usageIntervalHours !== undefined) data.usageIntervalHours = body.usageIntervalHours?.toString()
 
-  const schedule = await maintenanceScheduleService.update(id, user.organizationId, data)
+  const schedule = await maintenanceScheduleService.update(id, user.organizationId!, data)
   
   if (!schedule) {
     throw createError({ statusCode: 404, message: 'Schedule not found' })
