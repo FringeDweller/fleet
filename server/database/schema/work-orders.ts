@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, varchar, date } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, text, timestamp, varchar, date, jsonb, decimal } from 'drizzle-orm/pg-core'
 import { organizations } from './organizations'
 import { assets } from './assets'
 import { maintenanceTasks } from './maintenance-tasks'
@@ -16,6 +16,10 @@ export const workOrders = pgTable('work_orders', {
   status: varchar('status', { length: 50 }).notNull().default('open'),
   dueDate: date('due_date'),
   assignedToId: uuid('assigned_to_id').references(() => users.id),
+  checklist: jsonb('checklist').default([]),
+  laborCost: decimal('labor_cost', { precision: 10, scale: 2 }).default('0'),
+  partsCost: decimal('parts_cost', { precision: 10, scale: 2 }).default('0'),
+  totalCost: decimal('total_cost', { precision: 10, scale: 2 }).default('0'),
   organizationId: uuid('organization_id')
     .notNull()
     .references(() => organizations.id),

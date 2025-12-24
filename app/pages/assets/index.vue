@@ -1,92 +1,87 @@
 <script setup lang="ts">
-import type { Asset } from '~/types'
-
-definePageMeta({
-  middleware: 'auth'
-})
-
-const { assets, loading, fetchAssets } = useAssets()
-const { scan: scanQr } = useQrScanner()
-
-async function onScan() {
-  const barcode = await scanQr()
-  if (barcode?.displayValue) {
-    // Assuming barcode contains asset ID or number
-    await navigateTo(`/assets/${barcode.displayValue}`)
-  }
-}
-
-const search = ref('')
-const columns = [
+const columns: any[] = [
   { key: 'assetNumber', label: 'Asset #' },
   { key: 'make', label: 'Make' },
   { key: 'model', label: 'Model' },
   { key: 'year', label: 'Year' },
-  { key: 'status', label: 'Status' }
-] as const
+  { key: 'status', label: 'Status' },
+  { key: 'actions' }
+]
 
-const filteredAssets = computed(() => {
-  if (!search.value) return assets.value
-  return assets.value.filter((asset: Asset) => 
-    Object.values(asset).some(val => 
-      String(val).toLowerCase().includes(search.value.toLowerCase())
-    )
-  )
+const search = ref('')
+const selectedStatus = ref('')
+const page = ref(1)
+const pageCount = 10
+
+const { data: assets, pending } = await useFetch('/api/assets', {
+  query: {
+    q: search,
+    status: selectedStatus,
+    page: page,
+    limit: pageCount
+  }
 })
 
-onMounted(() => {
-  fetchAssets()
-})
+const statusOptions = [
+  { label: 'All', value: '' },
+  { label: 'Active', value: 'active' },
+  { label: 'Inactive', value: 'inactive' },
+  { label: 'Maintenance', value: 'maintenance' },
+  { label: 'Disposed', value: 'disposed' }
+]
 </script>
 
 <template>
-  <UDashboardPanel id="assets">
-    <template #header>
-      <UDashboardNavbar title="Assets">
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
-        <template #right>
-          <UButton icon="i-lucide-scan" color="neutral" variant="ghost" class="md:hidden" @click="onScan" />
-          <UButton icon="i-lucide-plus" label="New Asset" to="/assets/new" />
-        </template>
-      </UDashboardNavbar>
+  <div class="p-4">
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-2xl font-bold">Assets</h1>
+      <UButton to="/assets/new" icon="i-heroicons-plus" color="primary">
+        New Asset
+      </UButton>
+    </div>
 
-      <UDashboardToolbar>
-        <template #left>
-          <UInput
-            v-model="search"
-            icon="i-lucide-search"
-            placeholder="Search assets..."
-            class="w-64"
-          />
-        </template>
-      </UDashboardToolbar>
-    </template>
+    <div class="flex gap-4 mb-4">
+      <UInput
+        v-model="search"
+        icon="i-heroicons-magnifying-glass"
+        placeholder="Search assets..."
+        class="w-64"
+      />
+      <USelect
+        v-model="selectedStatus"
+        :options="statusOptions"
+        placeholder="Status"
+        class="w-40"
+      />
+    </div>
 
-    <template #body>
-      <UTable
-        :rows="filteredAssets"
-        :columns="(columns as any)"
-        :loading="loading"
-        class="w-full"
-      >
-        <template #status-data="{ row }">
-          <UBadge
-            :color="(row as any).status === 'active' ? 'success' : 'neutral'"
-            variant="subtle"
-            size="sm"
-          >
-            {{ (row as any).status }}
-          </UBadge>
-        </template>
-        
-        <template #assetNumber-data="{ row }">
-          <NuxtLink :to="`/assets/${(row as any).id}`" class="text-primary hover:underline font-medium">
-            {{ (row as any).assetNumber }}
-          </NuxtLink>
-        </template>
-      </UTable>
-    </template>
-  </UDashboardPanel>
+    <UTable
+      :rows="assets?.items || []"
+      :columns="columns"
+      :loading="pending"
+    >
+      <template #status-data="{ row }">
+        <UBadge :color="(row as any).status === 'active' ? 'success' : 'neutral'">
+          {{ (row as any).status }}
+        </UBadge>
+      </template>
+      <template #actions-data="{ row }">
+        <UButton
+          :to="`/assets/${(row as any).id}`"
+          icon="i-heroicons-pencil-square"
+          size="xs"
+          color="neutral"
+          variant="ghost"
+        />
+      </template>
+    </UTable>
+
+    <div class="flex justify-end mt-4">
+      <UPagination
+        v-model="page"
+        :page-count="pageCount"
+        :total="assets?.total || 0"
+      />
+    </div>
+  </div>
 </template>

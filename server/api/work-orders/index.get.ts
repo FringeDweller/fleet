@@ -1,4 +1,4 @@
-import { assetService } from '../../services/asset.service'
+import { workOrderService } from '../../services/work-order.service'
 
 export default defineEventHandler(async (event) => {
   const session = await getUserSession(event)
@@ -10,10 +10,10 @@ export default defineEventHandler(async (event) => {
   }
 
   const query = getQuery(event)
-  
-  return await assetService.listAssets(session.user.organizationId, {
-    q: query.q as string,
+
+  return await workOrderService.listWorkOrders(session.user.organizationId, {
     status: query.status as string,
+    q: query.q as string,
     page: query.page ? Number(query.page) : 1,
     limit: query.limit ? Number(query.limit) : 10
   })

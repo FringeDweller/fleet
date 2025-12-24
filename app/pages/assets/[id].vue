@@ -1,102 +1,83 @@
 <script setup lang="ts">
-import type { Asset } from '~/types'
-
-definePageMeta({
-  middleware: 'auth'
-})
-
 const route = useRoute()
-const id = route.params.id as string
+const assetId = route.params.id as string
 
-const { data: asset, pending: loading } = await useFetch<Asset>(`/api/assets/${id}`)
+const { data: asset, pending } = await useFetch(`/api/assets/${assetId}`)
 
 const items = [
-  { label: 'Overview', icon: 'i-lucide-info' },
-  { label: 'Work Orders', icon: 'i-lucide-wrench' },
-  { label: 'Maintenance', icon: 'i-lucide-calendar' },
-  { label: 'Parts', icon: 'i-lucide-package' },
-  { label: 'Inspections', icon: 'i-lucide-clipboard-check' }
+  { label: 'Overview', slot: 'overview' },
+  { label: 'Work Orders', slot: 'work-orders', disabled: true },
+  { label: 'Maintenance', slot: 'maintenance', disabled: true },
+  { label: 'Parts', slot: 'parts', disabled: true },
+  { label: 'Inspections', slot: 'inspections', disabled: true },
+  { label: 'Fuel', slot: 'fuel', disabled: true },
+  { label: 'Documents', slot: 'documents', disabled: true },
+  { label: 'Location', slot: 'location', disabled: true },
 ]
 </script>
 
 <template>
-  <UDashboardPanel id="asset-detail">
-    <template #header>
-      <UDashboardNavbar :title="asset?.assetNumber || 'Asset Details'">
-        <template #leading>
-          <UButton icon="i-lucide-arrow-left" variant="ghost" to="/assets" />
+  <div class="p-4">
+    <div v-if="pending" class="flex justify-center p-8">
+      <UIcon name="i-heroicons-arrow-path" class="animate-spin text-2xl" />
+    </div>
+    <div v-else-if="asset">
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h1 class="text-3xl font-bold">{{ (asset as any).assetNumber }}</h1>
+          <p class="text-gray-500">{{ (asset as any).year }} {{ (asset as any).make }} {{ (asset as any).model }}</p>
+        </div>
+        <div class="flex gap-2">
+          <UBadge :color="(asset as any).status === 'active' ? 'success' : 'neutral'" size="lg">
+            {{ (asset as any).status }}
+          </UBadge>
+          <UButton icon="i-heroicons-pencil-square" color="neutral" variant="ghost">Edit</UButton>
+        </div>
+      </div>
+
+      <UTabs :items="items" class="w-full">
+        <template #overview>
+          <UCard class="mt-4">
+            <template #header>
+              <h3 class="text-lg font-semibold">Asset Details</h3>
+            </template>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-500">VIN</label>
+                  <p>{{ (asset as any).vin || '-' }}</p>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-500">License Plate</label>
+                  <p>{{ (asset as any).licensePlate || '-' }}</p>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-500">Category</label>
+                  <p>{{ (asset as any).categoryName || '-' }}</p> 
+                </div>
+              </div>
+              <div class="space-y-4">
+                 <div>
+                  <label class="block text-sm font-medium text-gray-500">Current Mileage</label>
+                  <p>{{ (asset as any).currentMileage }} km</p>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-500">Current Hours</label>
+                  <p>{{ (asset as any).currentHours }} hrs</p>
+                </div>
+              </div>
+            </div>
+          </UCard>
         </template>
-      </UDashboardNavbar>
-    </template>
-
-    <template #body>
-      <div v-if="loading" class="flex items-center justify-center h-64">
-        <UIcon name="i-lucide-loader-2" class="size-8 animate-spin text-gray-400" />
-      </div>
-
-      <div v-else-if="asset && !Array.isArray(asset)" class="space-y-6">
-        <UTabs :items="items" class="w-full">
-          <template #content="{ item }">
-            <UCard v-if="item.label === 'Overview'">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <section class="space-y-4">
-                  <h3 class="text-lg font-semibold">
-                    General Information
-                  </h3>
-                  <div class="grid grid-cols-2 gap-4 text-sm">
-                    <span class="text-gray-500">Make</span>
-                    <span class="font-medium">{{ asset.make }}</span>
-                    <span class="text-gray-500">Model</span>
-                    <span class="font-medium">{{ asset.model }}</span>
-                    <span class="text-gray-500">Year</span>
-                    <span class="font-medium">{{ asset.year }}</span>
-                    <span class="text-gray-500">VIN</span>
-                    <span class="font-medium">{{ asset.vin || 'N/A' }}</span>
-                    <span class="text-gray-500">License Plate</span>
-                    <span class="font-medium">{{ asset.licensePlate || 'N/A' }}</span>
-                  </div>
-                </section>
-
-                <section class="space-y-4">
-                  <h3 class="text-lg font-semibold">
-                    Operational Data
-                  </h3>
-                  <div class="grid grid-cols-2 gap-4 text-sm">
-                    <span class="text-gray-500">Status</span>
-                    <UBadge
-                      :color="asset.status === 'active' ? 'success' : 'neutral'"
-                      variant="subtle"
-                    >
-                      {{ asset.status }}
-                    </UBadge>
-                    <span class="text-gray-500">Mileage</span>
-                    <span class="font-medium">{{ asset.currentMileage }} km</span>
-                    <span class="text-gray-500">Hours</span>
-                    <span class="font-medium">{{ asset.currentHours }} hrs</span>
-                  </div>
-                </section>
-              </div>
-            </UCard>
-
-            <UCard v-else>
-              <div class="flex flex-col items-center justify-center h-32 text-gray-500">
-                <UIcon :name="item.icon" class="size-8 mb-2" />
-                <p>{{ item.label }} feature coming soon</p>
-              </div>
-            </UCard>
-          </template>
-        </UTabs>
-      </div>
-
-      <div v-else class="flex flex-col items-center justify-center h-64 text-gray-500">
-        <UIcon name="i-lucide-alert-circle" class="size-12 mb-4" />
-        <p class="text-lg">
-          Asset not found
-        </p>
-        <UButton to="/assets" variant="link">
-          Back to Assets
-        </UButton>
-      </div>
-    </template>
-  </UDashboardPanel>
+        
+        <template #work-orders>
+          <div class="p-4 text-center text-gray-500">Work Orders module coming soon</div>
+        </template>
+      </UTabs>
+    </div>
+    <div v-else class="text-center p-8">
+      <p class="text-red-500">Asset not found</p>
+      <UButton to="/assets" color="neutral" variant="ghost" class="mt-4">Back to Assets</UButton>
+    </div>
+  </div>
 </template>
