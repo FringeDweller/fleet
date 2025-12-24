@@ -97,7 +97,28 @@ export const useBluetoothObd = () => {
   }
 
   const liveData = ref<{ rpm: number, speed: number, temp: number, fuel: number, odometer: number }>({ rpm: 0, speed: 0, temp: 0, fuel: 0, odometer: 125000.5 })
+  const dtcCodes = ref<string[]>([])
   const pollingInterval = ref<any>(null)
+  const { activeSession } = useOperatorSession()
+
+  // Sync DTCs to backend when they change
+  watch(dtcCodes, async (newCodes) => {
+    if (newCodes.length > 0 && activeSession.value) {
+      try {
+        await $fetch('/api/obd/readings', {
+          method: 'POST',
+          body: {
+            assetId: activeSession.value.assetId,
+            dtcCodes: newCodes,
+            odometer: liveData.value.odometer,
+            fuelLevel: liveData.value.fuel
+          }
+        })
+      } catch (e) {
+        console.error('Failed to sync OBD readings', e)
+      }
+    }
+  }, { deep: true })
 
   const startPolling = async () => {
     if (!isConnected.value || !connectedDevice.value) return
@@ -109,14 +130,25 @@ export const useBluetoothObd = () => {
         speed: Math.floor(Math.random() * 100),
         temp: Math.floor(Math.random() * (110 - 80) + 80),
         fuel: Math.floor(Math.random() * 100),
-        odometer: liveData.value.odometer + (liveData.value.speed / 3600) // Increment based on speed
+        odometer: liveData.value.odometer + (liveData.value.speed / 3600)
+      }
+
+      // Randomly simulate a DTC appearing (rare)
+      if (Math.random() > 0.99 && dtcCodes.value.length === 0) {
+        dtcCodes.value = ['P0300'] // Random/Multiple Cylinder Misfire Detected
       }
     }, 1000)
+  }
 
-    // Real implementation would look like:
-    // 1. Get Service & Characteristic
-    // 2. Write PID (e.g., 010C for RPM)
-    // 3. Read response & parse
+  const readDtcCodes = async () => {
+    // In a real app, send PID 03 to get stored trouble codes
+    return dtcCodes.value
+  }
+
+  const clearDtcCodes = async () => {
+    // In a real app, send PID 04
+    dtcCodes.value = []
+    return true
   }
 
   const readOdometer = async () => {
@@ -156,9 +188,12 @@ export const useBluetoothObd = () => {
     connectedDevice,
     devices,
     liveData,
+    dtcCodes,
     scanForDongles,
     connect,
     disconnect,
-    readOdometer
+    readOdometer,
+    readDtcCodes,
+    clearDtcCodes
   }
 }
