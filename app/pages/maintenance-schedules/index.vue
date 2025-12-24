@@ -37,6 +37,7 @@ onMounted(() => {
           <UDashboardSidebarCollapse />
         </template>
         <template #right>
+          <UButton icon="i-lucide-calendar" label="Calendar" to="/maintenance-schedules/calendar" color="gray" variant="ghost" class="mr-2" />
           <UButton icon="i-lucide-plus" label="New Schedule" to="/maintenance-schedules/new" />
         </template>
       </UDashboardNavbar>
