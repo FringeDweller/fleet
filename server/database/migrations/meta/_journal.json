@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1766534380524,
+      "tag": "0000_new_natasha_romanoff",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1766534682666,
+      "tag": "0001_lethal_ezekiel_stane",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1766534974452,
+      "tag": "0002_pink_boomer",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1766535028332,
+      "tag": "0003_sharp_eternity",
+      "breakpoints": true
+    }
+  ]
+}
