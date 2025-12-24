@@ -5,12 +5,42 @@ export const useAssets = () => {
   const categories = ref<AssetCategory[]>([])
   const loading = ref(false)
 
+  const { getCollection, putItem, queueOperation } = useOfflineSync()
+  const online = useOnline()
+
   const fetchAssets = async () => {
     loading.value = true
     try {
-      assets.value = await $fetch('/api/assets')
+      if (online.value) {
+        const data = await $fetch<Asset[]>('/api/assets')
+        assets.value = data
+        // Cache to IndexedDB
+        for (const asset of data) {
+          await putItem('assets', asset)
+        }
+      } else {
+        assets.value = await getCollection('assets')
+      }
+    } catch (error) {
+      console.error('Failed to fetch assets, falling back to local storage', error)
+      assets.value = await getCollection('assets')
     } finally {
       loading.value = false
+    }
+  }
+
+  const createAsset = async (data: Partial<Asset>) => {
+    if (online.value) {
+      const asset = await $fetch<Asset>('/api/assets', {
+        method: 'POST',
+        body: data
+      })
+      await putItem('assets', asset)
+      return asset
+    } else {
+      const asset = { ...data, id: crypto.randomUUID() } as Asset
+      await queueOperation('assets', 'create', asset)
+      return asset
     }
   }
 
@@ -21,8 +51,10 @@ export const useAssets = () => {
   return {
     assets,
     categories,
-    loading,
-    fetchAssets,
-    fetchCategories
-  }
-}
+        loading,
+        fetchAssets,
+        createAsset,
+        fetchCategories
+      }
+    }
+    

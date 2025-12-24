@@ -30,6 +30,7 @@ export const parts = pgTable('parts', {
   organizationId: uuid('organization_id')
     .notNull()
     .references(() => organizations.id),
+  hlc: text('hlc'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull()
 })

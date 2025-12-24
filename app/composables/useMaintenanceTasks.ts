@@ -3,10 +3,25 @@ export const useMaintenanceTasks = () => {
   const groups = ref<any[]>([])
   const loading = ref(false)
 
+  const { getCollection, putItem } = useOfflineSync()
+  const online = useOnline()
+
   const fetchTasks = async () => {
     loading.value = true
     try {
-      tasks.value = await $fetch('/api/maintenance-tasks')
+      if (online.value) {
+        const data = await $fetch<any[]>('/api/maintenance-tasks')
+        tasks.value = data
+        // Cache to IndexedDB
+        for (const task of data) {
+          await putItem('maintenance-tasks', task)
+        }
+      } else {
+        tasks.value = await getCollection('maintenance-tasks')
+      }
+    } catch (error) {
+      console.error('Failed to fetch tasks, falling back to local storage', error)
+      tasks.value = await getCollection('maintenance-tasks')
     } finally {
       loading.value = false
     }

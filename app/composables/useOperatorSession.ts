@@ -1,0 +1,90 @@
+export const useOperatorSession = () => {
+  const activeSession = ref<any>(null)
+  const loading = ref(false)
+
+  const { queueOperation, getItem, putItem } = useOfflineSync()
+  const online = useOnline()
+  const { user } = useUserSession()
+
+  const fetchActiveSession = async () => {
+    if (!user.value) return
+    
+    loading.value = true
+    try {
+      if (online.value) {
+        activeSession.value = await $fetch('/api/operators/sessions/active')
+        if (activeSession.value) {
+          await putItem('operator-sessions', activeSession.value)
+        }
+      } else {
+        // Find active session in IndexedDB
+        const sessions = await getItem('operator-sessions', 'active')
+        activeSession.value = sessions
+      }
+    } catch (error) {
+      console.error('Failed to fetch active session', error)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const logOn = async (assetId: string, data: { startOdometer?: string, startHours?: string } = {}) => {
+    loading.value = true
+    try {
+      if (online.value) {
+        const session = await $fetch('/api/operators/sessions', {
+          method: 'POST',
+          body: { assetId, ...data }
+        })
+        activeSession.value = session
+        await putItem('operator-sessions', session)
+        return session
+      } else {
+        const session = {
+          id: crypto.randomUUID(),
+          assetId,
+          operatorId: user.value?.id,
+          startTime: new Date().toISOString(),
+          ...data
+        }
+        await queueOperation('operator-sessions', 'create', session)
+        activeSession.value = session
+        return session
+      }
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const logOff = async (data: { endOdometer?: string, endHours?: string } = {}) => {
+    if (!activeSession.value) return
+
+    loading.value = true
+    try {
+      if (online.value) {
+        await $fetch(`/api/operators/sessions/${activeSession.value.id}`, {
+          method: 'PUT',
+          body: data
+        })
+      } else {
+        await queueOperation('operator-sessions', 'update', {
+          ...activeSession.value,
+          ...data,
+          endTime: new Date().toISOString()
+        })
+      }
+      activeSession.value = null
+      // Clear active session from IDB or mark it closed
+    } finally {
+      loading.value = false
+    }
+  }
+
+  return {
+    activeSession,
+    loading,
+    fetchActiveSession,
+    logOn,
+    logOff
+  }
+}

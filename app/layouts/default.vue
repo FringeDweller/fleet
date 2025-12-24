@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
+import { breakpointsTailwind } from '@vueuse/core'
 
 const route = useRoute()
 const toast = useToast()
@@ -123,6 +124,30 @@ const groups = computed(() => [{
   }]
 }])
 
+const { isNative } = useCapacitor()
+const breakpoints = useBreakpoints(breakpointsTailwind)
+const isMobile = breakpoints.smaller('lg')
+
+const mobileLinks = computed(() => [{
+  label: 'Home',
+  icon: 'i-lucide-house',
+  to: '/'
+}, {
+  label: 'Assets',
+  icon: 'i-lucide-truck',
+  to: '/assets'
+}, {
+  label: 'Work Orders',
+  icon: 'i-lucide-clipboard-list',
+  to: '/work-orders'
+}, {
+  label: 'More',
+  icon: 'i-lucide-menu',
+  onSelect: () => {
+    open.value = true
+  }
+}])
+
 onMounted(async () => {
   const cookie = useCookie('cookie-consent')
   if (cookie.value === 'accepted') {
@@ -160,7 +185,10 @@ onMounted(async () => {
       :ui="{ footer: 'lg:border-t lg:border-default' }"
     >
       <template #header="{ collapsed }">
-        <TeamsMenu :collapsed="collapsed" />
+        <div class="flex items-center justify-between w-full min-w-0">
+          <TeamsMenu :collapsed="collapsed" />
+          <PwaSyncStatus v-if="!collapsed" />
+        </div>
       </template>
 
       <template #default="{ collapsed }">
@@ -191,6 +219,13 @@ onMounted(async () => {
     <UDashboardSearch :groups="groups" />
 
     <slot />
+
+    <UNavigationMenu
+      v-if="isNative || isMobile"
+      :items="mobileLinks"
+      class="fixed bottom-0 left-0 right-0 lg:hidden bg-elevated/75 backdrop-blur border-t border-default px-4 pb-safe z-50"
+      :ui="{ list: 'flex justify-around' }"
+    />
 
     <NotificationsSlideover />
   </UDashboardGroup>

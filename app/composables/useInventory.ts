@@ -7,12 +7,30 @@ export const useInventory = () => {
   const loading = ref(false)
   const total = ref(0)
 
+  const { getCollection, putItem, getItem, queueOperation } = useOfflineSync()
+  const online = useOnline()
+
   const fetchParts = async (params?: { q?: string, categoryId?: string, page?: number, limit?: number }) => {
     loading.value = true
     try {
-      const response = await $fetch<{ items: Part[], total: number }>('/api/inventory/parts', { params })
-      parts.value = response.items
-      total.value = response.total
+      if (online.value) {
+        const response = await $fetch<{ items: Part[], total: number }>('/api/inventory/parts', { params })
+        parts.value = response.items
+        total.value = response.total
+        // Cache to IndexedDB
+        for (const part of response.items) {
+          await putItem('inventory', part)
+        }
+      } else {
+        const data = await getCollection('inventory')
+        parts.value = data
+        total.value = data.length
+      }
+    } catch (error) {
+      console.error('Failed to fetch parts, falling back to local storage', error)
+      const data = await getCollection('inventory')
+      parts.value = data
+      total.value = data.length
     } finally {
       loading.value = false
     }
@@ -22,22 +40,39 @@ export const useInventory = () => {
     return await $fetch<Part>(`/api/inventory/parts/${id}`)
   }
 
+  const fetchCategories = async () => {
+    categories.value = await $fetch<PartCategory[]>('/api/inventory/categories')
+  }
+
   const createPart = async (data: Partial<Part>) => {
-    return await $fetch<Part>('/api/inventory/parts', {
-      method: 'POST',
-      body: data
-    })
+    if (online.value) {
+      const part = await $fetch<Part>('/api/inventory/parts', {
+        method: 'POST',
+        body: data
+      })
+      await putItem('inventory', part)
+      return part
+    } else {
+      const part = { ...data, id: crypto.randomUUID() } as Part
+      await queueOperation('inventory', 'create', part)
+      return part
+    }
   }
 
   const updatePart = async (id: string, data: Partial<Part>) => {
-    return await $fetch<Part>(`/api/inventory/parts/${id}`, {
-      method: 'PUT',
-      body: data
-    })
-  }
-
-  const fetchCategories = async () => {
-    categories.value = await $fetch<PartCategory[]>('/api/inventory/categories')
+    if (online.value) {
+      const part = await $fetch<Part>(`/api/inventory/parts/${id}`, {
+        method: 'PUT',
+        body: data
+      })
+      await putItem('inventory', part)
+      return part
+    } else {
+      const existing = await getItem('inventory', id)
+      const part = { ...existing, ...data, id }
+      await queueOperation('inventory', 'update', part)
+      return part
+    }
   }
 
   const createCategory = async (data: Partial<PartCategory>) => {

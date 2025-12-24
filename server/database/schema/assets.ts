@@ -19,6 +19,8 @@ export const assets = pgTable('assets', {
     .references(() => organizations.id),
   currentMileage: decimal('current_mileage', { precision: 12, scale: 2 }).default('0'),
   currentHours: decimal('current_hours', { precision: 12, scale: 2 }).default('0'),
+  requiredCertification: text('required_certification'),
+  hlc: text('hlc'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull()
 })
