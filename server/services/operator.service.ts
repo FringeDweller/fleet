@@ -5,7 +5,7 @@ import { certifications } from '../database/schema/certifications'
 import { eq, and, isNull, gte } from 'drizzle-orm'
 
 export const operatorService = {
-  async startSession(data: { operatorId: string, assetId: string, organizationId: string, startOdometer?: string, startHours?: string, hlc?: string }) {
+  async startSession(data: { operatorId: string, assetId: string, organizationId: string, startOdometer?: string, startHours?: string, hlc?: string, previousSessionId?: string }) {
     // 1. Get asset to check required certification
     const asset = await db.query.assets.findFirst({
       where: eq(assets.id, data.assetId)

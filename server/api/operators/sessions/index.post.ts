@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event)
-  const { assetId, startOdometer, startHours, hlc } = body
+  const { assetId, startOdometer, startHours, hlc, previousSessionId } = body
 
   if (!assetId) {
     throw createError({ statusCode: 400, message: 'Asset ID is required' })
@@ -19,6 +19,7 @@ export default defineEventHandler(async (event) => {
     organizationId: session.user.organizationId!,
     startOdometer,
     startHours,
-    hlc
+    hlc,
+    previousSessionId
   })
 })

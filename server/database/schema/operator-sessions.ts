@@ -1,3 +1,4 @@
+import type { AnyPgColumn } from 'drizzle-orm/pg-core'
 import { pgTable, uuid, timestamp, decimal, text } from 'drizzle-orm/pg-core'
 import { organizations } from './organizations'
 import { users } from './users'
@@ -17,6 +18,7 @@ export const operatorSessions = pgTable('operator_sessions', {
   startHours: decimal('start_hours', { precision: 12, scale: 2 }),
   endOdometer: decimal('end_odometer', { precision: 12, scale: 2 }),
   endHours: decimal('end_hours', { precision: 12, scale: 2 }),
+  previousSessionId: uuid('previous_session_id').references((): AnyPgColumn => operatorSessions.id),
   organizationId: uuid('organization_id')
     .notNull()
     .references(() => organizations.id),

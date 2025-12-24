@@ -28,7 +28,7 @@ export const useOperatorSession = () => {
     }
   }
 
-  const logOn = async (assetId: string, data: { startOdometer?: string, startHours?: string } = {}) => {
+  const logOn = async (assetId: string, data: { startOdometer?: string, startHours?: string, previousSessionId?: string } = {}) => {
     loading.value = true
     try {
       if (online.value) {

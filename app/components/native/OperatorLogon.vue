@@ -3,7 +3,9 @@ const { logOn, logOff, activeSession, loading: sessionLoading } = useOperatorSes
 const { scanTag, isScanning: nfcScanning } = useNfc()
 const { startScan: scanQr, isScanning: qrScanning } = useQrScanner()
 const { isConnected: obdConnected, liveData: obdData } = useBluetoothObd()
+const { clear } = useUserSession()
 const toast = useToast()
+const handoverContext = useCookie<{ assetId: string, odometer?: string, hours?: string, sessionId: string, timestamp: number } | null>('handover-context')
 
 const assetId = ref('')
 const startOdometer = ref('')
@@ -12,6 +14,23 @@ const endOdometer = ref('')
 const endHours = ref('')
 const showManualForm = ref(false)
 const showLogOffForm = ref(false)
+
+// Check for handover context on mount
+onMounted(() => {
+  if (handoverContext.value) {
+    const ctx = handoverContext.value
+    // Only use if less than 15 minutes old
+    if (Date.now() - ctx.timestamp < 15 * 60 * 1000) {
+      assetId.value = ctx.assetId
+      startOdometer.value = ctx.odometer || ''
+      startHours.value = ctx.hours || ''
+      showManualForm.value = true
+      toast.add({ title: 'Shift Handover', description: 'Continuing from previous operator.', color: 'info' })
+    } else {
+      handoverContext.value = null // Expired
+    }
+  }
+})
 
 // Auto-populate odometer if OBD is connected
 watch(showManualForm, (val) => {
@@ -55,10 +74,17 @@ const handleLogOn = async (id: string) => {
 
 const submitLogOn = async () => {
   try {
+    const previousSessionId = handoverContext.value?.assetId === assetId.value ? handoverContext.value.sessionId : undefined
+    
     await logOn(assetId.value, {
       startOdometer: startOdometer.value,
-      startHours: startHours.value
+      startHours: startHours.value,
+      previousSessionId
     })
+    
+    // Clear context after successful login
+    if (previousSessionId) handoverContext.value = null
+    
     toast.add({ title: 'Logged on successfully', color: 'success' })
     showManualForm.value = false
   } catch (error: any) {
@@ -76,6 +102,44 @@ const submitLogOff = async () => {
     showLogOffForm.value = false
   } catch (error: any) {
     toast.add({ title: 'Log off failed', description: error.message, color: 'error' })
+  }
+}
+
+const onHandover = async () => {
+  if (!endOdometer.value && !endHours.value && !obdConnected.value) {
+    toast.add({ title: 'Readings required', description: 'Please enter odometer or hours for handover.', color: 'warning' })
+    return
+  }
+  
+  try {
+    const sessionId = activeSession.value?.id
+    const asset = activeSession.value?.assetId
+
+    // 1. Log off current session
+    await logOff({
+      endOdometer: endOdometer.value,
+      endHours: endHours.value
+    })
+
+    // 2. Set handover context
+    if (sessionId && asset) {
+      handoverContext.value = {
+        assetId: asset,
+        sessionId: sessionId,
+        odometer: endOdometer.value,
+        hours: endHours.value,
+        timestamp: Date.now()
+      }
+
+      // 3. Logout user
+      await clear()
+      
+      // 4. Redirect
+      navigateTo('/login')
+    }
+    
+  } catch (error: any) {
+    toast.add({ title: 'Handover failed', description: error.message, color: 'error' })
   }
 }
 </script>
@@ -165,6 +229,7 @@ const submitLogOff = async () => {
             </UFormField>
             <div class="flex justify-end gap-2 pt-4">
               <UButton label="Cancel" color="neutral" variant="outline" @click="showLogOffForm = false" />
+              <UButton label="Handover" color="warning" :loading="sessionLoading" @click="onHandover" />
               <UButton label="Log Off" color="error" :loading="sessionLoading" @click="submitLogOff" />
             </div>
           </div>
