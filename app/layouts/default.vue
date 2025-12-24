@@ -14,6 +14,34 @@ const links = [[{
     open.value = false
   }
 }, {
+  label: 'Assets',
+  icon: 'i-lucide-truck',
+  to: '/assets',
+  onSelect: () => {
+    open.value = false
+  }
+}, {
+  label: 'Work Orders',
+  icon: 'i-lucide-clipboard-list',
+  to: '/work-orders',
+  onSelect: () => {
+    open.value = false
+  }
+}, {
+  label: 'Maintenance Tasks',
+  icon: 'i-lucide-wrench',
+  to: '/maintenance-tasks',
+  onSelect: () => {
+    open.value = false
+  }
+}, {
+  label: 'Schedules',
+  icon: 'i-lucide-calendar',
+  to: '/maintenance-schedules',
+  onSelect: () => {
+    open.value = false
+  }
+}, {
   label: 'Inbox',
   icon: 'i-lucide-inbox',
   to: '/inbox',
