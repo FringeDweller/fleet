@@ -1,23 +1,31 @@
 <script setup lang="ts">
-const { currentInspection, startInspection, recordCheckpoint, submitInspection, loading } = usePreStartInspection()
+const { currentInspection, startInspection, recordCheckpoint, submitInspection, loading: inspectionLoading } = usePreStartInspection()
 const { scanTag, isScanning: nfcScanning } = useNfc()
 const { startScan: scanQr, isScanning: qrScanning } = useQrScanner()
+const { getCurrentPosition, loading: locationLoading } = useGeolocation()
 const toast = useToast()
 
 const step = ref(1) // 1: Start, 2: Checkpoints, 3: Checklist, 4: Sign-off
-const checklist = ref<{ id: string, label: string, status: 'passed' | 'failed' | null }[]>([
-  { id: 'lights', label: 'Lights & Indicators', status: null },
-  { id: 'tires', label: 'Tire Condition & Pressure', status: null },
-  { id: 'fluids', label: 'Fluid Levels (Oil, Coolant, Brake)', status: null },
-  { id: 'brakes', label: 'Brake Operation', status: null },
-  { id: 'mirrors', label: 'Mirrors & Windows', status: null }
-])
+const checklist = ref<{ id: string, label: string, status: 'passed' | 'failed' | null }[]>([])
+const loading = computed(() => inspectionLoading.value || locationLoading.value)
 
-const onStartScan = async () => {
+const onStartScan = async (method: 'nfc' | 'qr') => {
   try {
-    const id = await scanTag()
+    const id = method === 'nfc' ? await scanTag() : await scanQr()
     if (id) {
-      await startInspection(id)
+      const location = await getCurrentPosition()
+      await startInspection(id, location || undefined)
+      
+      // REQ-901-AC-03: Correct checklist loaded for vehicle type
+      // Mocking fetching based on asset ID. In real app, call an API.
+      checklist.value = [
+        { id: 'lights', label: 'Lights & Indicators', status: null },
+        { id: 'tires', label: 'Tire Condition & Pressure', status: null },
+        { id: 'fluids', label: 'Fluid Levels (Oil, Coolant, Brake)', status: null },
+        { id: 'brakes', label: 'Brake Operation', status: null },
+        { id: 'mirrors', label: 'Mirrors & Windows', status: null }
+      ]
+      
       step.value = 2
     }
   } catch (error: any) {
@@ -25,11 +33,12 @@ const onStartScan = async () => {
   }
 }
 
-const onCheckpointScan = async () => {
+const onCheckpointScan = async (method: 'nfc' | 'qr') => {
   try {
-    const id = await scanTag()
+    const id = method === 'nfc' ? await scanTag() : await scanQr()
     if (id) {
-      await recordCheckpoint(id)
+      const location = await getCurrentPosition()
+      await recordCheckpoint(id, location || undefined)
       toast.add({ title: `Checkpoint ${id} Recorded`, color: 'success' })
     }
   } catch (error: any) {
@@ -63,15 +72,26 @@ const submit = async () => {
     <!-- Step 1: Start -->
     <div v-if="step === 1" class="space-y-4 text-center">
       <h2 class="text-xl font-bold">Pre-Start Inspection</h2>
-      <p class="text-dimmed">Scan vehicle to begin daily inspection.</p>
-      <UButton
-        size="xl"
-        icon="i-lucide-nfc"
-        label="Scan Vehicle Tag"
-        block
-        :loading="nfcScanning"
-        @click="onStartScan"
-      />
+      <p class="text-dimmed">Scan vehicle NFC tag or QR code to begin daily inspection.</p>
+      
+      <div class="grid grid-cols-2 gap-4">
+        <UButton
+          size="xl"
+          icon="i-lucide-nfc"
+          label="NFC Tap"
+          block
+          :loading="nfcScanning"
+          @click="onStartScan('nfc')"
+        />
+        <UButton
+          size="xl"
+          icon="i-lucide-qr-code"
+          label="QR Scan"
+          block
+          :loading="qrScanning"
+          @click="onStartScan('qr')"
+        />
+      </div>
     </div>
 
     <!-- Step 2: Checkpoints -->
@@ -81,13 +101,26 @@ const submit = async () => {
       <div class="bg-elevated p-4 rounded-lg">
         <p class="text-sm font-medium">Scanned: {{ currentInspection?.checkpoints?.length || 0 }}</p>
       </div>
-      <UButton
-        size="lg"
-        icon="i-lucide-target"
-        label="Scan Checkpoint"
-        block
-        @click="onCheckpointScan"
-      />
+      
+      <div class="grid grid-cols-2 gap-4">
+        <UButton
+          size="lg"
+          icon="i-lucide-nfc"
+          label="NFC Tap"
+          block
+          :loading="nfcScanning"
+          @click="onCheckpointScan('nfc')"
+        />
+        <UButton
+          size="lg"
+          icon="i-lucide-qr-code"
+          label="QR Scan"
+          block
+          :loading="qrScanning"
+          @click="onCheckpointScan('qr')"
+        />
+      </div>
+
       <UButton
         label="Next: Checklist"
         block

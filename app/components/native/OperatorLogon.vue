@@ -2,6 +2,7 @@
 const { logOn, logOff, activeSession, loading: sessionLoading } = useOperatorSession()
 const { scanTag, isScanning: nfcScanning } = useNfc()
 const { startScan: scanQr, isScanning: qrScanning } = useQrScanner()
+const { isConnected: obdConnected, liveData: obdData } = useBluetoothObd()
 const toast = useToast()
 
 const assetId = ref('')
@@ -11,6 +12,19 @@ const endOdometer = ref('')
 const endHours = ref('')
 const showManualForm = ref(false)
 const showLogOffForm = ref(false)
+
+// Auto-populate odometer if OBD is connected
+watch(showManualForm, (val) => {
+  if (val && obdConnected.value && !startOdometer.value) {
+    startOdometer.value = obdData.value.odometer.toFixed(2)
+  }
+})
+
+watch(showLogOffForm, (val) => {
+  if (val && obdConnected.value && !endOdometer.value) {
+    endOdometer.value = obdData.value.odometer.toFixed(2)
+  }
+})
 
 const onNfcScan = async () => {
   try {
@@ -98,7 +112,12 @@ const submitLogOff = async () => {
               <UInput v-model="assetId" disabled />
             </UFormField>
             <UFormField label="Current Odometer">
-              <UInput v-model="startOdometer" type="number" placeholder="0.00" />
+              <UInput 
+                v-model="startOdometer" 
+                type="number" 
+                placeholder="0.00" 
+                :icon="obdConnected ? 'i-lucide-bluetooth' : undefined"
+              />
             </UFormField>
             <UFormField label="Engine Hours">
               <UInput v-model="startHours" type="number" placeholder="0.00" />
@@ -134,7 +153,12 @@ const submitLogOff = async () => {
         <template #content>
           <div class="p-4 space-y-4">
             <UFormField label="Final Odometer">
-              <UInput v-model="endOdometer" type="number" placeholder="0.00" />
+              <UInput 
+                v-model="endOdometer" 
+                type="number" 
+                placeholder="0.00" 
+                :icon="obdConnected ? 'i-lucide-bluetooth' : undefined"
+              />
             </UFormField>
             <UFormField label="Final Engine Hours">
               <UInput v-model="endHours" type="number" placeholder="0.00" />

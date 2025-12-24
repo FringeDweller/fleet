@@ -46,6 +46,17 @@ export const operatorService = {
       startTime: new Date()
     }).returning()
 
+    // Update asset with current readings
+    if (data.startOdometer || data.startHours) {
+      await db.update(assets)
+        .set({
+          currentMileage: data.startOdometer ? data.startOdometer.toString() : undefined,
+          currentHours: data.startHours ? data.startHours.toString() : undefined,
+          updatedAt: new Date()
+        })
+        .where(eq(assets.id, data.assetId))
+    }
+
     return session
   },
 
@@ -61,6 +72,17 @@ export const operatorService = {
         eq(operatorSessions.organizationId, data.organizationId)
       ))
       .returning()
+
+    // Update asset with final readings
+    if (session && (data.endOdometer || data.endHours)) {
+      await db.update(assets)
+        .set({
+          currentMileage: data.endOdometer ? data.endOdometer.toString() : undefined,
+          currentHours: data.endHours ? data.endHours.toString() : undefined,
+          updatedAt: new Date()
+        })
+        .where(eq(assets.id, session.assetId))
+    }
 
     return session
   },

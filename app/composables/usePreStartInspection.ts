@@ -6,12 +6,16 @@ export const usePreStartInspection = () => {
   const online = useOnline()
   const { user } = useUserSession()
 
-  const startInspection = async (assetId: string) => {
+  const { activeSession } = useOperatorSession()
+
+  const startInspection = async (assetId: string, location?: { latitude: number, longitude: number }) => {
     const inspection = {
       id: crypto.randomUUID(),
       assetId,
       operatorId: user.value?.id,
+      sessionId: activeSession.value?.assetId === assetId ? activeSession.value.id : null,
       startTime: new Date().toISOString(),
+      location,
       status: 'pending',
       results: [],
       checkpoints: []
@@ -20,11 +24,12 @@ export const usePreStartInspection = () => {
     return inspection
   }
 
-  const recordCheckpoint = async (checkpointId: string) => {
+  const recordCheckpoint = async (checkpointId: string, location?: { latitude: number, longitude: number }) => {
     if (!currentInspection.value) return
     currentInspection.value.checkpoints.push({
       id: checkpointId,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      location
     })
   }
 
