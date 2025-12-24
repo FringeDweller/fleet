@@ -36,6 +36,20 @@
       "when": 1766538765358,
       "tag": "0004_violet_anita_blake",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1766538988959,
+      "tag": "0005_broken_starfox",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1766539086491,
+      "tag": "0006_real_lethal_legion",
+      "breakpoints": true
     }
   ]
 }
