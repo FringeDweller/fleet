@@ -91,6 +91,7 @@ const items = [
   { label: 'Details', slot: 'details' },
   { label: 'Checklist', slot: 'checklist' },
   { label: 'Parts', slot: 'parts' },
+  { label: 'Forms', slot: 'forms' },
   { label: 'Photos', slot: 'photos', disabled: true },
   { label: 'Time & Cost', slot: 'cost', disabled: true },
   { label: 'History', slot: 'history', disabled: true }
@@ -203,6 +204,12 @@ const getStatusColor = (status: string) => {
                 </div>
              </div>
           </UCard>
+        </template>
+
+        <template #forms>
+            <div class="mt-4 max-w-2xl">
+                <FormsContextForms module="work_orders" :context="{ id, assetId: wo.assetId }" />
+            </div>
         </template>
 
         <template #parts>

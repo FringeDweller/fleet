@@ -1,6 +1,6 @@
-import { eq, and, desc } from 'drizzle-orm'
+import { eq, and, desc, inArray, sql } from 'drizzle-orm'
 import { db } from '../utils/db'
-import { customForms } from '../database/schema'
+import { customForms, formAssignments } from '../database/schema'
 
 export const formService = {
   async listForms(organizationId: string) {
@@ -45,6 +45,57 @@ export const formService = {
       .where(and(
         eq(customForms.id, id),
         eq(customForms.organizationId, organizationId)
+      ))
+  },
+
+  async listAssignments(organizationId: string, formId?: string) {
+    const where = [eq(formAssignments.organizationId, organizationId)]
+    if (formId) where.push(eq(formAssignments.formId, formId))
+    
+    return await db.select()
+      .from(formAssignments)
+      .where(and(...where))
+  },
+
+  async createAssignment(data: typeof formAssignments.$inferInsert) {
+    const [assignment] = await db.insert(formAssignments)
+      .values(data)
+      .returning()
+    return assignment
+  },
+
+  async deleteAssignment(id: string, organizationId: string) {
+    await db.delete(formAssignments)
+      .where(and(
+        eq(formAssignments.id, id),
+        eq(formAssignments.organizationId, organizationId)
+      ))
+  },
+
+  async getFormsForContext(organizationId: string, module: string, context: Record<string, any> = {}) {
+    const assignments = await db.select()
+      .from(formAssignments)
+      .where(and(
+        eq(formAssignments.organizationId, organizationId),
+        eq(formAssignments.targetModule, module)
+      ))
+    
+    const validFormIds = assignments
+      .filter(a => {
+        const conds = a.conditions as Record<string, any>
+        if (!conds || Object.keys(conds).length === 0) return true
+        return Object.entries(conds).every(([k, v]) => context[k] === v)
+      })
+      .map(a => a.formId)
+    
+    if (validFormIds.length === 0) return []
+
+    return await db.select()
+      .from(customForms)
+      .where(and(
+        eq(customForms.organizationId, organizationId),
+        eq(customForms.status, 'published'),
+        inArray(customForms.id, validFormIds)
       ))
   }
 }

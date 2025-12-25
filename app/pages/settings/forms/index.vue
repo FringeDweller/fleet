@@ -40,15 +40,15 @@ async function createForm() {
         <UButton label="Create Form" @click="isOpen = true" />
     </div>
 
-    <UTable :rows="forms || []" :columns="columns">
+    <UTable :rows="(forms as any[]) || []" :columns="columns">
         <template #status-data="{ row }">
-            <UBadge :color="row.status === 'published' ? 'success' : 'neutral'">{{ row.status }}</UBadge>
+            <UBadge :color="(row as any).status === 'published' ? 'success' : 'neutral'">{{ (row as any).status }}</UBadge>
         </template>
         <template #createdAt-data="{ row }">
-            {{ new Date(row.createdAt).toLocaleDateString() }}
+            {{ new Date((row as any).createdAt).toLocaleDateString() }}
         </template>
         <template #actions-data="{ row }">
-            <UButton icon="i-lucide-edit" variant="ghost" :to="`/settings/forms/${row.id}`" />
+            <UButton icon="i-lucide-edit" variant="ghost" :to="`/settings/forms/${(row as any).id}`" />
         </template>
     </UTable>
 

@@ -57,6 +57,13 @@
       "when": 1766706060223,
       "tag": "0007_heavy_fallen_one",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1766706712772,
+      "tag": "0008_silly_ikaris",
+      "breakpoints": true
     }
   ]
 }

@@ -12,6 +12,7 @@ const items = [
   { label: 'Parts', slot: 'parts' },
   { label: 'Inspections', slot: 'inspections', disabled: true },
   { label: 'Fuel', slot: 'fuel' },
+  { label: 'Forms', slot: 'forms' },
   { label: 'Documents', slot: 'documents', disabled: true },
   { label: 'Location', slot: 'location', disabled: true },
   { label: 'Operators', slot: 'operators', disabled: true }
@@ -123,6 +124,12 @@ const items = [
 
         <template #fuel>
           <AssetsFuelAnalytics :asset-id="assetId" />
+        </template>
+
+        <template #forms>
+            <div class="mt-4 max-w-2xl">
+                <FormsContextForms module="assets" :context="{ id: assetId, categoryId: (asset as any).categoryId }" />
+            </div>
         </template>
 
         <template #work-orders>

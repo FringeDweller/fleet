@@ -96,6 +96,11 @@ const getStatusColor = (status: string) => {
           </div>
         </div>
       </UCard>
+
+      <div class="space-y-4">
+        <h3 class="text-lg font-bold">Additional Forms</h3>
+        <FormsContextForms module="inspections" :context="{ id, assetId: inspection.assetId, status: inspection.status }" />
+      </div>
     </div>
   </div>
 </template>

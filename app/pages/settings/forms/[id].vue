@@ -8,8 +8,39 @@ const toast = useToast()
 
 const { data: form, refresh } = await useFetch<any>(`/api/settings/forms/${id}`)
 
+const items = [
+  { label: 'Builder', icon: 'i-lucide-layout-template', slot: 'builder' },
+  { label: 'Assignments', icon: 'i-lucide-link', slot: 'assignments' }
+]
+
 const formFields = ref<FormField[]>([])
 const isSaving = ref(false)
+
+const showAssignModal = ref(false)
+const newAssignment = ref({
+  targetModule: 'assets',
+  conditions: {}
+})
+
+const assignmentsList = ref()
+
+async function saveAssignment() {
+  try {
+    await $fetch('/api/settings/forms/assignments', {
+      method: 'POST',
+      body: {
+        ...newAssignment.value,
+        formId: id
+      }
+    })
+    showAssignModal.value = false
+    toast.add({ title: 'Assignment added', color: 'success' })
+    assignmentsList.value?.refresh()
+  } catch (e) {
+    toast.add({ title: 'Failed to add assignment', color: 'error' })
+  }
+}
+// ... existing saveForm, watchEffect ...
 
 // Initialize fields from loaded form
 watchEffect(() => {
@@ -89,9 +120,96 @@ async function saveTitle() {
         </div>
     </div>
     
-    <!-- Builder -->
-    <div class="flex-1 overflow-hidden">
-        <FormBuilder v-model="formFields" />
-    </div>
-  </div>
-</template>
+        <!-- Tabs -->
+    
+        <div class="flex-1 overflow-hidden flex flex-col">
+    
+            <UTabs :items="items" class="flex-1 flex flex-col overflow-hidden">
+    
+                <template #builder>
+    
+                    <div class="flex-1 overflow-hidden">
+    
+                        <FormBuilder v-model="formFields" />
+    
+                    </div>
+    
+                </template>
+    
+                
+    
+                <template #assignments>
+    
+                    <div class="p-6 space-y-6 max-w-4xl mx-auto w-full overflow-y-auto">
+    
+                        <div class="flex justify-between items-center">
+    
+                            <h3 class="text-lg font-bold">Form Assignments</h3>
+    
+                                                    <UButton label="Add Assignment" icon="i-lucide-plus" @click="showAssignModal = true" />
+    
+                                                </div>
+    
+                                                
+    
+                                                <FormAssignmentsList ref="assignmentsList" :form-id="id" />
+    
+                                                
+    
+                                                <UModal v-model="showAssignModal">
+    
+                            
+    
+                            <div class="p-6 space-y-4">
+    
+                                <h3 class="font-bold">New Assignment</h3>
+    
+                                <UFormGroup label="Target Module">
+    
+                                    <USelect 
+    
+                                        v-model="newAssignment.targetModule" 
+    
+                                        :options="[
+    
+                                            { label: 'Assets', value: 'assets' },
+    
+                                            { label: 'Work Orders', value: 'work_orders' },
+    
+                                            { label: 'Inspections', value: 'inspections' },
+    
+                                            { label: 'Operators', value: 'operators' }
+    
+                                        ]" 
+    
+                                    />
+    
+                                </UFormGroup>
+    
+                                
+    
+                                <div class="flex justify-end gap-2">
+    
+                                    <UButton label="Cancel" variant="ghost" @click="showAssignModal = false" />
+    
+                                    <UButton label="Save" @click="saveAssignment" />
+    
+                                </div>
+    
+                            </div>
+    
+                        </UModal>
+    
+                    </div>
+    
+                </template>
+    
+            </UTabs>
+    
+        </div>
+    
+      </div>
+    
+    </template>
+    
+    
