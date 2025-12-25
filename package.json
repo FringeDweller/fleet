@@ -65,6 +65,7 @@
     "pinia": "^3.0.4",
     "postgres": "^3.4.7",
     "vee-validate": "^4.15.1",
+    "vue-draggable-plus": "^0.6.0",
     "zod": "^4.2.1"
   },
   "devDependencies": {

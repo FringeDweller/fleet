@@ -1,4 +1,4 @@
-import { formService } from '~/server/services/form.service'
+import { formService } from '../../../services/form.service'
 
 export default defineEventHandler(async (event) => {
   const session = await getUserSession(event)

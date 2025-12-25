@@ -1,11 +1,21 @@
 <script setup lang="ts">
-const { data: forms, refresh } = await useFetch('/api/settings/forms')
+import type { TableColumn } from '@nuxt/ui'
 
-const columns = [
+interface Form {
+  id: string
+  title: string
+  status: string
+  createdAt: string
+  organizationId: string
+}
+
+const { data: forms, refresh } = await useFetch<Form[]>('/api/settings/forms')
+
+const columns: any[] = [
   { key: 'title', label: 'Title' },
   { key: 'status', label: 'Status' },
   { key: 'createdAt', label: 'Created' },
-  { key: 'actions' }
+  { key: 'actions', label: '' }
 ]
 
 const isOpen = ref(false)

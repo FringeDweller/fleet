@@ -1,4 +1,4 @@
-import { formService } from '~/server/services/form.service'
+import { formService } from '../../../services/form.service'
 import { z } from 'zod'
 
 const schema = z.object({
