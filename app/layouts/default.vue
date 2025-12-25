@@ -22,6 +22,13 @@ const links = [[{
     open.value = false
   }
 }, {
+  label: 'Fleet Map',
+  icon: 'i-lucide-map',
+  to: '/assets/map',
+  onSelect: () => {
+    open.value = false
+  }
+}, {
   label: 'Work Orders',
   icon: 'i-lucide-clipboard-list',
   to: '/work-orders',
