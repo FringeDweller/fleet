@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, decimal } from 'drizzle-orm/pg-core'
+import { pgTable, uuid, text, timestamp, decimal, index } from 'drizzle-orm/pg-core'
 import { organizations } from './organizations'
 import { assets } from './assets'
 import { operatorSessions } from './operator-sessions'
@@ -20,4 +20,9 @@ export const assetLocations = pgTable('asset_locations', {
     .references(() => organizations.id),
   hlc: text('hlc'),
   createdAt: timestamp('created_at').defaultNow().notNull()
+}, (table) => {
+  return {
+    assetIdIdx: index('asset_locations_asset_id_idx').on(table.assetId),
+    createdAtIdx: index('asset_locations_created_at_idx').on(table.createdAt)
+  }
 })

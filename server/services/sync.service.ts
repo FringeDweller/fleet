@@ -3,8 +3,10 @@ import { assets } from '../database/schema/assets'
 import { workOrders } from '../database/schema/work-orders'
 import { parts } from '../database/schema/inventory'
 import { maintenanceTasks } from '../database/schema/maintenance-tasks'
+import { assetLocations } from '../database/schema/asset-locations'
 import { eq, and } from 'drizzle-orm'
 import { compareHLC } from '../utils/hlc'
+import { geofenceService } from './geofence.service'
 
 export interface SyncOperation {
   id: string
@@ -36,17 +38,23 @@ export const syncService = {
       assets,
       'work-orders': workOrders,
       inventory: parts,
-      'maintenance-tasks': maintenanceTasks
+      'maintenance-tasks': maintenanceTasks,
+      'asset-locations': assetLocations
     }
 
     const table = tableMap[op.collection]
     if (!table) throw new Error(`Unknown collection: ${op.collection}`)
 
+    const recordId = op.data.id || (op.collection === 'asset-locations' ? op.id : null)
+
     // Get existing record to check HLC
-    const [existing] = await db.select().from(table).where(and(
-      eq(table.id, op.data.id),
-      eq(table.organizationId, organizationId)
-    )).limit(1)
+    let existing: any = null
+    if (recordId) {
+      [existing] = await db.select().from(table).where(and(
+        eq(table.id, recordId),
+        eq(table.organizationId, organizationId)
+      )).limit(1)
+    }
 
     if (existing && existing.hlc && compareHLC(op.hlc, existing.hlc as string) <= 0) {
       // Conflict: remote HLC is older or same as local. Ignore change.
@@ -57,18 +65,27 @@ export const syncService = {
     if (op.action === 'create' || op.action === 'update') {
       const dataToSave = {
         ...op.data,
+        id: recordId || op.data.id,
         organizationId,
         hlc: op.hlc,
         updatedAt: new Date()
       }
       
-      // Remove any fields that don't belong in the DB if necessary, 
-      // but Drizzle usually handles this if we use the right object.
-      
       if (existing) {
-        await db.update(table).set(dataToSave).where(eq(table.id, op.data.id))
+        await db.update(table).set(dataToSave).where(eq(table.id, recordId))
       } else {
         await db.insert(table).values(dataToSave)
+      }
+
+      // If it's a location, process geofences
+      if (op.collection === 'asset-locations' && op.action === 'create') {
+        await geofenceService.processLocation(
+          op.data.assetId,
+          Number(op.data.latitude),
+          Number(op.data.longitude),
+          organizationId,
+          op.data.sessionId
+        )
       }
     } else if (op.action === 'delete') {
       await db.delete(table).where(eq(table.id, op.data.id))

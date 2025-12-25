@@ -13,13 +13,18 @@ interface Geofence {
   radius: string | null
   coordinates: { lat: number, lng: number }[] | null
   category: string
+  alertOnEntry: 'always' | 'never' | 'after_hours'
+  alertOnExit: 'always' | 'never' | 'after_hours'
+  activeHours: { start: string, end: string, days: number[] } | null
   createdAt: string
 }
 
 const { data: geofences, refresh } = await useFetch<Geofence[]>('/api/geofences')
 
 const isModalOpen = ref(false)
+const isLogsModalOpen = ref(false)
 const selectedGeofence = ref<Partial<Geofence>>({})
+const logs = ref<any[]>([])
 
 const openCreateModal = () => {
   selectedGeofence.value = {
@@ -30,7 +35,10 @@ const openCreateModal = () => {
     radius: '100',
     centerLat: '0',
     centerLng: '0',
-    coordinates: []
+    coordinates: [],
+    alertOnEntry: 'always',
+    alertOnExit: 'always',
+    activeHours: { start: '08:00', end: '17:00', days: [1, 2, 3, 4, 5] }
   }
   isModalOpen.value = true
 }
@@ -38,6 +46,12 @@ const openCreateModal = () => {
 const openEditModal = (geofence: Geofence) => {
   selectedGeofence.value = { ...geofence }
   isModalOpen.value = true
+}
+
+const openLogsModal = async (geofence: Geofence) => {
+  selectedGeofence.value = geofence
+  logs.value = await $fetch(`/api/geofences/logs?geofenceId=${geofence.id}`)
+  isLogsModalOpen.value = true
 }
 
 const saveGeofence = async () => {
@@ -98,6 +112,12 @@ const columns = [
           <template #actions-data="{ row }">
             <div class="flex justify-end gap-2">
               <UButton
+                icon="i-heroicons-clock"
+                color="neutral"
+                variant="ghost"
+                @click="openLogsModal(row)"
+              />
+              <UButton
                 icon="i-heroicons-pencil-square"
                 color="neutral"
                 variant="ghost"
@@ -113,6 +133,24 @@ const columns = [
           </template>
         </UTable>
       </UCard>
+
+      <UModal v-model:open="isLogsModalOpen" title="Geofence Activity Logs">
+        <template #body>
+          <UTable :rows="logs" :columns="[
+            { key: 'assetId', label: 'Asset' },
+            { key: 'entryTime', label: 'Entry' },
+            { key: 'exitTime', label: 'Exit' },
+            { key: 'durationMinutes', label: 'Duration (min)' }
+          ]">
+            <template #entryTime-data="{ row }">
+              {{ new Date(row.entryTime).toLocaleString() }}
+            </template>
+            <template #exitTime-data="{ row }">
+              {{ new Date(row.exitTime).toLocaleString() }}
+            </template>
+          </UTable>
+        </template>
+      </UModal>
 
       <UModal v-model:open="isModalOpen" title="Geofence Details">
         <template #body>
@@ -130,6 +168,27 @@ const columns = [
               <UFormField label="Category" name="category">
                 <USelect v-model="selectedGeofence.category" :items="['depot', 'job_site', 'restricted', 'other']" />
               </UFormField>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <UFormField label="Alert on Entry" name="alertOnEntry">
+                <USelect v-model="selectedGeofence.alertOnEntry" :items="['always', 'never', 'after_hours']" />
+              </UFormField>
+              <UFormField label="Alert on Exit" name="alertOnExit">
+                <USelect v-model="selectedGeofence.alertOnExit" :items="['always', 'never', 'after_hours']" />
+              </UFormField>
+            </div>
+
+            <div v-if="selectedGeofence.category === 'restricted' || selectedGeofence.alertOnEntry === 'after_hours' || selectedGeofence.alertOnExit === 'after_hours'" class="space-y-4 border-t pt-4">
+              <p class="text-sm font-medium">Working Hours (for After Hours alerts)</p>
+              <div class="grid grid-cols-2 gap-4">
+                <UFormField label="Start Time" name="activeHoursStart">
+                  <UInput v-model="selectedGeofence.activeHours!.start" type="time" />
+                </UFormField>
+                <UFormField label="End Time" name="activeHoursEnd">
+                  <UInput v-model="selectedGeofence.activeHours!.end" type="time" />
+                </UFormField>
+              </div>
             </div>
 
             <div v-if="selectedGeofence.type === 'circle'" class="space-y-4 border-t pt-4">
