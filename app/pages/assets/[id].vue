@@ -11,9 +11,10 @@ const items = [
   { label: 'Maintenance', slot: 'maintenance', disabled: true },
   { label: 'Parts', slot: 'parts' },
   { label: 'Inspections', slot: 'inspections', disabled: true },
-  { label: 'Fuel', slot: 'fuel', disabled: true },
+  { label: 'Fuel', slot: 'fuel' },
   { label: 'Documents', slot: 'documents', disabled: true },
   { label: 'Location', slot: 'location', disabled: true },
+  { label: 'Operators', slot: 'operators', disabled: true }
 ]
 </script>
 
@@ -25,14 +26,20 @@ const items = [
     <div v-else-if="asset">
       <div class="flex justify-between items-center mb-6">
         <div>
-          <h1 class="text-3xl font-bold">{{ (asset as any).assetNumber }}</h1>
-          <p class="text-gray-500">{{ (asset as any).year }} {{ (asset as any).make }} {{ (asset as any).model }}</p>
+          <h1 class="text-3xl font-bold">
+            {{ (asset as any).assetNumber }}
+          </h1>
+          <p class="text-gray-500">
+            {{ (asset as any).year }} {{ (asset as any).make }} {{ (asset as any).model }}
+          </p>
         </div>
         <div class="flex gap-2">
           <UBadge :color="(asset as any).status === 'active' ? 'success' : 'neutral'" size="lg">
             {{ (asset as any).status }}
           </UBadge>
-          <UButton icon="i-heroicons-pencil-square" color="neutral" variant="ghost">Edit</UButton>
+          <UButton icon="i-heroicons-pencil-square" color="neutral" variant="ghost">
+            Edit
+          </UButton>
         </div>
       </div>
 
@@ -40,7 +47,9 @@ const items = [
         <template #overview>
           <UCard class="mt-4">
             <template #header>
-              <h3 class="text-lg font-semibold">Asset Details</h3>
+              <h3 class="text-lg font-semibold">
+                Asset Details
+              </h3>
             </template>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="space-y-4">
@@ -54,11 +63,11 @@ const items = [
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-500">Category</label>
-                  <p>{{ (asset as any).categoryName || '-' }}</p> 
+                  <p>{{ (asset as any).categoryName || '-' }}</p>
                 </div>
               </div>
               <div class="space-y-4">
-                 <div>
+                <div>
                   <label class="block text-sm font-medium text-gray-500">Current Mileage</label>
                   <p>{{ (asset as any).currentMileage }} km</p>
                 </div>
@@ -70,13 +79,21 @@ const items = [
             </div>
           </UCard>
         </template>
-        
+
         <template #parts>
           <UCard class="mt-4">
             <template #header>
               <div class="flex items-center justify-between">
-                <h3 class="text-lg font-semibold">Compatible Parts</h3>
-                <UButton icon="i-heroicons-plus" size="xs" color="primary" label="Link Part" disabled />
+                <h3 class="text-lg font-semibold">
+                  Compatible Parts
+                </h3>
+                <UButton
+                  icon="i-heroicons-plus"
+                  size="xs"
+                  color="primary"
+                  label="Link Part"
+                  disabled
+                />
               </div>
             </template>
 
@@ -103,15 +120,30 @@ const items = [
             </UTable>
           </UCard>
         </template>
-        
+
+        <template #fuel>
+          <AssetsFuelAnalytics :asset-id="assetId" />
+        </template>
+
         <template #work-orders>
-          <div class="p-4 text-center text-gray-500">Work Orders module coming soon</div>
+          <div class="p-4 text-center text-gray-500">
+            Work Orders module coming soon
+          </div>
         </template>
       </UTabs>
     </div>
     <div v-else class="text-center p-8">
-      <p class="text-red-500">Asset not found</p>
-      <UButton to="/assets" color="neutral" variant="ghost" class="mt-4">Back to Assets</UButton>
+      <p class="text-red-500">
+        Asset not found
+      </p>
+      <UButton
+        to="/assets"
+        color="neutral"
+        variant="ghost"
+        class="mt-4"
+      >
+        Back to Assets
+      </UButton>
     </div>
   </div>
 </template>

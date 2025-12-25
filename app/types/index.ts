@@ -175,3 +175,39 @@ export interface StockMovement {
   createdAt: string
 
 }
+
+export interface FuelTransaction {
+  id: string
+  assetId: string
+  operatorId: string
+  transactionDate: string
+  quantity: string
+  unit: string
+  totalCost: string
+  currency: string
+  odometer: string | null
+  hours: string | null
+  fuelType: string | null
+  stationName: string | null
+  receiptImage: string | null
+  organizationId: string
+  hlc: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface FuelAnalytics {
+  totalLitres: number
+  totalCost: number
+  avgConsumption: number
+  avgCostPerKm: number
+  trends: {
+    id: string
+    date: string
+    consumption: number
+    costPerKm: number
+    distance: number
+    quantity: number
+  }[]
+  anomalies: any[]
+}
