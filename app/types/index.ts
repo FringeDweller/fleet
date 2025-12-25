@@ -45,11 +45,16 @@ export interface Sale {
 }
 
 export interface Notification {
-  id: number
-  unread?: boolean
-  sender: User
-  body: string
-  date: string
+  id: string
+  userId: string | null
+  organizationId: string
+  title: string
+  message: string
+  type: 'info' | 'warning' | 'error' | 'success'
+  isRead: boolean
+  link: string | null
+  createdAt: string
+  updatedAt: string
 }
 
 export type Period = 'daily' | 'weekly' | 'monthly'
