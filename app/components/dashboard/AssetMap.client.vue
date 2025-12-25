@@ -14,11 +14,22 @@ const props = defineProps<{
     assetStatus: string | null
     createdAt: string
   }[]
+  geofences?: {
+    id: string
+    name: string
+    type: 'circle' | 'polygon'
+    centerLat: string | null
+    centerLng: string | null
+    radius: string | null
+    coordinates: { lat: number, lng: number }[] | null
+    category: string
+  }[]
 }>()
 
 const mapContainer = ref<HTMLElement | null>(null)
 let map: L.Map | null = null
 let markers: L.LayerGroup | null = null
+let geofenceLayers: L.LayerGroup | null = null
 
 onMounted(() => {
   if (!mapContainer.value) return
@@ -29,8 +40,36 @@ onMounted(() => {
   }).addTo(map)
 
   markers = L.layerGroup().addTo(map)
+  geofenceLayers = L.layerGroup().addTo(map)
   updateMarkers()
+  updateGeofences()
 })
+
+const updateGeofences = () => {
+  if (!map || !geofenceLayers) return
+
+  geofenceLayers.clearLayers()
+
+  if (!props.geofences) return
+
+  props.geofences.forEach((gf) => {
+    if (gf.type === 'circle' && gf.centerLat && gf.centerLng && gf.radius) {
+      const circle = L.circle([parseFloat(gf.centerLat), parseFloat(gf.centerLng)], {
+        radius: parseFloat(gf.radius),
+        color: gf.category === 'restricted' ? 'red' : 'blue',
+        fillColor: gf.category === 'restricted' ? '#f03' : '#30f',
+        fillOpacity: 0.2
+      }).bindPopup(`<strong>Geofence:</strong> ${gf.name}<br>Category: ${gf.category}`)
+      geofenceLayers!.addLayer(circle)
+    } else if (gf.type === 'polygon' && gf.coordinates) {
+      const poly = L.polygon(gf.coordinates as L.LatLngExpression[], {
+        color: gf.category === 'restricted' ? 'red' : 'blue',
+        fillOpacity: 0.2
+      }).bindPopup(`<strong>Geofence:</strong> ${gf.name}<br>Category: ${gf.category}`)
+      geofenceLayers!.addLayer(poly)
+    }
+  })
+}
 
 const updateMarkers = () => {
   if (!map || !markers) return
@@ -69,6 +108,7 @@ const updateMarkers = () => {
 }
 
 watch(() => props.locations, updateMarkers, { deep: true })
+watch(() => props.geofences, updateGeofences, { deep: true })
 
 onUnmounted(() => {
   if (map) {

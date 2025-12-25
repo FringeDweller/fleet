@@ -3,7 +3,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { data: locations, refresh, pending } = await useFetch<{
+const { data: locations, refresh: refreshLocations, pending: loadingLocations } = await useFetch<{
   id: string
   assetId: string
   latitude: string
@@ -15,17 +15,22 @@ const { data: locations, refresh, pending } = await useFetch<{
   createdAt: string
 }[]>('/api/assets/locations/latest')
 
-// Auto-refresh every 30 seconds
-let timer: ReturnType<typeof setInterval> | null = null
-onMounted(() => {
-  timer = setInterval(() => {
-    refresh()
-  }, 30000)
-})
+const { data: geofences } = await useFetch<{
+  id: string
+  name: string
+  type: 'circle' | 'polygon'
+  centerLat: string | null
+  centerLng: string | null
+  radius: string | null
+  coordinates: { lat: number, lng: number }[] | null
+  category: string
+}[]>('/api/geofences')
 
-onUnmounted(() => {
-  if (timer) clearInterval(timer)
-})
+const refresh = () => {
+  refreshLocations()
+}
+
+const pending = computed(() => loadingLocations.value)
 </script>
 
 <template>
@@ -51,7 +56,7 @@ onUnmounted(() => {
 
     <template #body>
       <div class="flex-1 flex flex-col min-h-0 h-full">
-        <DashboardAssetMap :locations="locations || []" class="flex-1" />
+        <DashboardAssetMap :locations="locations || []" :geofences="geofences || []" class="flex-1" />
       </div>
     </template>
   </UDashboardPanel>

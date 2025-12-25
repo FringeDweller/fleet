@@ -29,6 +29,13 @@ const links = [[{
     open.value = false
   }
 }, {
+  label: 'Geofences',
+  icon: 'i-lucide-square-dashed-mouse-pointer',
+  to: '/assets/geofences',
+  onSelect: () => {
+    open.value = false
+  }
+}, {
   label: 'Work Orders',
   icon: 'i-lucide-clipboard-list',
   to: '/work-orders',

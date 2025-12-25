@@ -12,7 +12,9 @@ export const geofences = pgTable('geofences', {
   radius: decimal('radius', { precision: 10, scale: 2 }), // in meters
   // For polygon
   coordinates: jsonb('coordinates'), // Array of {lat, lng}
-  
+  category: text('category', { enum: ['depot', 'job_site', 'restricted', 'other'] }).notNull().default('depot'),
+  activeHours: jsonb('active_hours'), // { start: '08:00', end: '17:00', days: [1,2,3,4,5] }
+
   organizationId: uuid('organization_id')
     .notNull()
     .references(() => organizations.id),
