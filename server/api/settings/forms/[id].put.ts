@@ -1,0 +1,18 @@
+import { formService } from '~/server/services/form.service'
+
+export default defineEventHandler(async (event) => {
+  const session = await getUserSession(event)
+  if (!session.user?.organizationId) {
+    throw createError({ statusCode: 403, message: 'Unauthorized' })
+  }
+
+  const id = getRouterParam(event, 'id')
+  if (!id) throw createError({ statusCode: 400, message: 'ID required' })
+
+  const body = await readBody(event)
+
+  const form = await formService.updateForm(id, session.user.organizationId, body)
+  if (!form) throw createError({ statusCode: 404, message: 'Form not found' })
+
+  return form
+})

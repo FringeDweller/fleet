@@ -15,6 +15,10 @@ const links = [[{
   icon: 'i-lucide-bell',
   to: '/settings/notifications'
 }, {
+  label: 'Custom Forms',
+  icon: 'i-lucide-file-text',
+  to: '/settings/forms'
+}, {
   label: 'Security',
   icon: 'i-lucide-shield',
   to: '/settings/security'
