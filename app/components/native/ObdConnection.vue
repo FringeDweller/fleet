@@ -62,6 +62,8 @@ const handleDisconnect = async () => {
       </div>
       
       <ObdLiveData />
+
+      <ObdDiagnostics />
     </div>
 
     <div v-else class="space-y-4">
