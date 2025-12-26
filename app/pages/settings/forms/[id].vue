@@ -172,7 +172,7 @@ async function saveTitle() {
                 <h3 class="text-xl font-bold">Preview: {{ form.title }}</h3>
                 <UButton icon="i-lucide-x" variant="ghost" color="neutral" @click="showPreview = false" />
             </div>
-            <FormRenderer :fields="formFields" />
+            <FormsFormRenderer :form-id="id" :fields="formFields" />
             <div class="flex justify-end pt-4 border-t mt-6">
                 <UButton label="Close Preview" @click="showPreview = false" />
             </div>
