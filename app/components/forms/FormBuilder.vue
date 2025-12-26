@@ -60,6 +60,32 @@ function removeOption(field: FormField, index: number) {
     field.options.splice(index, 1)
   }
 }
+
+function enableLogic(field: FormField) {
+  field.logic = {
+    action: 'show',
+    match: 'all',
+    conditions: [{ field: '', operator: 'eq', value: '' }]
+  }
+}
+
+function addCondition(field: FormField) {
+  if (field.logic) {
+    field.logic.conditions.push({ field: '', operator: 'eq', value: '' })
+  }
+}
+
+function removeCondition(field: FormField, index: number) {
+  if (field.logic) {
+    field.logic.conditions.splice(index, 1)
+  }
+}
+
+function otherFields(currentField: FormField) {
+  return fields.value
+    .filter(f => f.id !== currentField.id && f.type !== 'section')
+    .map(f => ({ label: f.label, value: f.key }))
+}
 </script>
 
 <template>
@@ -114,6 +140,9 @@ function removeOption(field: FormField, index: number) {
           >
             <!-- Field Render Preview -->
             <div class="pointer-events-none">
+              <div v-if="element.logic" class="absolute top-2 left-2">
+                 <UBadge size="xs" color="primary" variant="soft" icon="i-lucide-git-branch" title="Conditional Logic" />
+              </div>
               <div v-if="element.type === 'section'" class="border-b pb-2 mb-2">
                 <h3 class="text-lg font-bold">{{ element.label }}</h3>
               </div>
@@ -199,6 +228,84 @@ function removeOption(field: FormField, index: number) {
               <UInput v-model="opt.label" size="xs" class="flex-1" />
               <UButton icon="i-lucide-x" color="neutral" variant="ghost" size="xs" @click="removeOption(selectedField!, idx)" />
             </div>
+          </div>
+        </div>
+
+        <!-- Conditional Logic -->
+        <div class="pt-4 border-t space-y-4">
+          <div class="flex justify-between items-center">
+            <h4 class="font-medium text-sm">Conditional Logic</h4>
+            <UButton 
+              v-if="!selectedField.logic" 
+              size="xs" 
+              label="Enable" 
+              variant="soft" 
+              @click="enableLogic(selectedField!)" 
+            />
+            <UButton 
+              v-else 
+              size="xs" 
+              label="Disable" 
+              color="error" 
+              variant="ghost" 
+              @click="selectedField.logic = undefined" 
+            />
+          </div>
+
+          <div v-if="selectedField.logic" class="space-y-4">
+            <div class="flex items-center gap-2 text-xs">
+              <USelect 
+                v-model="selectedField.logic.action" 
+                size="xs" 
+                :options="[{label:'Show', value:'show'}, {label:'Hide', value:'hide'}]" 
+              />
+              <span>if</span>
+              <USelect 
+                v-model="selectedField.logic.match" 
+                size="xs" 
+                :options="[{label:'All', value:'all'}, {label:'Any', value:'any'}]" 
+              />
+              <span>match:</span>
+            </div>
+
+            <div v-for="(cond, idx) in selectedField.logic.conditions" :key="idx" class="p-2 border rounded bg-gray-50 dark:bg-gray-800 space-y-2 relative group/cond">
+              <USelect 
+                v-model="cond.field" 
+                size="xs" 
+                placeholder="Select Field"
+                :options="otherFields(selectedField!)" 
+              />
+              <USelect 
+                v-model="cond.operator" 
+                size="xs" 
+                :options="[
+                  {label:'Equals', value:'eq'}, 
+                  {label:'Not Equals', value:'neq'}, 
+                  {label:'Contains', value:'contains'},
+                  {label:'Greater Than', value:'gt'},
+                  {label:'Less Than', value:'lt'}
+                ]" 
+              />
+              <UInput v-model="cond.value" size="xs" placeholder="Value" />
+              
+              <UButton 
+                icon="i-lucide-trash" 
+                color="error" 
+                variant="ghost" 
+                size="xs" 
+                class="absolute -top-2 -right-2 opacity-0 group-hover/cond:opacity-100 transition-opacity"
+                @click="removeCondition(selectedField!, idx)" 
+              />
+            </div>
+
+            <UButton 
+              block 
+              size="xs" 
+              icon="i-lucide-plus" 
+              label="Add Condition" 
+              variant="soft" 
+              @click="addCondition(selectedField!)" 
+            />
           </div>
         </div>
 

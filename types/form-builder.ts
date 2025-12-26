@@ -11,6 +11,18 @@ export type FieldType =
   | 'signature' 
   | 'section'
 
+export interface Condition {
+  field: string // target field key
+  operator: 'eq' | 'neq' | 'contains' | 'gt' | 'lt'
+  value: any
+}
+
+export interface FieldLogic {
+  action: 'show' | 'hide'
+  match: 'all' | 'any'
+  conditions: Condition[]
+}
+
 export interface FormField {
   id: string
   type: FieldType
@@ -25,6 +37,7 @@ export interface FormField {
     max?: number
     pattern?: string
   }
+  logic?: FieldLogic
 }
 
 export interface FormSchema {
