@@ -2,6 +2,7 @@
 import FormBuilder from '../../../components/forms/FormBuilder.vue'
 import FormRenderer from '../../../components/forms/FormRenderer.vue'
 import FormAssignmentsList from '../../../components/forms/FormAssignmentsList.vue'
+import FormSubmissionsTable from '../../../components/forms/FormSubmissionsTable.vue'
 import type { FormField } from '../../../../types/form-builder'
 
 const route = useRoute()
@@ -12,7 +13,8 @@ const { data: form, refresh } = await useFetch<any>(`/api/settings/forms/${id}`)
 
 const items = [
   { label: 'Builder', icon: 'i-lucide-layout-template', slot: 'builder' },
-  { label: 'Assignments', icon: 'i-lucide-link', slot: 'assignments' }
+  { label: 'Assignments', icon: 'i-lucide-link', slot: 'assignments' },
+  { label: 'Submissions', icon: 'i-lucide-database', slot: 'submissions' }
 ]
 
 const formFields = ref<FormField[]>([])
@@ -160,6 +162,12 @@ async function saveTitle() {
                             </div>
                         </div>
                     </UModal>
+                </div>
+            </template>
+
+            <template #submissions>
+                <div class="p-6">
+                    <FormsFormSubmissionsTable :form-id="id" :schema="formFields" />
                 </div>
             </template>
         </UTabs>
