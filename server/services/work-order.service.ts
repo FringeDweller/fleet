@@ -225,7 +225,7 @@ export const workOrderService = {
         .returning()
 
       // Also update costs after labor is added
-      await this._updateWorkOrderCosts(tx, id, organizationId)
+      await this._updateWorkOrderCosts(tx, id)
 
       // 4. Update asset with completion readings
       if (data.completionMileage || data.completionHours) {
@@ -242,7 +242,7 @@ export const workOrderService = {
     })
   },
 
-  async _updateWorkOrderCosts(tx: any, workOrderId: string, organizationId: string) {
+  async _updateWorkOrderCosts(tx: any, workOrderId: string) {
     const partsCosts = await tx
       .select({
         total: sql<string>`sum(${workOrderParts.quantity} * ${workOrderParts.unitCost})`

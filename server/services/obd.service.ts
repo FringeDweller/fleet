@@ -3,7 +3,16 @@ import { db } from '../utils/db'
 import { obdReadings, workOrders, assets } from '../database/schema'
 
 export const obdService = {
-  async recordReading(data: any) {
+  async recordReading(data: {
+    assetId: string
+    odometer?: number | string
+    engineHours?: number | string
+    fuelLevel?: number | string
+    dtcCodes?: string[]
+    rawData?: Record<string, unknown>
+    organizationId: string
+    hlc?: string
+  }) {
     return await db.transaction(async (tx) => {
       // 1. Save the reading
       const [reading] = await tx.insert(obdReadings).values({
