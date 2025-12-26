@@ -61,9 +61,9 @@ const submit = async () => {
       receiptImage: receiptImage.value,
       transactionDate: new Date().toISOString()
     })
-    
+
     toast.add({ title: 'Transaction Recorded', color: 'success' })
-    
+
     // Reset form
     quantity.value = ''
     totalCost.value = ''
@@ -78,8 +78,12 @@ const submit = async () => {
 <template>
   <div class="p-4 space-y-6 pb-20">
     <div class="text-center">
-      <h2 class="text-xl font-bold">Fuel Logger</h2>
-      <p class="text-dimmed">Record vehicle refueling details.</p>
+      <h2 class="text-xl font-bold">
+        Fuel Logger
+      </h2>
+      <p class="text-dimmed">
+        Record vehicle refueling details.
+      </p>
     </div>
 
     <UCard>
@@ -110,10 +114,21 @@ const submit = async () => {
 
         <div class="grid grid-cols-2 gap-4">
           <UFormField label="Quantity (Liters)" required>
-            <UInput v-model="quantity" type="number" step="0.01" placeholder="0.00" />
+            <UInput
+              v-model="quantity"
+              type="number"
+              step="0.01"
+              placeholder="0.00"
+            />
           </UFormField>
           <UFormField label="Total Cost" required>
-            <UInput v-model="totalCost" type="number" step="0.01" placeholder="0.00" icon="i-lucide-dollar-sign" />
+            <UInput
+              v-model="totalCost"
+              type="number"
+              step="0.01"
+              placeholder="0.00"
+              icon="i-lucide-dollar-sign"
+            />
           </UFormField>
         </div>
 
@@ -132,7 +147,7 @@ const submit = async () => {
         <div class="space-y-2">
           <label class="block text-sm font-medium">Receipt Photo</label>
           <div v-if="receiptImage" class="relative rounded-lg overflow-hidden border border-default aspect-video">
-            <img :src="receiptImage" class="object-cover w-full h-full" />
+            <img :src="receiptImage" class="object-cover w-full h-full">
             <UButton
               icon="i-lucide-camera"
               class="absolute bottom-2 right-2"

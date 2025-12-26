@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
 
   const query = getQuery(event)
   const module = query.module as string
-  
+
   if (!module) throw createError({ statusCode: 400, message: 'Module required' })
 
   // Context is passed as JSON query param or individual params

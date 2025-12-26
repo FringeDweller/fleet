@@ -127,9 +127,9 @@ const items = [
         </template>
 
         <template #forms>
-            <div class="mt-4 max-w-2xl">
-                <FormsContextForms module="assets" :context="{ id: assetId, categoryId: (asset as any).categoryId }" />
-            </div>
+          <div class="mt-4 max-w-2xl">
+            <FormsContextForms module="assets" :context="{ id: assetId, categoryId: (asset as any).categoryId }" />
+          </div>
         </template>
 
         <template #work-orders>

@@ -96,7 +96,7 @@ export const useOfflineSync = () => {
 
   const sync = async () => {
     if (!online.value || syncing.value) return
-    
+
     const queue = await getQueue()
     if (queue.length === 0) return
 

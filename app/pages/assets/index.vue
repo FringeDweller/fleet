@@ -34,7 +34,9 @@ const statusOptions = [
 <template>
   <div class="p-4">
     <div class="flex justify-between items-center mb-4">
-      <h1 class="text-2xl font-bold">Assets</h1>
+      <h1 class="text-2xl font-bold">
+        Assets
+      </h1>
       <UButton to="/assets/new" icon="i-heroicons-plus" color="primary">
         New Asset
       </UButton>

@@ -23,9 +23,12 @@ watch(syncing, (isSyncing) => {
 </script>
 
 <template>
-  <div class="flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium transition-colors" :class="[
-    online ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-  ]">
+  <div
+    class="flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium transition-colors"
+    :class="[
+      online ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+    ]"
+  >
     <UIcon :name="syncing ? 'i-lucide-refresh-cw animate-spin' : online ? 'i-lucide-wifi' : 'i-lucide-wifi-off'" />
     <span>{{ online ? (syncing ? 'Syncing...' : 'Online') : 'Offline' }}</span>
     <span v-if="queueCount > 0" class="ml-1 px-1.5 py-0.5 rounded-full bg-white/50 dark:bg-black/50">

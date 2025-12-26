@@ -37,7 +37,7 @@ export const syncService = {
     const tableMap: Record<string, any> = {
       assets,
       'work-orders': workOrders,
-      inventory: parts,
+      'inventory': parts,
       'maintenance-tasks': maintenanceTasks,
       'asset-locations': assetLocations
     }
@@ -70,7 +70,7 @@ export const syncService = {
         hlc: op.hlc,
         updatedAt: new Date()
       }
-      
+
       if (existing) {
         await db.update(table).set(dataToSave).where(eq(table.id, recordId))
       } else {

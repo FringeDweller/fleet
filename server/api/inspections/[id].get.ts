@@ -23,6 +23,6 @@ export default defineEventHandler(async (event) => {
 
   // Manual join if relations not configured in db.ts/schema
   if (!result) throw createError({ statusCode: 404, message: 'Not found' })
-  
+
   return result
 })

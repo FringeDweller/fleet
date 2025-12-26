@@ -15,7 +15,7 @@ export const useQrScanner = () => {
   const checkPermission = async () => {
     const { camera } = await BarcodeScanner.checkPermissions()
     if (camera === 'granted') return true
-    
+
     const { camera: newStatus } = await BarcodeScanner.requestPermissions()
     return newStatus === 'granted'
   }
@@ -32,7 +32,7 @@ export const useQrScanner = () => {
     }
 
     isScanning.value = true
-    
+
     return new Promise(async (resolve, reject) => {
       // Add listener
       const listener = await BarcodeScanner.addListener('barcodesScanned', (result: any) => {

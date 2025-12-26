@@ -63,7 +63,7 @@ export const inspectionService = {
       description: `Defect reported from inspection: ${item.label}`,
       priority: severity,
       status: 'open',
-      organizationId,
+      organizationId
       // Link back to defect in description or if we had a linking table (Defect has woId, so we update defect later)
     }).returning()
 
@@ -71,7 +71,7 @@ export const inspectionService = {
     await tx.update(defects)
       .set({ workOrderId: wo.id, status: 'scheduled' })
       .where(eq(defects.id, defect.id))
-      
+
     return defect
   }
 }

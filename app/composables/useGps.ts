@@ -33,7 +33,7 @@ export const useGps = () => {
 
   const handleNewLocation = async (position: any) => {
     lastLocation.value = position.coords
-    
+
     // Only track if there's an active session
     if (!activeSession.value) return
 

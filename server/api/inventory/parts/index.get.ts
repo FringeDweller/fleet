@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const query = getQuery(event)
-  
+
   return await inventoryService.listParts(session.user.organizationId, {
     q: query.q as string,
     categoryId: query.categoryId as string,

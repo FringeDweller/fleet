@@ -16,7 +16,7 @@ async function onCategoryChange() {
     partsToCount.value = []
     return
   }
-  
+
   loading.value = true
   try {
     const response = await $fetch<{ items: Part[] }>('/api/inventory/parts', {
@@ -100,7 +100,12 @@ async function onAdjust() {
             ] as any[]"
           >
             <template #physicalCount-data="{ row }">
-              <UInput v-model="(row as any).physicalCount" type="number" step="0.01" class="w-32" />
+              <UInput
+                v-model="(row as any).physicalCount"
+                type="number"
+                step="0.01"
+                class="w-32"
+              />
             </template>
             <template #variance-data="{ row }">
               <span :class="{ 'text-error-500 font-bold': Number((row as any).physicalCount) !== Number((row as any).quantityOnHand) }">
@@ -110,8 +115,12 @@ async function onAdjust() {
           </UTable>
 
           <div class="flex justify-end gap-4">
-            <UButton color="neutral" variant="ghost" to="/inventory">Cancel</UButton>
-            <UButton color="primary" :loading="adjusting" @click="onAdjust">Adjust All</UButton>
+            <UButton color="neutral" variant="ghost" to="/inventory">
+              Cancel
+            </UButton>
+            <UButton color="primary" :loading="adjusting" @click="onAdjust">
+              Adjust All
+            </UButton>
           </div>
         </div>
       </div>

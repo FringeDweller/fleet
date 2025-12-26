@@ -136,12 +136,15 @@ const columns = [
 
       <UModal v-model:open="isLogsModalOpen" title="Geofence Activity Logs">
         <template #body>
-          <UTable :rows="logs" :columns="[
-            { key: 'assetId', label: 'Asset' },
-            { key: 'entryTime', label: 'Entry' },
-            { key: 'exitTime', label: 'Exit' },
-            { key: 'durationMinutes', label: 'Duration (min)' }
-          ]">
+          <UTable
+            :rows="logs"
+            :columns="[
+              { key: 'assetId', label: 'Asset' },
+              { key: 'entryTime', label: 'Entry' },
+              { key: 'exitTime', label: 'Exit' },
+              { key: 'durationMinutes', label: 'Duration (min)' }
+            ]"
+          >
             <template #entryTime-data="{ row }">
               {{ new Date(row.entryTime).toLocaleString() }}
             </template>
@@ -180,7 +183,9 @@ const columns = [
             </div>
 
             <div v-if="selectedGeofence.category === 'restricted' || selectedGeofence.alertOnEntry === 'after_hours' || selectedGeofence.alertOnExit === 'after_hours'" class="space-y-4 border-t pt-4">
-              <p class="text-sm font-medium">Working Hours (for After Hours alerts)</p>
+              <p class="text-sm font-medium">
+                Working Hours (for After Hours alerts)
+              </p>
               <div class="grid grid-cols-2 gap-4">
                 <UFormField label="Start Time" name="activeHoursStart">
                   <UInput v-model="selectedGeofence.activeHours!.start" type="time" />

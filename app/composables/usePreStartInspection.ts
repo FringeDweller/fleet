@@ -54,7 +54,7 @@ export const usePreStartInspection = () => {
       } else {
         await queueOperation('inspections', 'create', finalInspection)
       }
-      
+
       await putItem('inspections', finalInspection)
       currentInspection.value = null
       return finalInspection

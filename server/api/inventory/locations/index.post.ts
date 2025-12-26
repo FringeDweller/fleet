@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event)
-  
+
   return await inventoryService.createLocation({
     ...body,
     organizationId: session.user.organizationId

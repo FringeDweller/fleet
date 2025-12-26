@@ -69,11 +69,11 @@ export const fuelService = {
             const distance = Number(data.odometer) - Number(prevTransaction.odometer)
             if (distance > 0) {
               const consumption = (Number(data.quantity) / distance) * 100
-              
+
               // Get asset analytics to compare with average
               // For performance in a transaction, we might want a simpler check or skip if too complex
               // but let's do a simple check: if consumption > 30L/100km (or some threshold) or compare with last average
-              
+
               // Better: compare with average of last 5 transactions
               const recentTransactions = await tx.query.fuelTransactions.findMany({
                 where: and(
@@ -94,7 +94,7 @@ export const fuelService = {
                 if (totalDist > 0) {
                   const totalQty = others.slice(0, -1).reduce((sum, t) => sum + Number(t.quantity), 0)
                   const avg = (totalQty / totalDist) * 100
-                  
+
                   if (consumption > avg * 1.5) {
                     // Create notification
                     await notificationService.createNotification({
@@ -202,7 +202,7 @@ export const fuelService = {
     // This is a complex query to do across the whole fleet.
     // For simplicity, we'll fetch notifications related to fuel anomalies.
     // Or we could calculate it on the fly, but that's expensive.
-    
+
     // Let's just fetch the most recent fuel anomaly notifications.
     return await db.query.notifications.findMany({
       where: and(
@@ -212,7 +212,7 @@ export const fuelService = {
       ),
       orderBy: [desc(notifications.createdAt)],
       limit: 5
-    }).then(notifs => notifs.map(n => {
+    }).then(notifs => notifs.map((n) => {
       // Parse assetId from link if possible or just use the notification
       const assetId = n.link?.split('/')[2]?.split('?')[0]
       return {

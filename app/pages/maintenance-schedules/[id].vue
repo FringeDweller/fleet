@@ -54,7 +54,13 @@ async function onDelete() {
           <UButton icon="i-lucide-arrow-left" variant="ghost" to="/maintenance-schedules" />
         </template>
         <template #right>
-          <UButton label="Delete" color="error" variant="ghost" icon="i-lucide-trash" @click="onDelete" />
+          <UButton
+            label="Delete"
+            color="error"
+            variant="ghost"
+            icon="i-lucide-trash"
+            @click="onDelete"
+          />
         </template>
       </UDashboardNavbar>
     </template>

@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event)
-  
+
   return await workOrderService.addPartToWorkOrder({
     ...body,
     workOrderId: id,

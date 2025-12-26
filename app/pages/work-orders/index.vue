@@ -56,7 +56,9 @@ const getPriorityColor = (priority: string) => {
 <template>
   <div class="p-4">
     <div class="flex justify-between items-center mb-4">
-      <h1 class="text-2xl font-bold">Work Orders</h1>
+      <h1 class="text-2xl font-bold">
+        Work Orders
+      </h1>
       <UButton to="/work-orders/new" icon="i-heroicons-plus" color="primary">
         New Work Order
       </UButton>

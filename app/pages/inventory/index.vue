@@ -47,7 +47,13 @@ const formatCurrency = (value: string) => {
     <UDashboardPanel grow>
       <UDashboardNavbar title="Inventory">
         <template #right>
-          <UButton to="/inventory/count" icon="i-heroicons-clipboard-document-check" color="neutral" variant="ghost" class="mr-2">
+          <UButton
+            to="/inventory/count"
+            icon="i-heroicons-clipboard-document-check"
+            color="neutral"
+            variant="ghost"
+            class="mr-2"
+          >
             Inventory Count
           </UButton>
           <UButton to="/inventory/new" icon="i-heroicons-plus" color="primary">

@@ -47,10 +47,10 @@ export const useWorkOrders = () => {
     }
   }
 
-  const completeWorkOrder = async (id: string, data: { 
-    checklist?: any[], 
-    completionMileage?: string, 
-    completionHours?: string,
+  const completeWorkOrder = async (id: string, data: {
+    checklist?: any[]
+    completionMileage?: string
+    completionHours?: string
     laborCost?: string
   }) => {
     if (online.value) {

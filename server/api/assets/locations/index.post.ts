@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event)
-  
+
   const [location] = await db.insert(assetLocations).values({
     ...body,
     organizationId: session.user.organizationId

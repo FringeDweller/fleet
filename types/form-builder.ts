@@ -1,20 +1,20 @@
-export type FieldType = 
-  | 'text' 
-  | 'number' 
-  | 'textarea' 
-  | 'date' 
-  | 'time' 
-  | 'select' 
-  | 'checkbox' 
-  | 'radio' 
-  | 'photo' 
-  | 'signature' 
-  | 'section'
+export type FieldType
+  = | 'text'
+    | 'number'
+    | 'textarea'
+    | 'date'
+    | 'time'
+    | 'select'
+    | 'checkbox'
+    | 'radio'
+    | 'photo'
+    | 'signature'
+    | 'section'
 
 export interface Condition {
   field: string // target field key
   operator: 'eq' | 'neq' | 'contains' | 'gt' | 'lt'
-  value: any
+  value: string | number | boolean
 }
 
 export interface FieldLogic {
@@ -31,7 +31,7 @@ export interface FormField {
   required?: boolean
   placeholder?: string
   helpText?: string
-  options?: { label: string; value: string }[] // For select, radio
+  options?: { label: string, value: string }[] // For select, radio
   validation?: {
     min?: number
     max?: number

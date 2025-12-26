@@ -99,8 +99,6 @@ export interface AssetCategory {
 
 }
 
-
-
 export interface Part {
 
   id: string
@@ -135,8 +133,6 @@ export interface Part {
 
 }
 
-
-
 export interface PartCategory {
 
   id: string
@@ -152,8 +148,6 @@ export interface PartCategory {
   updatedAt: string
 
 }
-
-
 
 export interface StockMovement {
 

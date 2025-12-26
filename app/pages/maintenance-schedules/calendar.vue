@@ -26,7 +26,12 @@ onMounted(async () => {
           <UDashboardSidebarCollapse />
         </template>
         <template #right>
-            <UButton icon="i-lucide-list" label="List View" to="/maintenance-schedules" variant="ghost" />
+          <UButton
+            icon="i-lucide-list"
+            label="List View"
+            to="/maintenance-schedules"
+            variant="ghost"
+          />
         </template>
       </UDashboardNavbar>
     </template>
@@ -35,7 +40,7 @@ onMounted(async () => {
       <UCard class="h-full flex flex-col">
         <MaintenanceCalendar v-if="!loading" :schedules="schedules" :work-orders="workOrders" />
         <div v-else class="flex justify-center p-8">
-           <UIcon name="i-lucide-loader-2" class="animate-spin h-8 w-8" />
+          <UIcon name="i-lucide-loader-2" class="animate-spin h-8 w-8" />
         </div>
       </UCard>
     </template>

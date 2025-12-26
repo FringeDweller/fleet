@@ -13,7 +13,7 @@ export const workOrderService = {
     if (options.status) {
       whereConditions.push(eq(workOrders.status, options.status))
     }
-    
+
     if (options.q) {
       const search = `%${options.q}%`
       whereConditions.push(
@@ -41,7 +41,7 @@ export const workOrderService = {
         dueDate: workOrders.dueDate,
         assetNumber: assets.assetNumber,
         assetMake: assets.make,
-        assetModel: assets.model,
+        assetModel: assets.model
       })
       .from(workOrders)
       .leftJoin(assets, eq(workOrders.assetId, assets.id))
@@ -73,7 +73,7 @@ export const workOrderService = {
         assetNumber: assets.assetNumber,
         assetMake: assets.make,
         assetModel: assets.model,
-        createdAt: workOrders.createdAt,
+        createdAt: workOrders.createdAt
       })
       .from(workOrders)
       .leftJoin(assets, eq(workOrders.assetId, assets.id))
@@ -142,10 +142,10 @@ export const workOrderService = {
     })
   },
 
-  async completeWorkOrder(id: string, organizationId: string, userId: string, locationId: string, data: { 
-    checklist?: any[], 
-    completionMileage?: string, 
-    completionHours?: string,
+  async completeWorkOrder(id: string, organizationId: string, userId: string, locationId: string, data: {
+    checklist?: any[]
+    completionMileage?: string
+    completionHours?: string
     laborCost?: string
   } = {}) {
     return await db.transaction(async (tx) => {
@@ -213,17 +213,17 @@ export const workOrderService = {
       // 3. Update work order status and final readings
       const [updatedWo] = await tx
         .update(workOrders)
-        .set({ 
-          status: 'completed', 
+        .set({
+          status: 'completed',
           checklist: data.checklist || wo.checklist,
           completionMileage: data.completionMileage,
           completionHours: data.completionHours,
           laborCost: data.laborCost,
-          updatedAt: new Date() 
+          updatedAt: new Date()
         })
         .where(eq(workOrders.id, id))
         .returning()
-      
+
       // Also update costs after labor is added
       await this._updateWorkOrderCosts(tx, id, organizationId)
 

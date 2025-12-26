@@ -10,7 +10,7 @@ export const maintenanceSchedules = pgTable('maintenance_schedules', {
   organizationId: uuid('organization_id')
     .notNull()
     .references(() => organizations.id),
-  
+
   // Assignment (Asset OR Category)
   assetId: uuid('asset_id').references(() => assets.id),
   categoryId: uuid('category_id').references(() => assetCategories.id),
@@ -22,11 +22,11 @@ export const maintenanceSchedules = pgTable('maintenance_schedules', {
 
   // Schedule Configuration
   type: varchar('type', { length: 20 }).notNull(), // 'time', 'usage', 'combined'
-  
+
   // Time-based
   timeInterval: integer('time_interval'),
   timeUnit: varchar('time_unit', { length: 20 }), // 'days', 'weeks', 'months', 'years'
-  
+
   // Usage-based
   usageIntervalKm: decimal('usage_interval_km', { precision: 12, scale: 2 }),
   usageIntervalHours: decimal('usage_interval_hours', { precision: 12, scale: 2 }),
@@ -35,11 +35,11 @@ export const maintenanceSchedules = pgTable('maintenance_schedules', {
   lastPerformedAt: timestamp('last_performed_at'),
   lastPerformedKm: decimal('last_performed_km', { precision: 12, scale: 2 }),
   lastPerformedHours: decimal('last_performed_hours', { precision: 12, scale: 2 }),
-  
+
   nextDueAt: timestamp('next_due_at'),
   nextDueKm: decimal('next_due_km', { precision: 12, scale: 2 }),
   nextDueHours: decimal('next_due_hours', { precision: 12, scale: 2 }),
-  
+
   leadTimeDays: integer('lead_time_days').default(7),
   isActive: boolean('is_active').default(true),
 

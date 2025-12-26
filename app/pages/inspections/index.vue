@@ -22,7 +22,9 @@ const getStatusColor = (status: string) => {
 <template>
   <div class="p-4 space-y-6">
     <div class="flex justify-between items-center">
-      <h1 class="text-2xl font-bold">Inspection History</h1>
+      <h1 class="text-2xl font-bold">
+        Inspection History
+      </h1>
     </div>
 
     <UCard>

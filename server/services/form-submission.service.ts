@@ -1,6 +1,6 @@
 import { eq, and, desc } from 'drizzle-orm'
 import { db } from '../utils/db'
-import { formSubmissions, customForms } from '../database/schema'
+import { formSubmissions } from '../database/schema'
 
 export const formSubmissionService = {
   async submitForm(data: typeof formSubmissions.$inferInsert) {
@@ -10,13 +10,13 @@ export const formSubmissionService = {
     return submission
   },
 
-  async listSubmissions(organizationId: string, options: { 
-    formId?: string, 
-    targetModule?: string, 
-    targetId?: string 
+  async listSubmissions(organizationId: string, options: {
+    formId?: string
+    targetModule?: string
+    targetId?: string
   } = {}) {
     const where = [eq(formSubmissions.organizationId, organizationId)]
-    
+
     if (options.formId) where.push(eq(formSubmissions.formId, options.formId))
     if (options.targetModule) where.push(eq(formSubmissions.targetModule, options.targetModule))
     if (options.targetId) where.push(eq(formSubmissions.targetId, options.targetId))
@@ -35,7 +35,7 @@ export const formSubmissionService = {
         eq(formSubmissions.organizationId, organizationId)
       ))
       .limit(1)
-    
+
     return result[0]
   }
 }

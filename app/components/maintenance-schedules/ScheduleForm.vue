@@ -43,13 +43,13 @@ const schema = z.object({
   usageIntervalKm: z.number().optional(),
   usageIntervalHours: z.number().optional(),
   leadTimeDays: z.number().min(1)
-}).refine(data => {
+}).refine((data) => {
   if (data.targetType === 'asset' && !data.assetId) return false
   if (data.targetType === 'category' && !data.categoryId) return false
   return true
 }, {
-  message: "Target is required",
-  path: ["assetId"] 
+  message: 'Target is required',
+  path: ['assetId']
 })
 
 async function onSubmit(event: FormSubmitEvent<any>) {
@@ -57,15 +57,20 @@ async function onSubmit(event: FormSubmitEvent<any>) {
   // Clean up based on targetType
   if (data.targetType === 'asset') data.categoryId = null
   else data.assetId = null
-  
-  delete data.targetType 
-  
+
+  delete data.targetType
+
   emit('submit', data)
 }
 </script>
 
 <template>
-  <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
+  <UForm
+    :schema="schema"
+    :state="state"
+    class="space-y-4"
+    @submit="onSubmit"
+  >
     <UFormGroup label="Schedule Name" name="name" required>
       <UInput v-model="state.name" />
     </UFormGroup>
@@ -84,8 +89,13 @@ async function onSubmit(event: FormSubmitEvent<any>) {
       <UFormGroup label="Target Type" name="targetType">
         <URadioGroup v-model="state.targetType" :options="[{ label: 'Specific Asset', value: 'asset' }, { label: 'Asset Category', value: 'category' }]" />
       </UFormGroup>
-      
-      <UFormGroup v-if="state.targetType === 'asset'" label="Asset" name="assetId" required>
+
+      <UFormGroup
+        v-if="state.targetType === 'asset'"
+        label="Asset"
+        name="assetId"
+        required
+      >
         <USelectMenu
           v-model="state.assetId"
           :options="assets"
@@ -94,8 +104,13 @@ async function onSubmit(event: FormSubmitEvent<any>) {
           searchable
         />
       </UFormGroup>
-      
-      <UFormGroup v-else label="Category" name="categoryId" required>
+
+      <UFormGroup
+        v-else
+        label="Category"
+        name="categoryId"
+        required
+      >
         <USelectMenu
           v-model="state.categoryId"
           :options="categories"
@@ -106,38 +121,48 @@ async function onSubmit(event: FormSubmitEvent<any>) {
     </div>
 
     <UFormGroup label="Schedule Type" name="type">
-       <URadioGroup v-model="state.type" :options="['time', 'usage', 'combined']" />
+      <URadioGroup v-model="state.type" :options="['time', 'usage', 'combined']" />
     </UFormGroup>
 
     <div v-if="state.type === 'time' || state.type === 'combined'" class="grid grid-cols-2 gap-4 border p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
       <UFormGroup label="Every" name="timeInterval">
-         <UInput v-model.number="state.timeInterval" type="number" />
+        <UInput v-model.number="state.timeInterval" type="number" />
       </UFormGroup>
       <UFormGroup label="Unit" name="timeUnit">
-         <USelect v-model="state.timeUnit" :options="['days', 'weeks', 'months', 'years']" />
+        <USelect v-model="state.timeUnit" :options="['days', 'weeks', 'months', 'years']" />
       </UFormGroup>
     </div>
 
     <div v-if="state.type === 'usage' || state.type === 'combined'" class="grid grid-cols-2 gap-4 border p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
       <UFormGroup label="Interval (km)" name="usageIntervalKm">
-         <UInput v-model.number="state.usageIntervalKm" type="number" />
+        <UInput v-model.number="state.usageIntervalKm" type="number" />
       </UFormGroup>
       <UFormGroup label="Interval (Hours)" name="usageIntervalHours">
-         <UInput v-model.number="state.usageIntervalHours" type="number" />
+        <UInput v-model.number="state.usageIntervalHours" type="number" />
       </UFormGroup>
     </div>
 
     <UFormGroup label="Lead Time (Days)" name="leadTimeDays" help="Create work order X days before due">
       <UInput v-model.number="state.leadTimeDays" type="number" />
     </UFormGroup>
-    
+
     <UFormGroup name="isActive">
       <UCheckbox v-model="state.isActive" label="Active" />
     </UFormGroup>
 
     <div class="flex justify-end gap-2">
-      <UButton label="Cancel" color="neutral" variant="ghost" @click="$router.back()" />
-      <UButton type="submit" label="Save Schedule" color="primary" :loading="loading" />
+      <UButton
+        label="Cancel"
+        color="neutral"
+        variant="ghost"
+        @click="$router.back()"
+      />
+      <UButton
+        type="submit"
+        label="Save Schedule"
+        color="primary"
+        :loading="loading"
+      />
     </div>
   </UForm>
 </template>

@@ -31,10 +31,12 @@ const onSubmit = async () => {
 <template>
   <div class="p-4 max-w-2xl mx-auto">
     <div class="mb-6">
-      <h1 class="text-2xl font-bold">New Work Order</h1>
+      <h1 class="text-2xl font-bold">
+        New Work Order
+      </h1>
     </div>
 
-    <UForm :state="state" @submit="onSubmit" class="space-y-4">
+    <UForm :state="state" class="space-y-4" @submit="onSubmit">
       <UFormGroup label="Asset" name="assetId" required>
         <USelectMenu
           v-model="state.assetId"
@@ -53,12 +55,16 @@ const onSubmit = async () => {
       </UFormGroup>
 
       <UFormGroup label="Due Date" name="dueDate">
-        <UInput type="date" v-model="state.dueDate" />
+        <UInput v-model="state.dueDate" type="date" />
       </UFormGroup>
 
       <div class="flex justify-end gap-4 mt-6">
-        <UButton to="/work-orders" color="neutral" variant="ghost">Cancel</UButton>
-        <UButton type="submit" color="primary">Create Work Order</UButton>
+        <UButton to="/work-orders" color="neutral" variant="ghost">
+          Cancel
+        </UButton>
+        <UButton type="submit" color="primary">
+          Create Work Order
+        </UButton>
       </div>
     </UForm>
   </div>

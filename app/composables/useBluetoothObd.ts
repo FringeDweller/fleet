@@ -11,7 +11,7 @@ export const useBluetoothObd = () => {
   const connectedDevice = ref<BleDevice | null>(null)
   const devices = ref<BleDevice[]>([])
   const { isNative, isAndroid } = useCapacitor()
-  
+
   const lastDeviceId = useCookie('last-obd-device')
 
   const init = async () => {
@@ -19,17 +19,17 @@ export const useBluetoothObd = () => {
     try {
       await BleClient.initialize()
       isAvailable.value = true
-      
+
       // Auto-connect if previously connected
       if (lastDeviceId.value) {
         // We might need to scan first or just try connecting
         // For simplicity, we try to connect directly if supported or scan+connect
         try {
-           // Direct connect might fail if device not found in cache, often scan is safer
-           // But let's try direct first if platform allows
-           await connect(lastDeviceId.value)
+          // Direct connect might fail if device not found in cache, often scan is safer
+          // But let's try direct first if platform allows
+          await connect(lastDeviceId.value)
         } catch (e) {
-           console.log('Auto-connect failed', e)
+          console.log('Auto-connect failed', e)
         }
       }
     } catch (e) {
@@ -70,17 +70,16 @@ export const useBluetoothObd = () => {
         isConnected.value = false
         connectedDevice.value = null
       })
-      
+
       const device = devices.value.find(d => d.deviceId === deviceId)
       if (device) {
         connectedDevice.value = device
         isConnected.value = true
         lastDeviceId.value = deviceId
       }
-      
+
       // Here we would discover services and characteristics to find the RW characteristic
       // For now, we just establish connection
-      
     } catch (e) {
       console.error('Connection failed', e)
       throw e

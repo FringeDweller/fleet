@@ -12,11 +12,11 @@ export default defineNuxtConfig({
     'nuxt-auth-utils'
   ],
 
+  ssr: false,
+
   devtools: {
     enabled: true
   },
-
-  ssr: false,
 
   css: ['~/assets/css/main.css'],
 

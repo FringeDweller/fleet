@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const query = getQuery(event)
-  
+
   return await assetService.listAssets(session.user.organizationId, {
     q: query.q as string,
     status: query.status as string,

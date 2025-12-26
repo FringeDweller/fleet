@@ -41,7 +41,7 @@ export const geofenceService = {
       const centerLat = Number(geofence.centerLat)
       const centerLng = Number(geofence.centerLng)
       const radius = Number(geofence.radius)
-      
+
       const distance = this.getDistance(lat, lng, centerLat, centerLng)
       return distance <= radius
     } else if (geofence.type === 'polygon' && geofence.coordinates) {
@@ -57,9 +57,9 @@ export const geofenceService = {
     const Δφ = (lat2 - lat1) * Math.PI / 180
     const Δλ = (lon2 - lon1) * Math.PI / 180
 
-    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-              Math.cos(φ1) * Math.cos(φ2) *
-              Math.sin(Δλ / 2) * Math.sin(Δλ / 2)
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2)
+      + Math.cos(φ1) * Math.cos(φ2)
+      * Math.sin(Δλ / 2) * Math.sin(Δλ / 2)
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 
     return R * c
@@ -71,8 +71,8 @@ export const geofenceService = {
       const xi = coordinates[i].lng, yi = coordinates[i].lat
       const xj = coordinates[j].lng, yj = coordinates[j].lat
 
-      const intersect = ((yi > lat) !== (yj > lat)) &&
-          (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi)
+      const intersect = ((yi > lat) !== (yj > lat))
+        && (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi)
       if (intersect) inside = !inside
     }
     return inside
@@ -89,7 +89,7 @@ export const geofenceService = {
 
     for (const gf of allGeofences) {
       const isIn = currentGeofenceIds.includes(gf.id)
-      
+
       const [lastEvent] = await db.select()
         .from(geofenceEvents)
         .where(and(
@@ -109,10 +109,10 @@ export const geofenceService = {
           sessionId,
           type: 'entry'
         })
-        
-        const shouldAlert = gf.alertOnEntry === 'always' || 
-          (gf.alertOnEntry === 'after_hours' && this.isAfterHours(gf))
-        
+
+        const shouldAlert = gf.alertOnEntry === 'always'
+          || (gf.alertOnEntry === 'after_hours' && this.isAfterHours(gf))
+
         if (shouldAlert) {
           await this.triggerAlert(assetLabel, gf, 'entry', organizationId)
         }
@@ -125,8 +125,8 @@ export const geofenceService = {
           type: 'exit'
         })
 
-        const shouldAlert = gf.alertOnExit === 'always' || 
-          (gf.alertOnExit === 'after_hours' && this.isAfterHours(gf))
+        const shouldAlert = gf.alertOnExit === 'always'
+          || (gf.alertOnExit === 'after_hours' && this.isAfterHours(gf))
 
         if (shouldAlert) {
           await this.triggerAlert(assetLabel, gf, 'exit', organizationId)
@@ -156,24 +156,24 @@ export const geofenceService = {
 
   isAfterHours(geofence: any) {
     if (!geofence.activeHours) return false
-    
+
     const now = new Date()
     const day = now.getDay()
     const time = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0')
-    
+
     const { start, end, days } = geofence.activeHours as any
-    
+
     if (days && !days.includes(day)) return true
     if (start && time < start) return true
     if (end && time > end) return true
-    
+
     return false
   },
 
   async triggerAlert(assetLabel: string, geofence: any, type: string, organizationId: string) {
     let title = ''
     let message = ''
-    
+
     if (type === 'entry') {
       title = 'Geofence Entry'
       message = `Asset ${assetLabel} entered geofence ${geofence.name}`
@@ -203,7 +203,7 @@ export const geofenceService = {
 
   async getJobSiteLogs(organizationId: string, options: { assetId?: string, geofenceId?: string } = {}) {
     let jobSiteIds: string[] = []
-    
+
     if (options.geofenceId) {
       jobSiteIds = [options.geofenceId]
     } else {
@@ -215,7 +215,7 @@ export const geofenceService = {
       })
       jobSiteIds = jobSites.map(js => js.id)
     }
-    
+
     if (jobSiteIds.length === 0) return []
 
     const whereConditions = [inArray(geofenceEvents.geofenceId, jobSiteIds)]

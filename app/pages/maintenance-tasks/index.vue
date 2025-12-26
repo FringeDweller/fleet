@@ -14,8 +14,8 @@ const columns = [
 
 const filteredTasks = computed(() => {
   if (!search.value) return tasks.value
-  return tasks.value.filter(task => 
-    Object.values(task).some(val => 
+  return tasks.value.filter(task =>
+    Object.values(task).some(val =>
       String(val).toLowerCase().includes(search.value.toLowerCase())
     )
   )

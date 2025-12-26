@@ -32,7 +32,7 @@ export const useMaintenanceSchedules = () => {
       body: data
     })
   }
-  
+
   const deleteSchedule = async (id: string) => {
     await $fetch(`/api/maintenance-schedules/${id}`, {
       method: 'DELETE'

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-const { 
-  isAvailable, 
-  isScanning, 
-  isConnected, 
-  devices, 
-  connectedDevice, 
-  scanForDongles, 
-  connect, 
-  disconnect 
+const {
+  isAvailable,
+  isScanning,
+  isConnected,
+  devices,
+  connectedDevice,
+  scanForDongles,
+  connect,
+  disconnect
 } = useBluetoothObd()
 
 const toast = useToast()
@@ -49,8 +49,12 @@ const handleDisconnect = async () => {
             <UIcon name="i-lucide-bluetooth-connected" class="w-6 h-6 text-green-600 dark:text-green-300" />
           </div>
           <div>
-            <h3 class="font-bold">Connected</h3>
-            <p class="text-sm text-dimmed">{{ connectedDevice.name || connectedDevice.deviceId }}</p>
+            <h3 class="font-bold">
+              Connected
+            </h3>
+            <p class="text-sm text-dimmed">
+              {{ connectedDevice.name || connectedDevice.deviceId }}
+            </p>
           </div>
         </div>
         <UButton
@@ -60,7 +64,7 @@ const handleDisconnect = async () => {
           @click="handleDisconnect"
         />
       </div>
-      
+
       <ObdLiveData />
 
       <ObdDiagnostics />
@@ -77,13 +81,19 @@ const handleDisconnect = async () => {
       />
 
       <div v-if="devices.length > 0" class="space-y-2">
-        <p class="text-sm font-medium text-dimmed">Available Devices</p>
+        <p class="text-sm font-medium text-dimmed">
+          Available Devices
+        </p>
         <div v-for="device in devices" :key="device.deviceId" class="flex items-center justify-between p-3 bg-elevated rounded-lg border border-default">
           <div class="flex items-center gap-3">
             <UIcon name="i-lucide-bluetooth" class="w-5 h-5 text-blue-500" />
             <div>
-              <p class="font-medium">{{ device.name || 'Unknown Device' }}</p>
-              <p class="text-xs text-dimmed">{{ device.deviceId }}</p>
+              <p class="font-medium">
+                {{ device.name || 'Unknown Device' }}
+              </p>
+              <p class="text-xs text-dimmed">
+                {{ device.deviceId }}
+              </p>
             </div>
           </div>
           <UButton
@@ -95,7 +105,7 @@ const handleDisconnect = async () => {
           />
         </div>
       </div>
-      
+
       <div v-else-if="!isScanning" class="text-center py-8 text-dimmed">
         No devices found. Ensure your OBD dongle is plugged in and ready to pair.
       </div>

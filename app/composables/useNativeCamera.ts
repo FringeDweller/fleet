@@ -16,7 +16,7 @@ export const useNativeCamera = () => {
           const file = (e.target as HTMLInputElement).files?.[0]
           if (file) {
             const reader = new FileReader()
-            reader.onload = (re) => resolve(re.target?.result as string)
+            reader.onload = re => resolve(re.target?.result as string)
             reader.readAsDataURL(file)
           }
         }

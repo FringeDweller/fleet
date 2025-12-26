@@ -75,16 +75,16 @@ const handleLogOn = async (id: string) => {
 const submitLogOn = async () => {
   try {
     const previousSessionId = handoverContext.value?.assetId === assetId.value ? handoverContext.value.sessionId : undefined
-    
+
     await logOn(assetId.value, {
       startOdometer: startOdometer.value,
       startHours: startHours.value,
       previousSessionId
     })
-    
+
     // Clear context after successful login
     if (previousSessionId) handoverContext.value = null
-    
+
     toast.add({ title: 'Logged on successfully', color: 'success' })
     showManualForm.value = false
   } catch (error: any) {
@@ -110,7 +110,7 @@ const onHandover = async () => {
     toast.add({ title: 'Readings required', description: 'Please enter odometer or hours for handover.', color: 'warning' })
     return
   }
-  
+
   try {
     const sessionId = activeSession.value?.id
     const asset = activeSession.value?.assetId
@@ -133,11 +133,10 @@ const onHandover = async () => {
 
       // 3. Logout user
       await clear()
-      
+
       // 4. Redirect
       navigateTo('/login')
     }
-    
   } catch (error: any) {
     toast.add({ title: 'Handover failed', description: error.message, color: 'error' })
   }
@@ -147,9 +146,13 @@ const onHandover = async () => {
 <template>
   <div class="p-4 space-y-6">
     <div v-if="!activeSession" class="space-y-4">
-      <h2 class="text-xl font-bold text-center">Operator Log-On</h2>
-      <p class="text-center text-dimmed">Tap vehicle NFC tag or scan QR code to start shift.</p>
-      
+      <h2 class="text-xl font-bold text-center">
+        Operator Log-On
+      </h2>
+      <p class="text-center text-dimmed">
+        Tap vehicle NFC tag or scan QR code to start shift.
+      </p>
+
       <div class="grid grid-cols-2 gap-4">
         <UButton
           size="xl"
@@ -176,10 +179,10 @@ const onHandover = async () => {
               <UInput v-model="assetId" disabled />
             </UFormField>
             <UFormField label="Current Odometer">
-              <UInput 
-                v-model="startOdometer" 
-                type="number" 
-                placeholder="0.00" 
+              <UInput
+                v-model="startOdometer"
+                type="number"
+                placeholder="0.00"
                 :icon="obdConnected ? 'i-lucide-bluetooth' : undefined"
               />
             </UFormField>
@@ -187,7 +190,12 @@ const onHandover = async () => {
               <UInput v-model="startHours" type="number" placeholder="0.00" />
             </UFormField>
             <div class="flex justify-end gap-2 pt-4">
-              <UButton label="Cancel" color="neutral" variant="outline" @click="showManualForm = false" />
+              <UButton
+                label="Cancel"
+                color="neutral"
+                variant="outline"
+                @click="showManualForm = false"
+              />
               <UButton label="Log On" :loading="sessionLoading" @click="submitLogOn" />
             </div>
           </div>
@@ -197,11 +205,19 @@ const onHandover = async () => {
 
     <div v-else class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800 space-y-2">
       <div class="flex items-center justify-between">
-        <h3 class="font-bold text-green-800 dark:text-green-300">Active Session</h3>
-        <UBadge color="success" variant="subtle">Logged On</UBadge>
+        <h3 class="font-bold text-green-800 dark:text-green-300">
+          Active Session
+        </h3>
+        <UBadge color="success" variant="subtle">
+          Logged On
+        </UBadge>
       </div>
-      <p class="text-sm">Vehicle: {{ activeSession.assetId }}</p>
-      <p class="text-sm">Started: {{ new Date(activeSession.startTime).toLocaleString() }}</p>
+      <p class="text-sm">
+        Vehicle: {{ activeSession.assetId }}
+      </p>
+      <p class="text-sm">
+        Started: {{ new Date(activeSession.startTime).toLocaleString() }}
+      </p>
       <div class="pt-2">
         <UButton
           color="error"
@@ -217,10 +233,10 @@ const onHandover = async () => {
         <template #content>
           <div class="p-4 space-y-4">
             <UFormField label="Final Odometer">
-              <UInput 
-                v-model="endOdometer" 
-                type="number" 
-                placeholder="0.00" 
+              <UInput
+                v-model="endOdometer"
+                type="number"
+                placeholder="0.00"
                 :icon="obdConnected ? 'i-lucide-bluetooth' : undefined"
               />
             </UFormField>
@@ -228,9 +244,24 @@ const onHandover = async () => {
               <UInput v-model="endHours" type="number" placeholder="0.00" />
             </UFormField>
             <div class="flex justify-end gap-2 pt-4">
-              <UButton label="Cancel" color="neutral" variant="outline" @click="showLogOffForm = false" />
-              <UButton label="Handover" color="warning" :loading="sessionLoading" @click="onHandover" />
-              <UButton label="Log Off" color="error" :loading="sessionLoading" @click="submitLogOff" />
+              <UButton
+                label="Cancel"
+                color="neutral"
+                variant="outline"
+                @click="showLogOffForm = false"
+              />
+              <UButton
+                label="Handover"
+                color="warning"
+                :loading="sessionLoading"
+                @click="onHandover"
+              />
+              <UButton
+                label="Log Off"
+                color="error"
+                :loading="sessionLoading"
+                @click="submitLogOff"
+              />
             </div>
           </div>
         </template>

@@ -17,10 +17,10 @@ const columns: any[] = [
 
 const filteredSchedules = computed(() => {
   if (!search.value) return schedules.value
-  return schedules.value.filter(s => 
-    s.name.toLowerCase().includes(search.value.toLowerCase()) ||
-    s.taskName?.toLowerCase().includes(search.value.toLowerCase()) ||
-    s.targetName?.toLowerCase().includes(search.value.toLowerCase())
+  return schedules.value.filter(s =>
+    s.name.toLowerCase().includes(search.value.toLowerCase())
+    || s.taskName?.toLowerCase().includes(search.value.toLowerCase())
+    || s.targetName?.toLowerCase().includes(search.value.toLowerCase())
   )
 })
 
@@ -37,7 +37,14 @@ onMounted(() => {
           <UDashboardSidebarCollapse />
         </template>
         <template #right>
-          <UButton icon="i-lucide-calendar" label="Calendar" to="/maintenance-schedules/calendar" color="neutral" variant="ghost" class="mr-2" />
+          <UButton
+            icon="i-lucide-calendar"
+            label="Calendar"
+            to="/maintenance-schedules/calendar"
+            color="neutral"
+            variant="ghost"
+            class="mr-2"
+          />
           <UButton icon="i-lucide-plus" label="New Schedule" to="/maintenance-schedules/new" />
         </template>
       </UDashboardNavbar>
@@ -66,13 +73,13 @@ onMounted(() => {
             {{ (row as any).name }}
           </NuxtLink>
         </template>
-        
+
         <template #lastPerformedAt-data="{ row }">
           {{ (row as any).lastPerformedAt ? new Date((row as any).lastPerformedAt).toLocaleDateString() : '-' }}
         </template>
 
         <template #nextDueAt-data="{ row }">
-             {{ (row as any).nextDueAt ? new Date((row as any).nextDueAt).toLocaleDateString() : '-' }}
+          {{ (row as any).nextDueAt ? new Date((row as any).nextDueAt).toLocaleDateString() : '-' }}
         </template>
       </UTable>
     </template>

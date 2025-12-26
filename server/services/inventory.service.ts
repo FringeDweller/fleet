@@ -69,7 +69,7 @@ export const inventoryService = {
         )
       )
       .limit(1)
-    
+
     if (!results[0]) return null
 
     const inventoryLevels = await db
@@ -151,17 +151,19 @@ export const inventoryService = {
 
       if (data.type === 'transfer') {
         if (!data.locationId || !data.toLocationId) throw new Error('Source and destination locations required for transfer')
-        
+
         // Remove from source
         await this._updateLocationInventory(tx, data.partId, data.locationId, -Number(data.quantity), data.organizationId)
         // Add to destination
         await this._updateLocationInventory(tx, data.partId, data.toLocationId, Number(data.quantity), data.organizationId)
       } else {
         if (!data.locationId) throw new Error('Location required for movement')
-        
-        const delta = data.type === 'in' ? Number(data.quantity) : 
-                     data.type === 'out' ? -Number(data.quantity) : 
-                     0 // adjustment handled differently below
+
+        const delta = data.type === 'in'
+          ? Number(data.quantity)
+          : data.type === 'out'
+            ? -Number(data.quantity)
+            : 0 // adjustment handled differently below
 
         if (data.type === 'adjustment') {
           await this._setLocationInventory(tx, data.partId, data.locationId, Number(data.quantity), data.organizationId)

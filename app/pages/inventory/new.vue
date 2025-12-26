@@ -54,7 +54,7 @@ async function onSubmit() {
       </UDashboardNavbar>
 
       <div class="p-4 max-w-2xl">
-        <UForm :state="state" @submit="onSubmit" class="space-y-4">
+        <UForm :state="state" class="space-y-4" @submit="onSubmit">
           <UFormGroup label="SKU" name="sku" required>
             <UInput v-model="state.sku" placeholder="e.g. PART-123" />
           </UFormGroup>

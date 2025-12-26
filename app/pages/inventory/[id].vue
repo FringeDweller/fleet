@@ -144,12 +144,20 @@ const formatDate = (date: string) => {
           <UCard>
             <template #header>
               <div class="flex items-center justify-between">
-                <h3 class="text-base font-semibold leading-6">Record Stock Movement</h3>
-                <UButton color="neutral" variant="ghost" icon="i-heroicons-x-mark" class="-my-1" @click="isMovementModalOpen = false" />
+                <h3 class="text-base font-semibold leading-6">
+                  Record Stock Movement
+                </h3>
+                <UButton
+                  color="neutral"
+                  variant="ghost"
+                  icon="i-heroicons-x-mark"
+                  class="-my-1"
+                  @click="isMovementModalOpen = false"
+                />
               </div>
             </template>
 
-            <UForm :state="movementState" @submit="onRecordMovement" class="space-y-4">
+            <UForm :state="movementState" class="space-y-4" @submit="onRecordMovement">
               <UFormGroup label="Type" name="type">
                 <USelect v-model="movementState.type" :options="[{ label: 'Stock In', value: 'in' }, { label: 'Stock Out', value: 'out' }, { label: 'Adjustment (Absolute)', value: 'adjustment' }, { label: 'Transfer', value: 'transfer' }]" />
               </UFormGroup>
@@ -162,7 +170,12 @@ const formatDate = (date: string) => {
                 />
               </UFormGroup>
 
-              <UFormGroup v-if="movementState.type === 'transfer'" label="To Location" name="toLocationId" required>
+              <UFormGroup
+                v-if="movementState.type === 'transfer'"
+                label="To Location"
+                name="toLocationId"
+                required
+              >
                 <USelect
                   v-model="movementState.toLocationId"
                   :options="locations.map(l => ({ label: l.name, value: l.id }))"
@@ -179,8 +192,12 @@ const formatDate = (date: string) => {
               </UFormGroup>
 
               <div class="flex justify-end gap-3">
-                <UButton color="neutral" variant="ghost" @click="isMovementModalOpen = false">Cancel</UButton>
-                <UButton type="submit" color="primary" :loading="recordingMovement">Record</UButton>
+                <UButton color="neutral" variant="ghost" @click="isMovementModalOpen = false">
+                  Cancel
+                </UButton>
+                <UButton type="submit" color="primary" :loading="recordingMovement">
+                  Record
+                </UButton>
               </div>
             </UForm>
           </UCard>
@@ -189,8 +206,10 @@ const formatDate = (date: string) => {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <!-- General Info & Edit Form -->
           <section>
-            <h2 class="text-lg font-semibold mb-4">Edit Part Information</h2>
-            <UForm :state="editState" @submit="onUpdate" class="space-y-4">
+            <h2 class="text-lg font-semibold mb-4">
+              Edit Part Information
+            </h2>
+            <UForm :state="editState" class="space-y-4" @submit="onUpdate">
               <UFormGroup label="SKU" name="sku" required>
                 <UInput v-model="editState.sku" />
               </UFormGroup>
@@ -241,23 +260,33 @@ const formatDate = (date: string) => {
 
           <!-- Status & Stats -->
           <section class="space-y-6">
-            <h2 class="text-lg font-semibold mb-4">Stock Status</h2>
+            <h2 class="text-lg font-semibold mb-4">
+              Stock Status
+            </h2>
             <div class="grid grid-cols-2 gap-4">
               <UCard>
-                <div class="text-sm text-neutral-500">Total On Hand</div>
+                <div class="text-sm text-neutral-500">
+                  Total On Hand
+                </div>
                 <div class="text-3xl font-bold" :class="{ 'text-error-500': Number(part?.quantityOnHand) <= Number(part?.reorderThreshold) }">
                   {{ part?.quantityOnHand }} {{ part?.unit }}
                 </div>
               </UCard>
               <UCard>
-                <div class="text-sm text-neutral-500">Unit Cost</div>
-                <div class="text-3xl font-bold">{{ formatCurrency(part?.unitCost || '0') }}</div>
+                <div class="text-sm text-neutral-500">
+                  Unit Cost
+                </div>
+                <div class="text-3xl font-bold">
+                  {{ formatCurrency(part?.unitCost || '0') }}
+                </div>
               </UCard>
             </div>
 
             <UCard v-if="(part as any).inventoryLevels?.length">
               <template #header>
-                <h3 class="text-sm font-semibold">Stock by Location</h3>
+                <h3 class="text-sm font-semibold">
+                  Stock by Location
+                </h3>
               </template>
               <div class="divide-y divide-default">
                 <div v-for="level in (part as any).inventoryLevels" :key="level.locationId" class="flex justify-between py-2 first:pt-0 last:pb-0">
@@ -280,7 +309,9 @@ const formatDate = (date: string) => {
 
         <!-- Usage History -->
         <section>
-          <h2 class="text-lg font-semibold mb-4">Usage & Movement History</h2>
+          <h2 class="text-lg font-semibold mb-4">
+            Usage & Movement History
+          </h2>
           <UTable
             :rows="part?.history || []"
             :columns="historyColumns"

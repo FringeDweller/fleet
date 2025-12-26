@@ -33,21 +33,21 @@ export default defineEventHandler(async (event) => {
   if (workOrderRef) {
     // Try to find by ID or Number
     // Assuming workOrderRef could be WO Number like "WO-1234"
-    
+
     const wo = await db.query.workOrders.findFirst({
-        where: and(
-            eq(workOrders.woNumber, workOrderRef),
-            eq(workOrders.organizationId, session.user.organizationId)
-        )
+      where: and(
+        eq(workOrders.woNumber, workOrderRef),
+        eq(workOrders.organizationId, session.user.organizationId)
+      )
     })
-    
+
     if (wo) {
-         // Append to description
-         const newDesc = (wo.description || '') + `\n\n[${new Date().toISOString()}] DTC Codes cleared via OBD.`
-         
-         await db.update(workOrders)
-           .set({ description: newDesc, updatedAt: new Date() })
-           .where(eq(workOrders.id, wo.id))
+      // Append to description
+      const newDesc = (wo.description || '') + `\n\n[${new Date().toISOString()}] DTC Codes cleared via OBD.`
+
+      await db.update(workOrders)
+        .set({ description: newDesc, updatedAt: new Date() })
+        .where(eq(workOrders.id, wo.id))
     }
   }
 

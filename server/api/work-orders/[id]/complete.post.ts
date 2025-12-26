@@ -26,9 +26,9 @@ export default defineEventHandler(async (event) => {
   }
 
   return await workOrderService.completeWorkOrder(
-    id, 
-    session.user.organizationId, 
-    session.user.id, 
+    id,
+    session.user.organizationId,
+    session.user.id,
     body.locationId,
     {
       checklist: body.checklist,

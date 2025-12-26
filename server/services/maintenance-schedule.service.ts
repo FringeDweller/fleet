@@ -54,7 +54,7 @@ export const maintenanceScheduleService = {
       .from(maintenanceSchedules)
       .where(and(eq(maintenanceSchedules.id, id), eq(maintenanceSchedules.organizationId, organizationId)))
       .limit(1)
-    
+
     return schedule
   },
 

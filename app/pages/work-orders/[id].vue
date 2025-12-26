@@ -117,8 +117,12 @@ const getStatusColor = (status: string) => {
     <div v-else-if="wo">
       <div class="flex justify-between items-center mb-6">
         <div>
-          <h1 class="text-3xl font-bold">{{ wo.woNumber }}</h1>
-          <p class="text-gray-500">{{ wo.description }}</p>
+          <h1 class="text-3xl font-bold">
+            {{ wo.woNumber }}
+          </h1>
+          <p class="text-gray-500">
+            {{ wo.description }}
+          </p>
         </div>
         <div class="flex gap-2">
           <UBadge :color="getStatusColor(wo.status)" size="lg">
@@ -132,7 +136,9 @@ const getStatusColor = (status: string) => {
           >
             Complete
           </UButton>
-          <UButton icon="i-heroicons-pencil-square" color="neutral" variant="ghost">Edit</UButton>
+          <UButton icon="i-heroicons-pencil-square" color="neutral" variant="ghost">
+            Edit
+          </UButton>
         </div>
       </div>
 
@@ -140,17 +146,23 @@ const getStatusColor = (status: string) => {
         <template #details>
           <UCard class="mt-4">
             <template #header>
-              <h3 class="text-lg font-semibold">Work Order Details</h3>
+              <h3 class="text-lg font-semibold">
+                Work Order Details
+              </h3>
             </template>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="space-y-4">
                 <div>
                   <label class="block text-sm font-medium text-gray-500">Asset</label>
-                  <p class="font-medium">{{ (wo as any).assetNumber }} - {{ (wo as any).assetMake }} {{ (wo as any).assetModel }}</p>
+                  <p class="font-medium">
+                    {{ (wo as any).assetNumber }} - {{ (wo as any).assetMake }} {{ (wo as any).assetModel }}
+                  </p>
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-500">Priority</label>
-                  <p class="capitalize">{{ wo.priority }}</p>
+                  <p class="capitalize">
+                    {{ wo.priority }}
+                  </p>
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-500">Due Date</label>
@@ -158,7 +170,7 @@ const getStatusColor = (status: string) => {
                 </div>
               </div>
               <div class="space-y-4">
-                 <div>
+                <div>
                   <label class="block text-sm font-medium text-gray-500">Created</label>
                   <p>{{ new Date(wo.createdAt).toLocaleDateString() }}</p>
                 </div>
@@ -166,57 +178,61 @@ const getStatusColor = (status: string) => {
             </div>
           </UCard>
         </template>
-        
+
         <template #checklist>
           <UCard class="mt-4">
-             <div v-if="!checklist || checklist.length === 0" class="text-center p-8 text-gray-500">
-               No checklist items for this work order.
-             </div>
-             <div v-else class="space-y-6">
-                <div v-for="(item, index) in checklist" :key="index" class="border-b border-default pb-4">
-                  <p class="font-medium mb-2">{{ item.label }}</p>
-                  <div class="flex gap-2">
-                    <UButton
-                      label="Pass"
-                      :color="item.status === 'passed' ? 'success' : 'neutral'"
-                      variant="soft"
-                      class="flex-1"
-                      :disabled="wo?.status === 'completed'"
-                      @click="updateChecklistStatus(index, 'passed')"
-                    />
-                    <UButton
-                      label="Fail"
-                      :color="item.status === 'failed' ? 'error' : 'neutral'"
-                      variant="soft"
-                      class="flex-1"
-                      :disabled="wo?.status === 'completed'"
-                      @click="updateChecklistStatus(index, 'failed')"
-                    />
-                    <UButton
-                      label="N/A"
-                      :color="item.status === 'na' ? 'primary' : 'neutral'"
-                      variant="soft"
-                      class="flex-1"
-                      :disabled="wo?.status === 'completed'"
-                      @click="updateChecklistStatus(index, 'na')"
-                    />
-                  </div>
+            <div v-if="!checklist || checklist.length === 0" class="text-center p-8 text-gray-500">
+              No checklist items for this work order.
+            </div>
+            <div v-else class="space-y-6">
+              <div v-for="(item, index) in checklist" :key="index" class="border-b border-default pb-4">
+                <p class="font-medium mb-2">
+                  {{ item.label }}
+                </p>
+                <div class="flex gap-2">
+                  <UButton
+                    label="Pass"
+                    :color="item.status === 'passed' ? 'success' : 'neutral'"
+                    variant="soft"
+                    class="flex-1"
+                    :disabled="wo?.status === 'completed'"
+                    @click="updateChecklistStatus(index, 'passed')"
+                  />
+                  <UButton
+                    label="Fail"
+                    :color="item.status === 'failed' ? 'error' : 'neutral'"
+                    variant="soft"
+                    class="flex-1"
+                    :disabled="wo?.status === 'completed'"
+                    @click="updateChecklistStatus(index, 'failed')"
+                  />
+                  <UButton
+                    label="N/A"
+                    :color="item.status === 'na' ? 'primary' : 'neutral'"
+                    variant="soft"
+                    class="flex-1"
+                    :disabled="wo?.status === 'completed'"
+                    @click="updateChecklistStatus(index, 'na')"
+                  />
                 </div>
-             </div>
+              </div>
+            </div>
           </UCard>
         </template>
 
         <template #forms>
-            <div class="mt-4 max-w-2xl">
-                <FormsContextForms module="work_orders" :context="{ id, assetId: wo.assetId }" />
-            </div>
+          <div class="mt-4 max-w-2xl">
+            <FormsContextForms module="work_orders" :context="{ id, assetId: wo.assetId }" />
+          </div>
         </template>
 
         <template #parts>
           <UCard class="mt-4">
             <template #header>
               <div class="flex items-center justify-between">
-                <h3 class="text-lg font-semibold">Parts Used</h3>
+                <h3 class="text-lg font-semibold">
+                  Parts Used
+                </h3>
                 <UButton
                   v-if="wo.status !== 'completed'"
                   icon="i-heroicons-plus"
@@ -266,7 +282,9 @@ const getStatusColor = (status: string) => {
       <UModal v-model="isAddPartModalOpen">
         <UCard>
           <template #header>
-            <h3 class="text-base font-semibold">Add Part to Work Order</h3>
+            <h3 class="text-base font-semibold">
+              Add Part to Work Order
+            </h3>
           </template>
           <div class="space-y-4">
             <UFormGroup label="Part">
@@ -283,8 +301,12 @@ const getStatusColor = (status: string) => {
               <UInput v-model="partQuantity" type="number" step="0.01" />
             </UFormGroup>
             <div class="flex justify-end gap-3">
-              <UButton color="neutral" variant="ghost" @click="isAddPartModalOpen = false">Cancel</UButton>
-              <UButton color="primary" @click="onAddPart">Add Part</UButton>
+              <UButton color="neutral" variant="ghost" @click="isAddPartModalOpen = false">
+                Cancel
+              </UButton>
+              <UButton color="primary" @click="onAddPart">
+                Add Part
+              </UButton>
             </div>
           </div>
         </UCard>
@@ -293,7 +315,9 @@ const getStatusColor = (status: string) => {
       <UModal v-model="isCompleteModalOpen">
         <UCard>
           <template #header>
-            <h3 class="text-base font-semibold">Complete Work Order</h3>
+            <h3 class="text-base font-semibold">
+              Complete Work Order
+            </h3>
           </template>
           <div class="space-y-4">
             <p>Please provide final details for completion:</p>
@@ -316,16 +340,29 @@ const getStatusColor = (status: string) => {
               <UInput v-model="laborCost" type="number" step="0.01" />
             </UFormGroup>
             <div class="flex justify-end gap-3 pt-4">
-              <UButton color="neutral" variant="ghost" @click="isCompleteModalOpen = false">Cancel</UButton>
-              <UButton color="success" @click="onComplete">Complete Work Order</UButton>
+              <UButton color="neutral" variant="ghost" @click="isCompleteModalOpen = false">
+                Cancel
+              </UButton>
+              <UButton color="success" @click="onComplete">
+                Complete Work Order
+              </UButton>
             </div>
           </div>
         </UCard>
       </UModal>
     </div>
     <div v-else class="text-center p-8">
-      <p class="text-red-500">Work Order not found</p>
-      <UButton to="/work-orders" color="neutral" variant="ghost" class="mt-4">Back to List</UButton>
+      <p class="text-red-500">
+        Work Order not found
+      </p>
+      <UButton
+        to="/work-orders"
+        color="neutral"
+        variant="ghost"
+        class="mt-4"
+      >
+        Back to List
+      </UButton>
     </div>
   </div>
 </template>

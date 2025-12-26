@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event)
-  
+
   return await inventoryService.recordMovement({
     ...body,
     userId: session.user.id,

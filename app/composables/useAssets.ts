@@ -51,10 +51,9 @@ export const useAssets = () => {
   return {
     assets,
     categories,
-        loading,
-        fetchAssets,
-        createAsset,
-        fetchCategories
-      }
-    }
-    
+    loading,
+    fetchAssets,
+    createAsset,
+    fetchCategories
+  }
+}

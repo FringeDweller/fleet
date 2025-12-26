@@ -10,7 +10,7 @@ console.log('Starting worker...')
 
 const maintenanceWorker = new Worker('maintenance', maintenanceSchedulerProcessor, { connection })
 
-maintenanceWorker.on('completed', job => {
+maintenanceWorker.on('completed', (job) => {
   console.log(`Job ${job.id} has completed!`)
 })
 

@@ -9,7 +9,7 @@ export const useOperatorSession = () => {
 
   const fetchActiveSession = async () => {
     if (!user.value) return
-    
+
     loading.value = true
     try {
       if (online.value) {

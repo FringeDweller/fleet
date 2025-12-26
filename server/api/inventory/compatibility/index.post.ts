@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event)
-  
+
   return await inventoryService.addCompatibility({
     ...body,
     organizationId: session.user.organizationId

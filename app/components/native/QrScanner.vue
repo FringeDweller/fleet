@@ -39,13 +39,17 @@ const startScanningProcess = async () => {
       class="ml-2"
       @click="stopScan"
     />
-    
+
     <!-- Overlay when scanning -->
     <div v-if="isScanning" class="fixed inset-0 z-50 flex flex-col items-center justify-end pb-10 bg-black/50">
-       <div class="bg-white p-4 rounded-lg shadow-lg">
-         <p class="mb-4 font-semibold">Scanning QR Code...</p>
-         <UButton color="error" block @click="stopScan">Cancel Scan</UButton>
-       </div>
+      <div class="bg-white p-4 rounded-lg shadow-lg">
+        <p class="mb-4 font-semibold">
+          Scanning QR Code...
+        </p>
+        <UButton color="error" block @click="stopScan">
+          Cancel Scan
+        </UButton>
+      </div>
     </div>
   </div>
   <div v-else class="text-sm text-gray-500 italic">
