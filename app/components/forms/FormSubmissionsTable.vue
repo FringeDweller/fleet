@@ -11,7 +11,7 @@ const { data: submissions } = await useFetch<Record<string, unknown>[]>(`/api/fo
 })
 
 const columns = computed(() => {
-  const cols: { key: string; label: string }[] = [
+  const cols: { key: string, label: string }[] = [
     { key: 'createdAt', label: 'Date' },
     { key: 'targetModule', label: 'Module' },
     { key: 'submittedBy', label: 'User' }
@@ -100,7 +100,12 @@ function viewDetail(sub: Record<string, unknown>) {
           <h3 class="text-xl font-bold">
             Submission Detail
           </h3>
-          <UButton icon="i-lucide-x" variant="ghost" color="neutral" @click="showModal = false" />
+          <UButton
+            icon="i-lucide-x"
+            variant="ghost"
+            color="neutral"
+            @click="showModal = false"
+          />
         </div>
 
         <div v-if="selectedSubmission" class="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
