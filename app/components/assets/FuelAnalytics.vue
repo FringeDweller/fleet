@@ -124,24 +124,24 @@ const columns = [
         </div>
       </template>
 
-        <UTable
-          :rows="logs"
-          :columns="columns as any[]"
-          :loading="!!pending"
-        >
-          <template #transactionDate-data="{ row }">
-            {{ new Date((row as any).transactionDate).toLocaleDateString() }}
-          </template>
-          <template #quantity-data="{ row }">
-            {{ (row as any).quantity }} L
-          </template>
-          <template #totalCost-data="{ row }">
-            ${{ (row as any).totalCost }}
-          </template>
-          <template #odometer-data="{ row }">
-            {{ (row as any).odometer ? `${(row as any).odometer} km` : '-' }}
-          </template>
-        </UTable>
+      <UTable
+        :rows="history || []"
+        :columns="columns as any[]"
+        :loading="!!loadingHistory"
+      >
+        <template #transactionDate-data="{ row }">
+          {{ new Date((row as any).transactionDate).toLocaleDateString() }}
+        </template>
+        <template #quantity-data="{ row }">
+          {{ (row as any).quantity }} L
+        </template>
+        <template #totalCost-data="{ row }">
+          ${{ (row as any).totalCost }}
+        </template>
+        <template #odometer-data="{ row }">
+          {{ (row as any).odometer ? `${(row as any).odometer} km` : '-' }}
+        </template>
+      </UTable>
     </UCard>
   </div>
 </template>

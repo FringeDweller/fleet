@@ -7,27 +7,27 @@ const props = defineProps<{
 }>()
 
 const { data: submissions } = await useFetch<any[]>(`/api/forms/submissions`, {
-    query: { formId: props.formId }
+  query: { formId: props.formId }
 })
 
 const columns = computed(() => {
-    const cols: { key: string; label: string }[] = [
-        { key: 'createdAt', label: 'Date' },
-        { key: 'targetModule', label: 'Module' },
-        { key: 'submittedBy', label: 'User' }
-    ]
-    
-    // Add first 3 fields from schema as columns
-    if (props.schema) {
-        props.schema.slice(0, 3).forEach((f) => {
-            if (f.type !== 'section') {
-                cols.push({ key: `data.${f.key}`, label: f.label })
-            }
-        })
-    }
-    
-    cols.push({ key: 'actions', label: '' })
-    return cols
+  const cols: { key: string, label: string }[] = [
+    { key: 'createdAt', label: 'Date' },
+    { key: 'targetModule', label: 'Module' },
+    { key: 'submittedBy', label: 'User' }
+  ]
+
+  // Add first 3 fields from schema as columns
+  if (props.schema) {
+    props.schema.slice(0, 3).forEach((f) => {
+      if (f.type !== 'section') {
+        cols.push({ key: `data.${f.key}`, label: f.label })
+      }
+    })
+  }
+
+  cols.push({ key: 'actions', label: '' })
+  return cols
 })
 function exportToCsv() {
   if (!submissions.value) return
@@ -38,11 +38,11 @@ function exportToCsv() {
       if (col.key === 'createdAt') return new Date(sub.createdAt).toLocaleString()
       if (col.key === 'targetModule') return sub.targetModule
       if (col.key === 'submittedBy') return sub.submittedBy
-                  if (col.key.startsWith('data.')) {
-                      const key = col.key.split('.')[1]
-                      return `"${sub.data?.[key] || ''}"`
-                  }
-      
+      if (col.key.startsWith('data.')) {
+        const key = col.key.split('.')[1]
+        return `"${sub.data?.[key] || ''}"`
+      }
+
       return ''
     }).join(',')
   }).join('\n')
@@ -87,12 +87,12 @@ function viewDetail(sub: any) {
         <UButton icon="i-lucide-eye" variant="ghost" @click="viewDetail(row)" />
       </template>
 
-        <!-- Dynamic data columns -->
-        <template v-for="col in (columns as any[]).filter((c: any) => c.key.startsWith('data.'))" :key="col.key" #[`${col.key}-data`]="{ row }: any">
-            <span class="truncate max-w-[150px] inline-block">
-                {{ (row as any).data?.[col.key.split('.')[1]] }}
-            </span>
-        </template>
+      <!-- Dynamic data columns -->
+      <template v-for="col in (columns as any[]).filter((c: any) => c.key.startsWith('data.'))" :key="col.key" #[`${col.key}-data`]="{ row }: any">
+        <span class="truncate max-w-[150px] inline-block">
+          {{ (row as any).data?.[col.key.split('.')[1]] }}
+        </span>
+      </template>
     </UTable>
 
     <UModal v-model="showModal">
@@ -109,19 +109,15 @@ function viewDetail(sub: any) {
           />
         </div>
 
-                    <div v-if="selectedSubmission" class="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
-
-                        <div v-for="field in schema" :key="field.id">
-
-                            <div v-if="field.type === 'section'" class="font-bold border-b pt-4 pb-1 mb-2">{{ field.label }}</div>
-
-        
-            <div v-else class="flex flex-col gap-1 border-b border-default pb-2">
-              <span class="text-[10px] text-dimmed uppercase font-bold tracking-wider">{{ field.label }}</span>
-              <span class="text-sm whitespace-pre-wrap">{{ selectedSubmission.data[field.key] || '-' }}</span>
+            <div v-if="selectedSubmission" class="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+                <div v-for="field in (schema as FormField[])" :key="field.id">
+                    <div v-if="field.type === 'section'" class="font-bold border-b pt-4 pb-1 mb-2">{{ field.label }}</div>
+                    <div v-else class="flex flex-col gap-1 border-b border-default pb-2">
+                        <span class="text-[10px] text-dimmed uppercase font-bold tracking-wider">{{ field.label }}</span>
+                        <span class="text-sm whitespace-pre-wrap">{{ selectedSubmission.data[field.key] || '-' }}</span>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
 
         <div class="flex justify-end pt-4 border-t mt-6">
           <UButton label="Close" color="neutral" @click="showModal = false" />

@@ -81,7 +81,7 @@ export const formService = {
       ))
 
     const validFormIds = assignments
-      .filter(a => {
+      .filter((a) => {
         const conds = a.conditions as Record<string, any>
         if (!conds || Object.keys(conds).length === 0) return true
         return Object.entries(conds).every(([k, v]) => context[k] === v)

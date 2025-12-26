@@ -12,7 +12,7 @@ const emit = defineEmits<{
 
 const fields = computed({
   get: () => props.modelValue,
-  set: (val) => emit('update:modelValue', val)
+  set: val => emit('update:modelValue', val)
 })
 
 const selectedFieldId = ref<string | null>(null)
@@ -28,10 +28,10 @@ const toolset = [
   { type: 'select', label: 'Dropdown', icon: 'i-lucide-list' },
   { type: 'section', label: 'Section Header', icon: 'i-lucide-heading' },
   { type: 'photo', label: 'Photo Upload', icon: 'i-lucide-camera' },
-  { type: 'signature', label: 'Signature', icon: 'i-lucide-pen-tool' },
+  { type: 'signature', label: 'Signature', icon: 'i-lucide-pen-tool' }
 ]
 
-function onClone(element: any) {
+function onClone(element: Record<string, any>) {
   return {
     id: crypto.randomUUID(),
     type: element.type,

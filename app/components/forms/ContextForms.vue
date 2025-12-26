@@ -4,42 +4,62 @@ const props = defineProps<{
   context: Record<string, any>
 }>()
 
-const { data: forms } = await useFetch<any[]>('/api/forms/context', {
-    query: {
-        module: props.module,
-        context: JSON.stringify(props.context)
-    }
+const { data: forms } = await useFetch<Record<string, any>[]>('/api/forms/context', {
+  query: {
+    module: props.module,
+    context: JSON.stringify(props.context)
+  }
 })
 
-const { data: submissions, refresh: refreshSubmissions } = await useFetch<any[]>('/api/forms/submissions', {
-
+const { data: submissions, refresh: refreshSubmissions } = await useFetch<Record<string, any>[]>('/api/forms/submissions', {
   query: {
     targetModule: props.module,
     targetId: props.context.id
   }
 })
+const selectedForm = ref<Record<string, any> | null>(null)
 
-const selectedForm = ref<any>(null)
 const showFormModal = ref(false)
 
-function openForm(form: any) {
-  selectedForm.value = form
-  showFormModal.value = true
+
+
+function openForm(form: Record<string, any>) {
+
+    selectedForm.value = form
+
+    showFormModal.value = true
+
 }
+
+
 
 function onSubmitted() {
-  showFormModal.value = false
-  selectedForm.value = null
-  refreshSubmissions()
+
+    showFormModal.value = false
+
+    selectedForm.value = null
+
+    refreshSubmissions()
+
 }
 
-const selectedSubmission = ref<any>(null)
+
+
+const selectedSubmission = ref<Record<string, any> | null>(null)
+
 const showSubmissionModal = ref(false)
 
-function viewSubmission(sub: any) {
-  selectedSubmission.value = sub
-  showSubmissionModal.value = true
+
+
+function viewSubmission(sub: Record<string, any>) {
+
+    selectedSubmission.value = sub
+
+    showSubmissionModal.value = true
+
 }
+
+
 </script>
 
 <template>
