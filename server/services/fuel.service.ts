@@ -159,7 +159,7 @@ export const fuelService = {
     if (transactionsWithOdo.length >= 2) {
       const first = transactionsWithOdo[0]
       const last = transactionsWithOdo[transactionsWithOdo.length - 1]
-      
+
       if (first && last && first.odometer && last.odometer) {
         const totalDistance = Number(last.odometer) - Number(first.odometer)
 
@@ -178,9 +178,9 @@ export const fuelService = {
     const trends = transactionsWithOdo.slice(-10).map((t, i, arr) => {
       if (i === 0) return null
       const prev = arr[i - 1]
-      
+
       if (!t.odometer || !prev || !prev.odometer) return null
-      
+
       const dist = Number(t.odometer) - Number(prev.odometer)
       if (dist <= 0) return null
 

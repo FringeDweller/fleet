@@ -31,11 +31,11 @@ const toolset = [
   { type: 'signature', label: 'Signature', icon: 'i-lucide-pen-tool' }
 ]
 
-function onClone(element: Record<string, any>) {
+function onClone(element: Record<string, unknown>) {
   return {
     id: crypto.randomUUID(),
     type: element.type,
-    label: element.label || 'New Field',
+    label: (element.label as string) || 'New Field',
     key: `field_${Date.now().toString(36)}`,
     required: false,
     placeholder: '',

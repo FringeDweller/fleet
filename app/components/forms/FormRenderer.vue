@@ -17,7 +17,7 @@ const formData = ref<Record<string, any>>({})
 
 // Initialize form data
 watch(() => props.fields, (newFields) => {
-  newFields.forEach((f) => {
+  newFields.forEach(f => {
     if (formData.value[f.key] === undefined) {
       if (f.type === 'checkbox') formData.value[f.key] = false
       else if (f.type === 'select') formData.value[f.key] = f.options?.[0]?.value || ''
@@ -31,7 +31,7 @@ function isVisible(field: FormField) {
 
   const { action, match, conditions } = field.logic
 
-  const results = conditions.map((cond) => {
+  const results = conditions.map(cond => {
     const val = formData.value[cond.field]
     switch (cond.operator) {
       case 'eq': return val === cond.value

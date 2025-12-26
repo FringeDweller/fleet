@@ -1,65 +1,51 @@
 <script setup lang="ts">
+import type { FormField } from '../../../types/form-builder'
+
 const props = defineProps<{
   module: string
-  context: Record<string, any>
+  context: Record<string, unknown>
 }>()
 
-const { data: forms } = await useFetch<Record<string, any>[]>('/api/forms/context', {
+const { data: forms } = await useFetch<Record<string, unknown>[]>('/api/forms/context', {
   query: {
     module: props.module,
     context: JSON.stringify(props.context)
   }
 })
 
-const { data: submissions, refresh: refreshSubmissions } = await useFetch<Record<string, any>[]>('/api/forms/submissions', {
+const { data: submissions, refresh: refreshSubmissions } = await useFetch<Record<string, unknown>[]>('/api/forms/submissions', {
   query: {
     targetModule: props.module,
     targetId: props.context.id
   }
 })
-const selectedForm = ref<Record<string, any> | null>(null)
+const selectedForm = ref<Record<string, unknown> | null>(null)
 
 const showFormModal = ref(false)
 
+function openForm(form: Record<string, unknown>) {
+  selectedForm.value = form
 
-
-function openForm(form: Record<string, any>) {
-
-    selectedForm.value = form
-
-    showFormModal.value = true
-
+  showFormModal.value = true
 }
-
-
 
 function onSubmitted() {
+  showFormModal.value = false
 
-    showFormModal.value = false
+  selectedForm.value = null
 
-    selectedForm.value = null
-
-    refreshSubmissions()
-
+  refreshSubmissions()
 }
 
-
-
-const selectedSubmission = ref<Record<string, any> | null>(null)
+const selectedSubmission = ref<Record<string, unknown> | null>(null)
 
 const showSubmissionModal = ref(false)
 
+function viewSubmission(sub: Record<string, unknown>) {
+  selectedSubmission.value = sub
 
-
-function viewSubmission(sub: Record<string, any>) {
-
-    selectedSubmission.value = sub
-
-    showSubmissionModal.value = true
-
+  showSubmissionModal.value = true
 }
-
-
 </script>
 
 <template>
@@ -70,7 +56,7 @@ function viewSubmission(sub: Record<string, any>) {
         Available Forms
       </h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div v-for="form in forms" :key="form.id" class="border rounded-lg bg-white dark:bg-gray-900 overflow-hidden flex flex-col shadow-sm">
+        <div v-for="form in forms" :key="form.id as string" class="border rounded-lg bg-white dark:bg-gray-900 overflow-hidden flex flex-col shadow-sm">
           <div class="px-4 py-3 bg-gray-50 dark:bg-gray-800 border-b flex justify-between items-center">
             <h4 class="font-bold text-sm">
               {{ form.title }}
@@ -103,7 +89,7 @@ function viewSubmission(sub: Record<string, any>) {
       <div class="border rounded-lg divide-y bg-white dark:bg-gray-900 shadow-sm">
         <div
           v-for="sub in submissions"
-          :key="sub.id"
+          :key="sub.id as string"
           class="p-4 flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer group"
           @click="viewSubmission(sub)"
         >
@@ -113,10 +99,10 @@ function viewSubmission(sub: Record<string, any>) {
             </div>
             <div>
               <div class="font-medium text-sm">
-                Submission on {{ new Date(sub.createdAt).toLocaleString() }}
+                Submission on {{ new Date(sub.createdAt as string).toLocaleString() }}
               </div>
               <div class="text-xs text-dimmed flex gap-2">
-                <span>By User {{ sub.submittedBy.slice(0, 8) }}</span>
+                <span>By User {{ (sub.submittedBy as string).slice(0, 8) }}</span>
               </div>
             </div>
           </div>
@@ -152,10 +138,10 @@ function viewSubmission(sub: Record<string, any>) {
 
         <FormsFormRenderer
           v-if="selectedForm"
-          :form-id="selectedForm.id"
-          :fields="selectedForm.schema"
+          :form-id="selectedForm.id as string"
+          :fields="selectedForm.schema as FormField[]"
           :target-module="module"
-          :target-id="context.id"
+          :target-id="context.id as string"
           @submitted="onSubmitted"
         />
       </div>
@@ -178,12 +164,12 @@ function viewSubmission(sub: Record<string, any>) {
 
         <div v-if="selectedSubmission" class="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
           <div class="grid grid-cols-2 gap-4 text-xs bg-gray-50 dark:bg-gray-800 p-3 rounded border">
-            <div><span class="text-dimmed font-bold uppercase mr-1">Submitted:</span> {{ new Date(selectedSubmission.createdAt).toLocaleString() }}</div>
+            <div><span class="text-dimmed font-bold uppercase mr-1">Submitted:</span> {{ new Date(selectedSubmission.createdAt as string).toLocaleString() }}</div>
             <div><span class="text-dimmed font-bold uppercase mr-1">By:</span> {{ selectedSubmission.submittedBy }}</div>
           </div>
 
           <div class="space-y-4">
-            <div v-for="(val, key) in selectedSubmission.data" :key="key" class="border-b border-default pb-3">
+            <div v-for="(val, key) in (selectedSubmission.data as Record<string, unknown>)" :key="key" class="border-b border-default pb-3">
               <div class="text-xs text-dimmed font-bold uppercase mb-1">
                 {{ key }}
               </div>

@@ -69,7 +69,7 @@ export const geofenceService = {
     let inside = false
     for (let i = 0, j = coordinates.length - 1; i < coordinates.length; j = i++) {
       if (!coordinates[i] || !coordinates[j]) continue
-      
+
       const xi = coordinates[i]!.lng, yi = coordinates[i]!.lat
       const xj = coordinates[j]!.lng, yj = coordinates[j]!.lat
 
