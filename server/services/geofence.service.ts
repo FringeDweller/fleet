@@ -68,8 +68,10 @@ export const geofenceService = {
   isPointInPolygon(lat: number, lng: number, coordinates: { lat: number, lng: number }[]) {
     let inside = false
     for (let i = 0, j = coordinates.length - 1; i < coordinates.length; j = i++) {
-      const xi = coordinates[i].lng, yi = coordinates[i].lat
-      const xj = coordinates[j].lng, yj = coordinates[j].lat
+      if (!coordinates[i] || !coordinates[j]) continue
+      
+      const xi = coordinates[i]!.lng, yi = coordinates[i]!.lat
+      const xj = coordinates[j]!.lng, yj = coordinates[j]!.lat
 
       const intersect = ((yi > lat) !== (yj > lat))
         && (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi)

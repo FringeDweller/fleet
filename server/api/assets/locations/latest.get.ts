@@ -23,5 +23,6 @@ export default defineEventHandler(async (event) => {
     ORDER BY al.asset_id, al.created_at DESC
   `)
 
-  return latestLocations.rows
+  // Drizzle with PostgresJS returns the rows directly as a RowList
+  return latestLocations as unknown as Record<string, any>[]
 })

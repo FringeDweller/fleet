@@ -1,6 +1,6 @@
 import { eq, and, desc, sql } from 'drizzle-orm'
 import { db } from '../utils/db'
-import { fuelTransactions, assets } from '../database/schema'
+import { fuelTransactions, assets, notifications } from '../database/schema'
 import { notificationService } from './notification.service'
 
 export const fuelService = {
@@ -54,7 +54,7 @@ export const fuelService = {
         }
 
         // 3. Check for fuel anomaly if we have odometer
-        if (data.odometer) {
+        if (data.odometer && transaction) {
           // Get previous transaction with odometer
           const prevTransaction = await tx.query.fuelTransactions.findFirst({
             where: and(
@@ -88,22 +88,26 @@ export const fuelService = {
                 // Calculate average excluding current
                 const others = recentTransactions.filter(t => t.id !== transaction.id)
                 // Need at least 2 others to have a distance
-                const first = others[others.length - 1]
-                const last = others[0]
-                const totalDist = Number(last.odometer) - Number(first.odometer)
-                if (totalDist > 0) {
-                  const totalQty = others.slice(0, -1).reduce((sum, t) => sum + Number(t.quantity), 0)
-                  const avg = (totalQty / totalDist) * 100
+                if (others.length >= 2) {
+                  const first = others[others.length - 1]
+                  const last = others[0]
+                  if (first && last && first.odometer && last.odometer) {
+                    const totalDist = Number(last.odometer) - Number(first.odometer)
+                    if (totalDist > 0) {
+                      const totalQty = others.slice(0, -1).reduce((sum, t) => sum + Number(t.quantity), 0)
+                      const avg = (totalQty / totalDist) * 100
 
-                  if (consumption > avg * 1.5) {
-                    // Create notification
-                    await notificationService.createNotification({
-                      organizationId: data.organizationId,
-                      title: 'Fuel Anomaly Detected',
-                      message: `Asset ${asset.assetNumber} recorded unusually high fuel consumption: ${consumption.toFixed(2)} L/100km (Avg: ${avg.toFixed(2)} L/100km)`,
-                      type: 'warning',
-                      link: `/assets/${asset.id}?tab=fuel`
-                    })
+                      if (consumption > avg * 1.5) {
+                        // Create notification
+                        await notificationService.createNotification({
+                          organizationId: data.organizationId,
+                          title: 'Fuel Anomaly Detected',
+                          message: `Asset ${asset.assetNumber} recorded unusually high fuel consumption: ${consumption.toFixed(2)} L/100km (Avg: ${avg.toFixed(2)} L/100km)`,
+                          type: 'warning',
+                          link: `/assets/${asset.id}?tab=fuel`
+                        })
+                      }
+                    }
                   }
                 }
               }
@@ -155,15 +159,18 @@ export const fuelService = {
     if (transactionsWithOdo.length >= 2) {
       const first = transactionsWithOdo[0]
       const last = transactionsWithOdo[transactionsWithOdo.length - 1]
-      const totalDistance = Number(last.odometer) - Number(first.odometer)
+      
+      if (first && last && first.odometer && last.odometer) {
+        const totalDistance = Number(last.odometer) - Number(first.odometer)
 
-      if (totalDistance > 0) {
-        // We sum quantities after the first fill up
-        const qtyAfterFirst = transactionsWithOdo.slice(1).reduce((sum, t) => sum + Number(t.quantity), 0)
-        const costAfterFirst = transactionsWithOdo.slice(1).reduce((sum, t) => sum + Number(t.totalCost), 0)
+        if (totalDistance > 0) {
+          // We sum quantities after the first fill up
+          const qtyAfterFirst = transactionsWithOdo.slice(1).reduce((sum, t) => sum + Number(t.quantity), 0)
+          const costAfterFirst = transactionsWithOdo.slice(1).reduce((sum, t) => sum + Number(t.totalCost), 0)
 
-        avgConsumption = (qtyAfterFirst / totalDistance) * 100
-        avgCostPerKm = costAfterFirst / totalDistance
+          avgConsumption = (qtyAfterFirst / totalDistance) * 100
+          avgCostPerKm = costAfterFirst / totalDistance
+        }
       }
     }
 
@@ -171,6 +178,9 @@ export const fuelService = {
     const trends = transactionsWithOdo.slice(-10).map((t, i, arr) => {
       if (i === 0) return null
       const prev = arr[i - 1]
+      
+      if (!t.odometer || !prev || !prev.odometer) return null
+      
       const dist = Number(t.odometer) - Number(prev.odometer)
       if (dist <= 0) return null
 

@@ -38,12 +38,11 @@ function exportToCsv() {
       if (col.key === 'createdAt') return new Date(sub.createdAt).toLocaleString()
       if (col.key === 'targetModule') return sub.targetModule
       if (col.key === 'submittedBy') return sub.submittedBy
-      if (col.key.startsWith('data.')) {
-        const key = col.key.split('.')[1]
-        return `"${sub.data?.[key] || ''}"`
-      }
-
-      return ''
+                  if (col.key.startsWith('data.')) {
+                      const key = col.key.split('.')[1] as string
+                      return `"${sub.data?.[key] || ''}"`
+                  }
+            return ''
     }).join(',')
   }).join('\n')
 
@@ -79,8 +78,11 @@ function viewDetail(sub: any) {
       />
     </div>
 
-    <UTable :rows="(submissions as any[]) || []" :columns="columns">
-      <template #createdAt-data="{ row }">
+        <UTable :rows="(submissions as any[]) || []" :columns="(columns as any[])">
+
+            <template #createdAt-data="{ row }">
+
+    
         {{ new Date((row as any).createdAt).toLocaleDateString() }}
       </template>
       <template #actions-data="{ row }">
