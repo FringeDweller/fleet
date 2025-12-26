@@ -100,34 +100,28 @@ const columns = [
 
     <template #body>
       <UCard>
-        <UTable :rows="geofences || []" :columns="columns">
+        <UTable :rows="geofences as any[] || []" :columns="columns as any[]">
           <template #category-data="{ row }">
-            <UBadge :color="row.category === 'restricted' ? 'error' : 'primary'" variant="subtle">
-              {{ row.category }}
+            <UBadge :color="(row as any).category === 'restricted' ? 'error' : 'primary'" variant="subtle">
+              {{ (row as any).category }}
             </UBadge>
           </template>
           <template #createdAt-data="{ row }">
-            {{ new Date(row.createdAt).toLocaleDateString() }}
+            {{ new Date((row as any).createdAt).toLocaleDateString() }}
           </template>
           <template #actions-data="{ row }">
-            <div class="flex justify-end gap-2">
+            <div class="flex items-center gap-2">
               <UButton
+                color="neutral"
+                variant="ghost"
                 icon="i-heroicons-clock"
-                color="neutral"
-                variant="ghost"
-                @click="openLogsModal(row)"
+                @click="openLogsModal(row as any)"
               />
               <UButton
+                color="neutral"
+                variant="ghost"
                 icon="i-heroicons-pencil-square"
-                color="neutral"
-                variant="ghost"
-                @click="openEditModal(row)"
-              />
-              <UButton
-                icon="i-heroicons-trash"
-                color="error"
-                variant="ghost"
-                @click="deleteGeofence(row.id)"
+                @click="openEditModal(row as any)"
               />
             </div>
           </template>
@@ -143,13 +137,13 @@ const columns = [
               { key: 'entryTime', label: 'Entry' },
               { key: 'exitTime', label: 'Exit' },
               { key: 'durationMinutes', label: 'Duration (min)' }
-            ]"
+            ] as any[]"
           >
             <template #entryTime-data="{ row }">
-              {{ new Date(row.entryTime).toLocaleString() }}
+              {{ new Date((row as any).entryTime).toLocaleString() }}
             </template>
             <template #exitTime-data="{ row }">
-              {{ new Date(row.exitTime).toLocaleString() }}
+              {{ (row as any).exitTime ? new Date((row as any).exitTime).toLocaleString() : '-' }}
             </template>
           </UTable>
         </template>

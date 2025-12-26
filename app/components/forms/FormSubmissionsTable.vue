@@ -88,7 +88,7 @@ function viewDetail(sub: any) {
       </template>
 
         <!-- Dynamic data columns -->
-        <template v-for="col in (columns as any[]).filter(c => c.key.startsWith('data.'))" :key="col.key" #[`${col.key}-data`]="{ row }: any">
+        <template v-for="col in (columns as any[]).filter((c: any) => c.key.startsWith('data.'))" :key="col.key" #[`${col.key}-data`]="{ row }: any">
             <span class="truncate max-w-[150px] inline-block">
                 {{ (row as any).data?.[col.key.split('.')[1]] }}
             </span>
