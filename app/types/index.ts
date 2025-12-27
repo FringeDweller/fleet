@@ -126,7 +126,7 @@ export interface Part {
   updatedAt: string
   categoryName?: string
   history?: StockMovement[]
-  inventoryLevels?: { locationId: string, locationName: string, quantity: string }[]
+  inventoryLevels?: { locationId: string; locationName: string; quantity: string }[]
 }
 
 export interface PartCategory {

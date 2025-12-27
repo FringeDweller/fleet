@@ -4,7 +4,15 @@ import type { Part } from '~/types'
 const route = useRoute()
 const router = useRouter()
 const toast = useToast()
-const { fetchPart, updatePart, categories, fetchCategories, recordMovement, locations, fetchLocations } = useInventory()
+const {
+  fetchPart,
+  updatePart,
+  categories,
+  fetchCategories,
+  recordMovement,
+  locations,
+  fetchLocations
+} = useInventory()
 
 const partId = route.params.id as string
 const loading = ref(true)
@@ -109,7 +117,9 @@ const historyColumns = [
 ]
 
 const formatCurrency = (value: string) => {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(value))
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
+    Number(value)
+  )
 }
 
 const formatDate = (date: string) => {

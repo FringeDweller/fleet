@@ -20,7 +20,9 @@ const toast = useToast()
 
 const { data: form, refresh } = await useFetch<CustomForm>(`/api/settings/forms/${id}`)
 
-const { data: versions, refresh: refreshVersions } = await useFetch<CustomForm[]>(`/api/settings/forms/${id}/versions`)
+const { data: versions, refresh: refreshVersions } = await useFetch<CustomForm[]>(
+  `/api/settings/forms/${id}/versions`
+)
 
 const items = [
   { label: 'Builder', icon: 'i-lucide-layout-template', slot: 'builder' },

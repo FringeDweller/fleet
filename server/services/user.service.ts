@@ -1,7 +1,7 @@
-import { eq } from 'drizzle-orm'
 import * as argon2 from 'argon2'
-import { db } from '../utils/db'
+import { eq } from 'drizzle-orm'
 import { users } from '../database/schema'
+import { db } from '../utils/db'
 
 export const userService = {
   async findByEmail(email: string) {

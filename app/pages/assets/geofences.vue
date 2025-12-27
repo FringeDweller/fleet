@@ -11,11 +11,11 @@ interface Geofence {
   centerLat: string | null
   centerLng: string | null
   radius: string | null
-  coordinates: { lat: number, lng: number }[] | null
+  coordinates: { lat: number; lng: number }[] | null
   category: string
   alertOnEntry: 'always' | 'never' | 'after_hours'
   alertOnExit: 'always' | 'never' | 'after_hours'
-  activeHours: { start: string, end: string, days: number[] } | null
+  activeHours: { start: string; end: string; days: number[] } | null
   createdAt: string
 }
 
@@ -50,7 +50,9 @@ const openEditModal = (geofence: Geofence) => {
 
 const openLogsModal = async (geofence: Geofence) => {
   selectedGeofence.value = geofence
-  logs.value = await $fetch<Record<string, unknown>[]>(`/api/geofences/logs?geofenceId=${geofence.id}`)
+  logs.value = await $fetch<Record<string, unknown>[]>(
+    `/api/geofences/logs?geofenceId=${geofence.id}`
+  )
   isLogsModalOpen.value = true
 }
 

@@ -1,6 +1,6 @@
-import { pgTable, uuid, text, timestamp, decimal, jsonb } from 'drizzle-orm/pg-core'
-import { organizations } from './organizations'
+import { decimal, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { assets } from './assets'
+import { organizations } from './organizations'
 
 export const obdReadings = pgTable('obd_readings', {
   id: uuid('id').primaryKey().defaultRandom(),

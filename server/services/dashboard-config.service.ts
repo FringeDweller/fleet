@@ -1,6 +1,6 @@
-import { eq, and } from 'drizzle-orm'
-import { db } from '../utils/db'
+import { and, eq } from 'drizzle-orm'
 import { dashboardConfigs } from '../database/schema'
+import { db } from '../utils/db'
 
 export interface WidgetConfig {
   id: string
@@ -20,12 +20,15 @@ const DEFAULT_LAYOUT: WidgetConfig[] = [
 
 export const dashboardConfigService = {
   async getConfig(userId: string, organizationId: string) {
-    const [config] = await db.select()
+    const [config] = await db
+      .select()
       .from(dashboardConfigs)
-      .where(and(
-        eq(dashboardConfigs.userId, userId),
-        eq(dashboardConfigs.organizationId, organizationId)
-      ))
+      .where(
+        and(
+          eq(dashboardConfigs.userId, userId),
+          eq(dashboardConfigs.organizationId, organizationId)
+        )
+      )
       .limit(1)
 
     if (!config) {
@@ -40,22 +43,24 @@ export const dashboardConfigService = {
   },
 
   async saveConfig(userId: string, organizationId: string, layout: WidgetConfig[]) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const existing = await this.getConfig(userId, organizationId) as any
+    // biome-ignore lint:  @typescript-eslint/no-explicit-any
+    const existing = (await this.getConfig(userId, organizationId)) as any
 
     if (existing.id) {
-      const [updated] = await db.update(dashboardConfigs)
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const [updated] = await db
+        .update(dashboardConfigs)
+        // biome-ignore lint:  @typescript-eslint/no-explicit-any
         .set({ layout: layout as any, updatedAt: new Date() })
         .where(eq(dashboardConfigs.id, existing.id))
         .returning()
       return updated
     } else {
-      const [inserted] = await db.insert(dashboardConfigs)
+      const [inserted] = await db
+        .insert(dashboardConfigs)
         .values({
           userId,
           organizationId,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // biome-ignore lint:  @typescript-eslint/no-explicit-any
           layout: layout as any
         })
         .returning()

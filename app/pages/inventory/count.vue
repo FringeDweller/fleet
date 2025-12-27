@@ -22,7 +22,7 @@ async function onCategoryChange() {
     const response = await $fetch<{ items: Part[] }>('/api/inventory/parts', {
       query: { categoryId: selectedCategoryId.value, limit: 100 }
     })
-    partsToCount.value = response.items.map(p => ({ ...p, physicalCount: p.quantityOnHand }))
+    partsToCount.value = response.items.map((p) => ({ ...p, physicalCount: p.quantityOnHand }))
   } finally {
     loading.value = false
   }

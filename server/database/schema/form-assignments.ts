@@ -1,6 +1,6 @@
-import { pgTable, uuid, text, timestamp, jsonb } from 'drizzle-orm/pg-core'
-import { organizations } from './organizations'
+import { jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { customForms } from './custom-forms'
+import { organizations } from './organizations'
 
 export const formAssignments = pgTable('form_assignments', {
   id: uuid('id').primaryKey().defaultRandom(),

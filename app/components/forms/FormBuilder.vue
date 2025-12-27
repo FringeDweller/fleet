@@ -6,17 +6,15 @@ const props = defineProps<{
   modelValue: FormField[]
 }>()
 
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: FormField[]): void
-}>()
+const emit = defineEmits<(e: 'update:modelValue', value: FormField[]) => void>()
 
 const fields = computed({
   get: () => props.modelValue,
-  set: val => emit('update:modelValue', val)
+  set: (val) => emit('update:modelValue', val)
 })
 
 const selectedFieldId = ref<string | null>(null)
-const selectedField = computed(() => fields.value.find(f => f.id === selectedFieldId.value))
+const selectedField = computed(() => fields.value.find((f) => f.id === selectedFieldId.value))
 
 const toolset = [
   { type: 'text', label: 'Text Input', icon: 'i-lucide-type' },
@@ -44,7 +42,7 @@ function onClone(element: Record<string, unknown>) {
 }
 
 function removeField(id: string) {
-  fields.value = fields.value.filter(f => f.id !== id)
+  fields.value = fields.value.filter((f) => f.id !== id)
   if (selectedFieldId.value === id) {
     selectedFieldId.value = null
   }
@@ -83,8 +81,8 @@ function removeCondition(field: FormField, index: number) {
 
 function otherFields(currentField: FormField) {
   return fields.value
-    .filter(f => f.id !== currentField.id && f.type !== 'section')
-    .map(f => ({ label: f.label, value: f.key }))
+    .filter((f) => f.id !== currentField.id && f.type !== 'section')
+    .map((f) => ({ label: f.label, value: f.key }))
 }
 </script>
 

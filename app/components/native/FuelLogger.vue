@@ -46,7 +46,11 @@ const onCaptureReceipt = async () => {
 
 const submit = async () => {
   if (!assetId.value || !quantity.value || !totalCost.value) {
-    toast.add({ title: 'Missing Information', description: 'Please fill in required fields.', color: 'warning' })
+    toast.add({
+      title: 'Missing Information',
+      description: 'Please fill in required fields.',
+      color: 'warning'
+    })
     return
   }
 
@@ -70,7 +74,11 @@ const submit = async () => {
     odometer.value = ''
     receiptImage.value = ''
   } catch (error: unknown) {
-    toast.add({ title: 'Failed to record fuel', description: (error as Error).message, color: 'error' })
+    toast.add({
+      title: 'Failed to record fuel',
+      description: (error as Error).message,
+      color: 'error'
+    })
   }
 }
 </script>

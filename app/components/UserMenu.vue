@@ -9,11 +9,31 @@ const { user: sessionUser, clear } = useUserSession()
 const colorMode = useColorMode()
 const appConfig = useAppConfig()
 
-const colors = ['red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose']
+const colors = [
+  'red',
+  'orange',
+  'amber',
+  'yellow',
+  'lime',
+  'green',
+  'emerald',
+  'teal',
+  'cyan',
+  'sky',
+  'blue',
+  'indigo',
+  'violet',
+  'purple',
+  'fuchsia',
+  'pink',
+  'rose'
+]
 const neutrals = ['slate', 'gray', 'zinc', 'neutral', 'stone']
 
 const user = computed(() => ({
-  name: sessionUser.value ? `${sessionUser.value.firstName} ${sessionUser.value.lastName}` : 'Guest',
+  name: sessionUser.value
+    ? `${sessionUser.value.firstName} ${sessionUser.value.lastName}`
+    : 'Guest',
   avatar: {
     src: `https://ui-avatars.com/api/?name=${sessionUser.value?.firstName}+${sessionUser.value?.lastName}&background=random`,
     alt: sessionUser.value?.firstName
@@ -26,93 +46,115 @@ async function onLogout() {
   await navigateTo('/login')
 }
 
-const items = computed<DropdownMenuItem[][]>(() => ([[{
-  type: 'label',
-  label: user.value.name,
-  avatar: user.value.avatar
-}], [{
-  label: 'Profile',
-  icon: 'i-lucide-user'
-}, {
-  label: 'Settings',
-  icon: 'i-lucide-settings',
-  to: '/settings'
-}], [{
-  label: 'Theme',
-  icon: 'i-lucide-palette',
-  children: [{
-    label: 'Primary',
-    slot: 'chip',
-    chip: appConfig.ui.colors.primary,
-    content: {
-      align: 'center',
-      collisionPadding: 16
-    },
-    children: colors.map(color => ({
-      label: color,
-      chip: color,
-      slot: 'chip',
-      checked: appConfig.ui.colors.primary === color,
-      type: 'checkbox',
-      onSelect: (e) => {
-        e.preventDefault()
-
-        appConfig.ui.colors.primary = color
-      }
-    }))
-  }, {
-    label: 'Neutral',
-    slot: 'chip',
-    chip: appConfig.ui.colors.neutral === 'neutral' ? 'old-neutral' : appConfig.ui.colors.neutral,
-    content: {
-      align: 'end',
-      collisionPadding: 16
-    },
-    children: neutrals.map(color => ({
-      label: color,
-      chip: color === 'neutral' ? 'old-neutral' : color,
-      slot: 'chip',
-      type: 'checkbox',
-      checked: appConfig.ui.colors.neutral === color,
-      onSelect: (e) => {
-        e.preventDefault()
-
-        appConfig.ui.colors.neutral = color
-      }
-    }))
-  }]
-}, {
-  label: 'Appearance',
-  icon: 'i-lucide-sun-moon',
-  children: [{
-    label: 'Light',
-    icon: 'i-lucide-sun',
-    type: 'checkbox',
-    checked: colorMode.value === 'light',
-    onSelect(e: Event) {
-      e.preventDefault()
-
-      colorMode.preference = 'light'
+const items = computed<DropdownMenuItem[][]>(() => [
+  [
+    {
+      type: 'label',
+      label: user.value.name,
+      avatar: user.value.avatar
     }
-  }, {
-    label: 'Dark',
-    icon: 'i-lucide-moon',
-    type: 'checkbox',
-    checked: colorMode.value === 'dark',
-    onUpdateChecked(checked: boolean) {
-      if (checked) {
-        colorMode.preference = 'dark'
-      }
+  ],
+  [
+    {
+      label: 'Profile',
+      icon: 'i-lucide-user'
     },
-    onSelect(e: Event) {
-      e.preventDefault()
+    {
+      label: 'Settings',
+      icon: 'i-lucide-settings',
+      to: '/settings'
     }
-  }]
-}], [{
-  label: 'Log out',
-  icon: 'i-lucide-log-out',
-  onSelect: onLogout
-}]]))
+  ],
+  [
+    {
+      label: 'Theme',
+      icon: 'i-lucide-palette',
+      children: [
+        {
+          label: 'Primary',
+          slot: 'chip',
+          chip: appConfig.ui.colors.primary,
+          content: {
+            align: 'center',
+            collisionPadding: 16
+          },
+          children: colors.map((color) => ({
+            label: color,
+            chip: color,
+            slot: 'chip',
+            checked: appConfig.ui.colors.primary === color,
+            type: 'checkbox',
+            onSelect: (e) => {
+              e.preventDefault()
+
+              appConfig.ui.colors.primary = color
+            }
+          }))
+        },
+        {
+          label: 'Neutral',
+          slot: 'chip',
+          chip:
+            appConfig.ui.colors.neutral === 'neutral' ? 'old-neutral' : appConfig.ui.colors.neutral,
+          content: {
+            align: 'end',
+            collisionPadding: 16
+          },
+          children: neutrals.map((color) => ({
+            label: color,
+            chip: color === 'neutral' ? 'old-neutral' : color,
+            slot: 'chip',
+            type: 'checkbox',
+            checked: appConfig.ui.colors.neutral === color,
+            onSelect: (e) => {
+              e.preventDefault()
+
+              appConfig.ui.colors.neutral = color
+            }
+          }))
+        }
+      ]
+    },
+    {
+      label: 'Appearance',
+      icon: 'i-lucide-sun-moon',
+      children: [
+        {
+          label: 'Light',
+          icon: 'i-lucide-sun',
+          type: 'checkbox',
+          checked: colorMode.value === 'light',
+          onSelect(e: Event) {
+            e.preventDefault()
+
+            colorMode.preference = 'light'
+          }
+        },
+        {
+          label: 'Dark',
+          icon: 'i-lucide-moon',
+          type: 'checkbox',
+          checked: colorMode.value === 'dark',
+          onUpdateChecked(checked: boolean) {
+            if (checked) {
+              colorMode.preference = 'dark'
+            }
+          },
+          onSelect(e: Event) {
+            e.preventDefault()
+          }
+        }
+      ]
+    }
+  ],
+  [
+    {
+      label: 'Log out',
+      icon: 'i-lucide-log-out',
+      onSelect: onLogout
+    }
+  ]
+])
 </script>
 
 <template>

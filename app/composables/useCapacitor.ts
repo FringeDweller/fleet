@@ -1,5 +1,5 @@
-import { Capacitor } from '@capacitor/core'
 import { App } from '@capacitor/app'
+import { Capacitor } from '@capacitor/core'
 
 export const useCapacitor = () => {
   const isNative = computed(() => Capacitor.isNativePlatform())

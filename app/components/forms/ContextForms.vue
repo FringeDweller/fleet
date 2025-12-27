@@ -13,7 +13,9 @@ const { data: forms } = await useFetch<Record<string, unknown>[]>('/api/forms/co
   }
 })
 
-const { data: submissions, refresh: refreshSubmissions } = await useFetch<Record<string, unknown>[]>('/api/forms/submissions', {
+const { data: submissions, refresh: refreshSubmissions } = await useFetch<
+  Record<string, unknown>[]
+>('/api/forms/submissions', {
   query: {
     targetModule: props.module,
     targetId: props.context.id

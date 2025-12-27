@@ -1,5 +1,5 @@
 export const usePreStartInspection = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint:  @typescript-eslint/no-explicit-any
   const currentInspection = ref<any>(null)
   const loading = ref(false)
 
@@ -9,7 +9,10 @@ export const usePreStartInspection = () => {
 
   const { activeSession } = useOperatorSession()
 
-  const startInspection = async (assetId: string, location?: { latitude: number, longitude: number }) => {
+  const startInspection = async (
+    assetId: string,
+    location?: { latitude: number; longitude: number }
+  ) => {
     const inspection = {
       id: crypto.randomUUID(),
       assetId,
@@ -25,7 +28,10 @@ export const usePreStartInspection = () => {
     return inspection
   }
 
-  const recordCheckpoint = async (checkpointId: string, location?: { latitude: number, longitude: number }) => {
+  const recordCheckpoint = async (
+    checkpointId: string,
+    location?: { latitude: number; longitude: number }
+  ) => {
     if (!currentInspection.value) return
     currentInspection.value.checkpoints.push({
       id: checkpointId,
@@ -34,8 +40,12 @@ export const usePreStartInspection = () => {
     })
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const submitInspection = async (status: 'passed' | 'failed', results: any[], signatureUrl?: string) => {
+  // biome-ignore lint:  @typescript-eslint/no-explicit-any
+  const submitInspection = async (
+    status: 'passed' | 'failed',
+    results: any[],
+    signatureUrl?: string
+  ) => {
     if (!currentInspection.value) return
 
     loading.value = true

@@ -15,7 +15,10 @@ const showLowStockOnly = ref(false)
 const page = ref(1)
 const pageCount = 10
 
-const { data: inventory, pending } = await useFetch<{ items: Record<string, unknown>[], total: number }>('/api/inventory/parts', {
+const { data: inventory, pending } = await useFetch<{
+  items: Record<string, unknown>[]
+  total: number
+}>('/api/inventory/parts', {
   query: {
     q: search,
     categoryId: selectedCategory,
@@ -30,13 +33,17 @@ const { data: categories } = await useFetch<Record<string, unknown>[]>('/api/inv
 const categoryOptions = computed(() => {
   const options = [{ label: 'All Categories', value: '' }]
   if (categories.value) {
-    options.push(...categories.value.map(c => ({ label: c.name as string, value: c.id as string })))
+    options.push(
+      ...categories.value.map((c) => ({ label: c.name as string, value: c.id as string }))
+    )
   }
   return options
 })
 
 const formatCurrency = (value: string) => {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(value))
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
+    Number(value)
+  )
 }
 </script>
 

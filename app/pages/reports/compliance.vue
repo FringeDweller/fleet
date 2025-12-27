@@ -12,8 +12,8 @@ const range = ref<Range>({
 })
 
 interface ComplianceReport {
-  inspections: { total: number, passed: number, failed: number }
-  maintenance: { total: number, overdue: number }
+  inspections: { total: number; passed: number; failed: number }
+  maintenance: { total: number; overdue: number }
   expiringCertifications: Array<{
     id: string
     userName: string
@@ -22,15 +22,23 @@ interface ComplianceReport {
   }>
 }
 
-const { data: report, status, refresh } = await useAsyncData('compliance-report', () => {
-  const params = new URLSearchParams()
-  if (range.value.start) params.append('start', range.value.start.toISOString())
-  if (range.value.end) params.append('end', range.value.end.toISOString())
+const {
+  data: report,
+  status,
+  refresh
+} = await useAsyncData(
+  'compliance-report',
+  () => {
+    const params = new URLSearchParams()
+    if (range.value.start) params.append('start', range.value.start.toISOString())
+    if (range.value.end) params.append('end', range.value.end.toISOString())
 
-  return $fetch<ComplianceReport>(`/api/reports/compliance?${params.toString()}`)
-}, {
-  watch: [range]
-})
+    return $fetch<ComplianceReport>(`/api/reports/compliance?${params.toString()}`)
+  },
+  {
+    watch: [range]
+  }
+)
 
 const certColumns = [
   { key: 'userName', label: 'User' },
@@ -45,7 +53,11 @@ const inspectionCompliance = computed(() => {
 
 const maintenanceCompliance = computed(() => {
   if (!report.value || report.value.maintenance.total === 0) return 100
-  return Math.round(((report.value.maintenance.total - report.value.maintenance.overdue) / report.value.maintenance.total) * 100)
+  return Math.round(
+    ((report.value.maintenance.total - report.value.maintenance.overdue) /
+      report.value.maintenance.total) *
+      100
+  )
 })
 </script>
 

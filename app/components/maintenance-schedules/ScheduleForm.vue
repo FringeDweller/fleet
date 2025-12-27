@@ -38,35 +38,48 @@ const state = reactive<ScheduleState>({
   categoryId: (props.initialData?.categoryId as string) || '',
   type: ((props.initialData?.type as string) || 'time') as 'time' | 'usage' | 'combined',
   timeInterval: (props.initialData?.timeInterval as number) || 0,
-  timeUnit: ((props.initialData?.timeUnit as string) || 'months') as 'days' | 'weeks' | 'months' | 'years',
-  usageIntervalKm: props.initialData?.usageIntervalKm ? Number(props.initialData?.usageIntervalKm) : 0,
-  usageIntervalHours: props.initialData?.usageIntervalHours ? Number(props.initialData?.usageIntervalHours) : 0,
+  timeUnit: ((props.initialData?.timeUnit as string) || 'months') as
+    | 'days'
+    | 'weeks'
+    | 'months'
+    | 'years',
+  usageIntervalKm: props.initialData?.usageIntervalKm
+    ? Number(props.initialData?.usageIntervalKm)
+    : 0,
+  usageIntervalHours: props.initialData?.usageIntervalHours
+    ? Number(props.initialData?.usageIntervalHours)
+    : 0,
   leadTimeDays: (props.initialData?.leadTimeDays as number) || 7,
   isActive: (props.initialData?.isActive as boolean) ?? true
 })
 
-const schema = z.object({
-  name: z.string().min(3, 'Name is required'),
-  taskId: z.string().min(1, 'Task is required'),
-  targetType: z.enum(['asset', 'category']),
-  assetId: z.string().optional(),
-  categoryId: z.string().optional(),
-  type: z.enum(['time', 'usage', 'combined']),
-  timeInterval: z.number().optional(),
-  timeUnit: z.enum(['days', 'weeks', 'months', 'years']).optional(),
-  usageIntervalKm: z.number().optional(),
-  usageIntervalHours: z.number().optional(),
-  leadTimeDays: z.number().min(1)
-}).refine((data) => {
-  if (data.targetType === 'asset' && !data.assetId) return false
-  if (data.targetType === 'category' && !data.categoryId) return false
-  return true
-}, {
-  message: 'Target is required',
-  path: ['assetId']
-})
+const schema = z
+  .object({
+    name: z.string().min(3, 'Name is required'),
+    taskId: z.string().min(1, 'Task is required'),
+    targetType: z.enum(['asset', 'category']),
+    assetId: z.string().optional(),
+    categoryId: z.string().optional(),
+    type: z.enum(['time', 'usage', 'combined']),
+    timeInterval: z.number().optional(),
+    timeUnit: z.enum(['days', 'weeks', 'months', 'years']).optional(),
+    usageIntervalKm: z.number().optional(),
+    usageIntervalHours: z.number().optional(),
+    leadTimeDays: z.number().min(1)
+  })
+  .refine(
+    (data) => {
+      if (data.targetType === 'asset' && !data.assetId) return false
+      if (data.targetType === 'category' && !data.categoryId) return false
+      return true
+    },
+    {
+      message: 'Target is required',
+      path: ['assetId']
+    }
+  )
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint:  @typescript-eslint/no-explicit-any
 async function onSubmit(event: any) {
   const data = { ...event.data }
   // Clean up based on targetType

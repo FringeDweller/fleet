@@ -1,6 +1,6 @@
+import { and, desc, eq, getTableColumns, sql } from 'drizzle-orm'
+import { assets, inspections, users } from '../../database/schema'
 import { db } from '../../utils/db'
-import { inspections, assets, users } from '../../database/schema'
-import { eq, and, desc, getTableColumns, sql } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
   const session = await getUserSession(event)

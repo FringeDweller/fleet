@@ -1,10 +1,10 @@
-import { db } from '../utils/db'
+import { and, eq, type Table } from 'drizzle-orm'
+import { assetLocations } from '../database/schema/asset-locations'
 import { assets } from '../database/schema/assets'
-import { workOrders } from '../database/schema/work-orders'
 import { parts } from '../database/schema/inventory'
 import { maintenanceTasks } from '../database/schema/maintenance-tasks'
-import { assetLocations } from '../database/schema/asset-locations'
-import { eq, and, type Table } from 'drizzle-orm'
+import { workOrders } from '../database/schema/work-orders'
+import { db } from '../utils/db'
 import { compareHLC } from '../utils/hlc'
 import { geofenceService } from './geofence.service'
 
@@ -34,16 +34,16 @@ export const syncService = {
   },
 
   async processOperation(op: SyncOperation, organizationId: string) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // biome-ignore lint:  @typescript-eslint/no-explicit-any
     const tableMap: Record<string, Table<any>> = {
       assets,
       'work-orders': workOrders,
-      'inventory': parts,
+      inventory: parts,
       'maintenance-tasks': maintenanceTasks,
       'asset-locations': assetLocations
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // biome-ignore lint:  @typescript-eslint/no-explicit-any
     const table = tableMap[op.collection] as any
     if (!table) throw new Error(`Unknown collection: ${op.collection}`)
 
@@ -52,10 +52,11 @@ export const syncService = {
     // Get existing record to check HLC
     let existing: Record<string, unknown> | null = null
     if (recordId) {
-      const [record] = await db.select().from(table).where(and(
-        eq(table.id, recordId),
-        eq(table.organizationId, organizationId)
-      )).limit(1)
+      const [record] = await db
+        .select()
+        .from(table)
+        .where(and(eq(table.id, recordId), eq(table.organizationId, organizationId)))
+        .limit(1)
       existing = record as Record<string, unknown>
     }
 

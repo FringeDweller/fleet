@@ -1,6 +1,6 @@
-import { eq, and, desc, sql } from 'drizzle-orm'
+import { and, desc, eq, sql } from 'drizzle-orm'
+import { assets, fuelTransactions, notifications } from '../database/schema'
 import { db } from '../utils/db'
-import { fuelTransactions, assets, notifications } from '../database/schema'
 import { notificationService } from './notification.service'
 
 export const fuelService = {
@@ -20,20 +20,23 @@ export const fuelService = {
   }) {
     return await db.transaction(async (tx) => {
       // 1. Insert transaction
-      const [transaction] = await tx.insert(fuelTransactions).values({
-        assetId: data.assetId,
-        operatorId: data.operatorId,
-        transactionDate: data.transactionDate ? new Date(data.transactionDate) : new Date(),
-        quantity: data.quantity.toString(),
-        totalCost: data.totalCost.toString(),
-        odometer: data.odometer?.toString(),
-        hours: data.hours?.toString(),
-        fuelType: data.fuelType,
-        stationName: data.stationName,
-        receiptImage: data.receiptImage,
-        organizationId: data.organizationId,
-        hlc: data.hlc
-      }).returning()
+      const [transaction] = await tx
+        .insert(fuelTransactions)
+        .values({
+          assetId: data.assetId,
+          operatorId: data.operatorId,
+          transactionDate: data.transactionDate ? new Date(data.transactionDate) : new Date(),
+          quantity: data.quantity.toString(),
+          totalCost: data.totalCost.toString(),
+          odometer: data.odometer?.toString(),
+          hours: data.hours?.toString(),
+          fuelType: data.fuelType,
+          stationName: data.stationName,
+          receiptImage: data.receiptImage,
+          organizationId: data.organizationId,
+          hlc: data.hlc
+        })
+        .returning()
 
       // 2. Update asset readings if provided and higher than current
       const asset = await tx.query.assets.findFirst({
@@ -41,11 +44,19 @@ export const fuelService = {
       })
 
       if (asset) {
-        const updates: { updatedAt: Date, currentMileage?: string, currentHours?: string } = { updatedAt: new Date() }
-        if (data.odometer && (!asset.currentMileage || Number(data.odometer) > Number(asset.currentMileage))) {
+        const updates: { updatedAt: Date; currentMileage?: string; currentHours?: string } = {
+          updatedAt: new Date()
+        }
+        if (
+          data.odometer &&
+          (!asset.currentMileage || Number(data.odometer) > Number(asset.currentMileage))
+        ) {
           updates.currentMileage = data.odometer.toString()
         }
-        if (data.hours && (!asset.currentHours || Number(data.hours) > Number(asset.currentHours))) {
+        if (
+          data.hours &&
+          (!asset.currentHours || Number(data.hours) > Number(asset.currentHours))
+        ) {
           updates.currentHours = data.hours.toString()
         }
 
@@ -86,7 +97,7 @@ export const fuelService = {
 
               if (recentTransactions.length >= 3) {
                 // Calculate average excluding current
-                const others = recentTransactions.filter(t => t.id !== transaction.id)
+                const others = recentTransactions.filter((t) => t.id !== transaction.id)
                 // Need at least 2 others to have a distance
                 if (others.length >= 2) {
                   const first = others[others.length - 1]
@@ -94,7 +105,9 @@ export const fuelService = {
                   if (first && last && first.odometer && last.odometer) {
                     const totalDist = Number(last.odometer) - Number(first.odometer)
                     if (totalDist > 0) {
-                      const totalQty = others.slice(0, -1).reduce((sum, t) => sum + Number(t.quantity), 0)
+                      const totalQty = others
+                        .slice(0, -1)
+                        .reduce((sum, t) => sum + Number(t.quantity), 0)
                       const avg = (totalQty / totalDist) * 100
 
                       if (consumption > avg * 1.5) {
@@ -152,7 +165,7 @@ export const fuelService = {
     const totalCost = transactions.reduce((sum, t) => sum + Number(t.totalCost), 0)
 
     // Calculate efficiency if we have at least 2 odometer readings
-    const transactionsWithOdo = transactions.filter(t => t.odometer != null)
+    const transactionsWithOdo = transactions.filter((t) => t.odometer != null)
     let avgConsumption = 0
     let avgCostPerKm = 0
 
@@ -165,8 +178,12 @@ export const fuelService = {
 
         if (totalDistance > 0) {
           // We sum quantities after the first fill up
-          const qtyAfterFirst = transactionsWithOdo.slice(1).reduce((sum, t) => sum + Number(t.quantity), 0)
-          const costAfterFirst = transactionsWithOdo.slice(1).reduce((sum, t) => sum + Number(t.totalCost), 0)
+          const qtyAfterFirst = transactionsWithOdo
+            .slice(1)
+            .reduce((sum, t) => sum + Number(t.quantity), 0)
+          const costAfterFirst = transactionsWithOdo
+            .slice(1)
+            .reduce((sum, t) => sum + Number(t.totalCost), 0)
 
           avgConsumption = (qtyAfterFirst / totalDistance) * 100
           avgCostPerKm = costAfterFirst / totalDistance
@@ -175,28 +192,33 @@ export const fuelService = {
     }
 
     // Trends (last 10 entries)
-    const trends = transactionsWithOdo.slice(-10).map((t, i, arr) => {
-      if (i === 0) return null
-      const prev = arr[i - 1]
+    const trends = transactionsWithOdo
+      .slice(-10)
+      .map((t, i, arr) => {
+        if (i === 0) return null
+        const prev = arr[i - 1]
 
-      if (!t.odometer || !prev || !prev.odometer) return null
+        if (!t.odometer || !prev || !prev.odometer) return null
 
-      const dist = Number(t.odometer) - Number(prev.odometer)
-      if (dist <= 0) return null
+        const dist = Number(t.odometer) - Number(prev.odometer)
+        if (dist <= 0) return null
 
-      const consumption = (Number(t.quantity) / dist) * 100
-      return {
-        id: t.id,
-        date: t.transactionDate,
-        consumption,
-        costPerKm: Number(t.totalCost) / dist,
-        distance: dist,
-        quantity: Number(t.quantity)
-      }
-    }).filter((t): t is NonNullable<typeof t> => t !== null)
+        const consumption = (Number(t.quantity) / dist) * 100
+        return {
+          id: t.id,
+          date: t.transactionDate,
+          consumption,
+          costPerKm: Number(t.totalCost) / dist,
+          distance: dist,
+          quantity: Number(t.quantity)
+        }
+      })
+      .filter((t): t is NonNullable<typeof t> => t !== null)
 
     // Anomaly detection: consumption > 50% above average
-    const anomalies = trends.filter(t => avgConsumption > 0 && t.consumption > avgConsumption * 1.5)
+    const anomalies = trends.filter(
+      (t) => avgConsumption > 0 && t.consumption > avgConsumption * 1.5
+    )
 
     return {
       totalLitres,
@@ -214,27 +236,31 @@ export const fuelService = {
     // Or we could calculate it on the fly, but that's expensive.
 
     // Let's just fetch the most recent fuel anomaly notifications.
-    return await db.query.notifications.findMany({
-      where: and(
-        eq(notifications.organizationId, organizationId),
-        eq(notifications.type, 'warning'),
-        sql`${notifications.title} = 'Fuel Anomaly Detected'`
-      ),
-      orderBy: [desc(notifications.createdAt)],
-      limit: 5
-    }).then(notifs => notifs.map((n) => {
-      // Parse assetId from link if possible or just use the notification
-      const assetId = n.link?.split('/')[2]?.split('?')[0]
-      return {
-        id: n.id,
-        assetId,
-        assetNumber: n.message.split(' ')[1], // Quick hack to get asset number
-        message: n.message,
-        createdAt: n.createdAt,
-        // We'd need more data for precise consumption in widget, but let's parse message
-        consumption: parseFloat(n.message.match(/consumption: ([\d.]+) L/)?.[1] || '0'),
-        percentageAboveAvg: 50 // placeholder
-      }
-    }))
+    return await db.query.notifications
+      .findMany({
+        where: and(
+          eq(notifications.organizationId, organizationId),
+          eq(notifications.type, 'warning'),
+          sql`${notifications.title} = 'Fuel Anomaly Detected'`
+        ),
+        orderBy: [desc(notifications.createdAt)],
+        limit: 5
+      })
+      .then((notifs) =>
+        notifs.map((n) => {
+          // Parse assetId from link if possible or just use the notification
+          const assetId = n.link?.split('/')[2]?.split('?')[0]
+          return {
+            id: n.id,
+            assetId,
+            assetNumber: n.message.split(' ')[1], // Quick hack to get asset number
+            message: n.message,
+            createdAt: n.createdAt,
+            // We'd need more data for precise consumption in widget, but let's parse message
+            consumption: parseFloat(n.message.match(/consumption: ([\d.]+) L/)?.[1] || '0'),
+            percentageAboveAvg: 50 // placeholder
+          }
+        })
+      )
   }
 }

@@ -1,9 +1,9 @@
-import { eq, and, ilike, sql } from 'drizzle-orm'
+import { and, eq, ilike, sql } from 'drizzle-orm'
+import { assetCategories, assets, maintenanceSchedules, maintenanceTasks } from '../database/schema'
 import { db } from '../utils/db'
-import { maintenanceSchedules, maintenanceTasks, assets, assetCategories } from '../database/schema'
 
 export const maintenanceScheduleService = {
-  async list(organizationId: string, options: { q?: string, page?: number, limit?: number } = {}) {
+  async list(organizationId: string, options: { q?: string; page?: number; limit?: number } = {}) {
     const page = options.page || 1
     const limit = options.limit || 50
     const offset = (page - 1) * limit
@@ -39,7 +39,7 @@ export const maintenanceScheduleService = {
       .orderBy(maintenanceSchedules.createdAt)
 
     return {
-      items: items.map(item => ({
+      items: items.map((item) => ({
         ...item.schedule,
         taskName: item.taskName,
         targetName: item.assetName || item.categoryName || 'Unknown'
@@ -52,7 +52,12 @@ export const maintenanceScheduleService = {
     const [schedule] = await db
       .select()
       .from(maintenanceSchedules)
-      .where(and(eq(maintenanceSchedules.id, id), eq(maintenanceSchedules.organizationId, organizationId)))
+      .where(
+        and(
+          eq(maintenanceSchedules.id, id),
+          eq(maintenanceSchedules.organizationId, organizationId)
+        )
+      )
       .limit(1)
 
     return schedule
@@ -63,11 +68,20 @@ export const maintenanceScheduleService = {
     return schedule
   },
 
-  async update(id: string, organizationId: string, data: Partial<typeof maintenanceSchedules.$inferInsert>) {
+  async update(
+    id: string,
+    organizationId: string,
+    data: Partial<typeof maintenanceSchedules.$inferInsert>
+  ) {
     const [schedule] = await db
       .update(maintenanceSchedules)
       .set({ ...data, updatedAt: new Date() })
-      .where(and(eq(maintenanceSchedules.id, id), eq(maintenanceSchedules.organizationId, organizationId)))
+      .where(
+        and(
+          eq(maintenanceSchedules.id, id),
+          eq(maintenanceSchedules.organizationId, organizationId)
+        )
+      )
       .returning()
     return schedule
   },
@@ -75,6 +89,11 @@ export const maintenanceScheduleService = {
   async delete(id: string, organizationId: string) {
     await db
       .delete(maintenanceSchedules)
-      .where(and(eq(maintenanceSchedules.id, id), eq(maintenanceSchedules.organizationId, organizationId)))
+      .where(
+        and(
+          eq(maintenanceSchedules.id, id),
+          eq(maintenanceSchedules.organizationId, organizationId)
+        )
+      )
   }
 }

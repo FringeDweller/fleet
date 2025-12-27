@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, jsonb, integer } from 'drizzle-orm/pg-core'
+import { integer, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { organizations } from './organizations'
 
 export const customForms = pgTable('custom_forms', {

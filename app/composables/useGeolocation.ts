@@ -1,7 +1,7 @@
 import { Geolocation } from '@capacitor/geolocation'
 
 export const useGeolocation = () => {
-  const coords = ref<{ latitude: number, longitude: number } | null>(null)
+  const coords = ref<{ latitude: number; longitude: number } | null>(null)
   const error = ref<string | null>(null)
   const loading = ref(false)
 

@@ -21,7 +21,7 @@ const props = defineProps<{
     centerLat: string | null
     centerLng: string | null
     radius: string | null
-    coordinates: { lat: number, lng: number }[] | null
+    coordinates: { lat: number; lng: number }[] | null
     category: string
   }[]
 }>()
@@ -86,8 +86,7 @@ const updateMarkers = () => {
 
     if (isNaN(lat) || isNaN(lng)) return
 
-    const marker = L.marker([lat, lng])
-      .bindPopup(`
+    const marker = L.marker([lat, lng]).bindPopup(`
         <div class="p-2 min-w-[150px]">
           <h3 class="font-bold text-lg border-b mb-2 pb-1">${loc.assetNumber}</h3>
           <p class="text-sm"><strong>Make:</strong> ${loc.assetMake}</p>

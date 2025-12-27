@@ -3,28 +3,37 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { data: locations, refresh: refreshLocations, pending: loadingLocations } = await useFetch<{
-  id: string
-  assetId: string
-  latitude: string
-  longitude: string
-  assetNumber: string
-  assetMake: string
-  assetModel: string
-  assetStatus: string | null
-  createdAt: string
-}[]>('/api/assets/locations/latest')
+const {
+  data: locations,
+  refresh: refreshLocations,
+  pending: loadingLocations
+} = await useFetch<
+  {
+    id: string
+    assetId: string
+    latitude: string
+    longitude: string
+    assetNumber: string
+    assetMake: string
+    assetModel: string
+    assetStatus: string | null
+    createdAt: string
+  }[]
+>('/api/assets/locations/latest')
 
-const { data: geofences } = await useFetch<{
-  id: string
-  name: string
-  type: 'circle' | 'polygon'
-  centerLat: string | null
-  centerLng: string | null
-  radius: string | null
-  coordinates: { lat: number, lng: number }[] | null
-  category: string
-}[]>('/api/geofences')
+const { data: geofences } =
+  await useFetch<
+    {
+      id: string
+      name: string
+      type: 'circle' | 'polygon'
+      centerLat: string | null
+      centerLng: string | null
+      radius: string | null
+      coordinates: { lat: number; lng: number }[] | null
+      category: string
+    }[]
+  >('/api/geofences')
 
 const refresh = () => {
   refreshLocations()

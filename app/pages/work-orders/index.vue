@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint:  @typescript-eslint/no-explicit-any
 const columns: any[] = [
   { key: 'woNumber', label: 'WO #' },
   { key: 'assetNumber', label: 'Asset' },
@@ -15,7 +15,10 @@ const selectedStatus = ref('')
 const page = ref(1)
 const pageCount = 10
 
-const { data: workOrders, pending } = await useFetch<{ items: Record<string, unknown>[], total: number }>('/api/work-orders', {
+const { data: workOrders, pending } = await useFetch<{
+  items: Record<string, unknown>[]
+  total: number
+}>('/api/work-orders', {
   query: {
     q: search,
     status: selectedStatus,
@@ -35,21 +38,31 @@ const statusOptions = [
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'open': return 'primary'
-    case 'in_progress': return 'info'
-    case 'pending_parts': return 'warning'
-    case 'completed': return 'success'
-    case 'closed': return 'neutral'
-    default: return 'neutral'
+    case 'open':
+      return 'primary'
+    case 'in_progress':
+      return 'info'
+    case 'pending_parts':
+      return 'warning'
+    case 'completed':
+      return 'success'
+    case 'closed':
+      return 'neutral'
+    default:
+      return 'neutral'
   }
 }
 
 const getPriorityColor = (priority: string) => {
   switch (priority) {
-    case 'high': return 'error'
-    case 'medium': return 'warning'
-    case 'low': return 'neutral'
-    default: return 'neutral'
+    case 'high':
+      return 'error'
+    case 'medium':
+      return 'warning'
+    case 'low':
+      return 'neutral'
+    default:
+      return 'neutral'
   }
 }
 </script>

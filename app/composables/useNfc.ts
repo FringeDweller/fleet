@@ -2,9 +2,7 @@ import { Capacitor } from '@capacitor/core'
 import { CapacitorNfc } from '@capgo/capacitor-nfc'
 
 const toHexString = (byteArray: number[]) => {
-  return Array.from(byteArray, function (byte) {
-    return ('0' + (byte & 0xFF).toString(16)).slice(-2)
-  }).join('')
+  return Array.from(byteArray, (byte) => ('0' + (byte & 0xff).toString(16)).slice(-2)).join('')
 }
 
 export const useNfc = () => {

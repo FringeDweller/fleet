@@ -27,7 +27,8 @@ export default defineEventHandler(async (event) => {
   // Convert decimals to strings if present
   const data: Record<string, unknown> = { ...body }
   if (body.usageIntervalKm !== undefined) data.usageIntervalKm = body.usageIntervalKm?.toString()
-  if (body.usageIntervalHours !== undefined) data.usageIntervalHours = body.usageIntervalHours?.toString()
+  if (body.usageIntervalHours !== undefined)
+    data.usageIntervalHours = body.usageIntervalHours?.toString()
 
   const schedule = await maintenanceScheduleService.update(id, user.organizationId!, data)
 

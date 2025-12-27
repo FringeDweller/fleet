@@ -60,12 +60,8 @@
           "name": "asset_categories_parent_id_asset_categories_id_fk",
           "tableFrom": "asset_categories",
           "tableTo": "asset_categories",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -73,12 +69,8 @@
           "name": "asset_categories_organization_id_organizations_id_fk",
           "tableFrom": "asset_categories",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -199,12 +191,8 @@
           "name": "asset_locations_asset_id_assets_id_fk",
           "tableFrom": "asset_locations",
           "tableTo": "assets",
-          "columnsFrom": [
-            "asset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["asset_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -212,12 +200,8 @@
           "name": "asset_locations_session_id_operator_sessions_id_fk",
           "tableFrom": "asset_locations",
           "tableTo": "operator_sessions",
-          "columnsFrom": [
-            "session_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["session_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -225,12 +209,8 @@
           "name": "asset_locations_organization_id_organizations_id_fk",
           "tableFrom": "asset_locations",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -354,12 +334,8 @@
           "name": "assets_category_id_asset_categories_id_fk",
           "tableFrom": "assets",
           "tableTo": "asset_categories",
-          "columnsFrom": [
-            "category_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["category_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -367,12 +343,8 @@
           "name": "assets_organization_id_organizations_id_fk",
           "tableFrom": "assets",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -382,9 +354,7 @@
         "assets_asset_number_unique": {
           "name": "assets_asset_number_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "asset_number"
-          ]
+          "columns": ["asset_number"]
         }
       },
       "policies": {},
@@ -453,12 +423,8 @@
           "name": "certifications_user_id_users_id_fk",
           "tableFrom": "certifications",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -466,12 +432,8 @@
           "name": "certifications_organization_id_organizations_id_fk",
           "tableFrom": "certifications",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -546,12 +508,8 @@
           "name": "custom_forms_organization_id_organizations_id_fk",
           "tableFrom": "custom_forms",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -650,12 +608,8 @@
           "name": "defects_asset_id_assets_id_fk",
           "tableFrom": "defects",
           "tableTo": "assets",
-          "columnsFrom": [
-            "asset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["asset_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -663,12 +617,8 @@
           "name": "defects_inspection_id_inspections_id_fk",
           "tableFrom": "defects",
           "tableTo": "inspections",
-          "columnsFrom": [
-            "inspection_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["inspection_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -676,12 +626,8 @@
           "name": "defects_work_order_id_work_orders_id_fk",
           "tableFrom": "defects",
           "tableTo": "work_orders",
-          "columnsFrom": [
-            "work_order_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["work_order_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -689,12 +635,8 @@
           "name": "defects_reported_by_users_id_fk",
           "tableFrom": "defects",
           "tableTo": "users",
-          "columnsFrom": [
-            "reported_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["reported_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -702,12 +644,8 @@
           "name": "defects_organization_id_organizations_id_fk",
           "tableFrom": "defects",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -781,12 +719,8 @@
           "name": "form_assignments_form_id_custom_forms_id_fk",
           "tableFrom": "form_assignments",
           "tableTo": "custom_forms",
-          "columnsFrom": [
-            "form_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["form_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -794,12 +728,8 @@
           "name": "form_assignments_organization_id_organizations_id_fk",
           "tableFrom": "form_assignments",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -879,12 +809,8 @@
           "name": "form_submissions_form_id_custom_forms_id_fk",
           "tableFrom": "form_submissions",
           "tableTo": "custom_forms",
-          "columnsFrom": [
-            "form_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["form_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -892,12 +818,8 @@
           "name": "form_submissions_submitted_by_users_id_fk",
           "tableFrom": "form_submissions",
           "tableTo": "users",
-          "columnsFrom": [
-            "submitted_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["submitted_by"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -905,12 +827,8 @@
           "name": "form_submissions_organization_id_organizations_id_fk",
           "tableFrom": "form_submissions",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1040,12 +958,8 @@
           "name": "fuel_transactions_asset_id_assets_id_fk",
           "tableFrom": "fuel_transactions",
           "tableTo": "assets",
-          "columnsFrom": [
-            "asset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["asset_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1053,12 +967,8 @@
           "name": "fuel_transactions_operator_id_users_id_fk",
           "tableFrom": "fuel_transactions",
           "tableTo": "users",
-          "columnsFrom": [
-            "operator_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["operator_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1066,12 +976,8 @@
           "name": "fuel_transactions_organization_id_organizations_id_fk",
           "tableFrom": "fuel_transactions",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1183,12 +1089,8 @@
           "name": "geofence_events_geofence_id_geofences_id_fk",
           "tableFrom": "geofence_events",
           "tableTo": "geofences",
-          "columnsFrom": [
-            "geofence_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["geofence_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1196,12 +1098,8 @@
           "name": "geofence_events_asset_id_assets_id_fk",
           "tableFrom": "geofence_events",
           "tableTo": "assets",
-          "columnsFrom": [
-            "asset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["asset_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1209,12 +1107,8 @@
           "name": "geofence_events_session_id_operator_sessions_id_fk",
           "tableFrom": "geofence_events",
           "tableTo": "operator_sessions",
-          "columnsFrom": [
-            "session_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["session_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1222,12 +1116,8 @@
           "name": "geofence_events_organization_id_organizations_id_fk",
           "tableFrom": "geofence_events",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1346,12 +1236,8 @@
           "name": "geofences_organization_id_organizations_id_fk",
           "tableFrom": "geofences",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1407,9 +1293,7 @@
         "organizations_slug_unique": {
           "name": "organizations_slug_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "slug"
-          ]
+          "columns": ["slug"]
         }
       },
       "policies": {},
@@ -1485,12 +1369,8 @@
           "name": "users_organization_id_organizations_id_fk",
           "tableFrom": "users",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1500,9 +1380,7 @@
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},
@@ -1570,12 +1448,8 @@
           "name": "asset_part_compatibility_part_id_parts_id_fk",
           "tableFrom": "asset_part_compatibility",
           "tableTo": "parts",
-          "columnsFrom": [
-            "part_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["part_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1583,12 +1457,8 @@
           "name": "asset_part_compatibility_asset_category_id_asset_categories_id_fk",
           "tableFrom": "asset_part_compatibility",
           "tableTo": "asset_categories",
-          "columnsFrom": [
-            "asset_category_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["asset_category_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1596,12 +1466,8 @@
           "name": "asset_part_compatibility_asset_id_assets_id_fk",
           "tableFrom": "asset_part_compatibility",
           "tableTo": "assets",
-          "columnsFrom": [
-            "asset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["asset_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1609,12 +1475,8 @@
           "name": "asset_part_compatibility_organization_id_organizations_id_fk",
           "tableFrom": "asset_part_compatibility",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1682,12 +1544,8 @@
           "name": "inventory_locations_organization_id_organizations_id_fk",
           "tableFrom": "inventory_locations",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1748,12 +1606,8 @@
           "name": "part_categories_organization_id_organizations_id_fk",
           "tableFrom": "part_categories",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1821,12 +1675,8 @@
           "name": "part_inventory_part_id_parts_id_fk",
           "tableFrom": "part_inventory",
           "tableTo": "parts",
-          "columnsFrom": [
-            "part_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["part_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1834,12 +1684,8 @@
           "name": "part_inventory_location_id_inventory_locations_id_fk",
           "tableFrom": "part_inventory",
           "tableTo": "inventory_locations",
-          "columnsFrom": [
-            "location_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["location_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1847,12 +1693,8 @@
           "name": "part_inventory_organization_id_organizations_id_fk",
           "tableFrom": "part_inventory",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1966,12 +1808,8 @@
           "name": "parts_category_id_part_categories_id_fk",
           "tableFrom": "parts",
           "tableTo": "part_categories",
-          "columnsFrom": [
-            "category_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["category_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1979,12 +1817,8 @@
           "name": "parts_organization_id_organizations_id_fk",
           "tableFrom": "parts",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1994,9 +1828,7 @@
         "parts_sku_unique": {
           "name": "parts_sku_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "sku"
-          ]
+          "columns": ["sku"]
         }
       },
       "policies": {},
@@ -2088,12 +1920,8 @@
           "name": "stock_movements_part_id_parts_id_fk",
           "tableFrom": "stock_movements",
           "tableTo": "parts",
-          "columnsFrom": [
-            "part_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["part_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2101,12 +1929,8 @@
           "name": "stock_movements_location_id_inventory_locations_id_fk",
           "tableFrom": "stock_movements",
           "tableTo": "inventory_locations",
-          "columnsFrom": [
-            "location_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["location_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2114,12 +1938,8 @@
           "name": "stock_movements_to_location_id_inventory_locations_id_fk",
           "tableFrom": "stock_movements",
           "tableTo": "inventory_locations",
-          "columnsFrom": [
-            "to_location_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["to_location_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2127,12 +1947,8 @@
           "name": "stock_movements_user_id_users_id_fk",
           "tableFrom": "stock_movements",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2140,12 +1956,8 @@
           "name": "stock_movements_organization_id_organizations_id_fk",
           "tableFrom": "stock_movements",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -2219,12 +2031,8 @@
           "name": "maintenance_tasks_group_id_task_groups_id_fk",
           "tableFrom": "maintenance_tasks",
           "tableTo": "task_groups",
-          "columnsFrom": [
-            "group_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["group_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2232,12 +2040,8 @@
           "name": "maintenance_tasks_organization_id_organizations_id_fk",
           "tableFrom": "maintenance_tasks",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -2298,12 +2102,8 @@
           "name": "task_groups_parent_id_task_groups_id_fk",
           "tableFrom": "task_groups",
           "tableTo": "task_groups",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2311,12 +2111,8 @@
           "name": "task_groups_organization_id_organizations_id_fk",
           "tableFrom": "task_groups",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -2378,12 +2174,8 @@
           "name": "task_parts_task_id_maintenance_tasks_id_fk",
           "tableFrom": "task_parts",
           "tableTo": "maintenance_tasks",
-          "columnsFrom": [
-            "task_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["task_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2391,12 +2183,8 @@
           "name": "task_parts_part_id_parts_id_fk",
           "tableFrom": "task_parts",
           "tableTo": "parts",
-          "columnsFrom": [
-            "part_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["part_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -2547,12 +2335,8 @@
           "name": "work_orders_asset_id_assets_id_fk",
           "tableFrom": "work_orders",
           "tableTo": "assets",
-          "columnsFrom": [
-            "asset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["asset_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2560,12 +2344,8 @@
           "name": "work_orders_task_id_maintenance_tasks_id_fk",
           "tableFrom": "work_orders",
           "tableTo": "maintenance_tasks",
-          "columnsFrom": [
-            "task_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["task_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2573,12 +2353,8 @@
           "name": "work_orders_schedule_id_maintenance_schedules_id_fk",
           "tableFrom": "work_orders",
           "tableTo": "maintenance_schedules",
-          "columnsFrom": [
-            "schedule_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["schedule_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2586,12 +2362,8 @@
           "name": "work_orders_assigned_to_id_users_id_fk",
           "tableFrom": "work_orders",
           "tableTo": "users",
-          "columnsFrom": [
-            "assigned_to_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["assigned_to_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2599,12 +2371,8 @@
           "name": "work_orders_organization_id_organizations_id_fk",
           "tableFrom": "work_orders",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -2614,9 +2382,7 @@
         "work_orders_wo_number_unique": {
           "name": "work_orders_wo_number_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "wo_number"
-          ]
+          "columns": ["wo_number"]
         }
       },
       "policies": {},
@@ -2686,12 +2452,8 @@
           "name": "work_order_parts_work_order_id_work_orders_id_fk",
           "tableFrom": "work_order_parts",
           "tableTo": "work_orders",
-          "columnsFrom": [
-            "work_order_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["work_order_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2699,12 +2461,8 @@
           "name": "work_order_parts_part_id_parts_id_fk",
           "tableFrom": "work_order_parts",
           "tableTo": "parts",
-          "columnsFrom": [
-            "part_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["part_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2712,12 +2470,8 @@
           "name": "work_order_parts_organization_id_organizations_id_fk",
           "tableFrom": "work_order_parts",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -2827,12 +2581,8 @@
           "name": "operator_sessions_operator_id_users_id_fk",
           "tableFrom": "operator_sessions",
           "tableTo": "users",
-          "columnsFrom": [
-            "operator_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["operator_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2840,12 +2590,8 @@
           "name": "operator_sessions_asset_id_assets_id_fk",
           "tableFrom": "operator_sessions",
           "tableTo": "assets",
-          "columnsFrom": [
-            "asset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["asset_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2853,12 +2599,8 @@
           "name": "operator_sessions_previous_session_id_operator_sessions_id_fk",
           "tableFrom": "operator_sessions",
           "tableTo": "operator_sessions",
-          "columnsFrom": [
-            "previous_session_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["previous_session_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2866,12 +2608,8 @@
           "name": "operator_sessions_organization_id_organizations_id_fk",
           "tableFrom": "operator_sessions",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -2978,12 +2716,8 @@
           "name": "inspections_asset_id_assets_id_fk",
           "tableFrom": "inspections",
           "tableTo": "assets",
-          "columnsFrom": [
-            "asset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["asset_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -2991,12 +2725,8 @@
           "name": "inspections_operator_id_users_id_fk",
           "tableFrom": "inspections",
           "tableTo": "users",
-          "columnsFrom": [
-            "operator_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["operator_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -3004,12 +2734,8 @@
           "name": "inspections_organization_id_organizations_id_fk",
           "tableFrom": "inspections",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -3101,12 +2827,8 @@
           "name": "obd_readings_asset_id_assets_id_fk",
           "tableFrom": "obd_readings",
           "tableTo": "assets",
-          "columnsFrom": [
-            "asset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["asset_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -3114,12 +2836,8 @@
           "name": "obd_readings_organization_id_organizations_id_fk",
           "tableFrom": "obd_readings",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -3272,12 +2990,8 @@
           "name": "maintenance_schedules_organization_id_organizations_id_fk",
           "tableFrom": "maintenance_schedules",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -3285,12 +2999,8 @@
           "name": "maintenance_schedules_asset_id_assets_id_fk",
           "tableFrom": "maintenance_schedules",
           "tableTo": "assets",
-          "columnsFrom": [
-            "asset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["asset_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -3298,12 +3008,8 @@
           "name": "maintenance_schedules_category_id_asset_categories_id_fk",
           "tableFrom": "maintenance_schedules",
           "tableTo": "asset_categories",
-          "columnsFrom": [
-            "category_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["category_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -3311,12 +3017,8 @@
           "name": "maintenance_schedules_task_id_maintenance_tasks_id_fk",
           "tableFrom": "maintenance_schedules",
           "tableTo": "maintenance_tasks",
-          "columnsFrom": [
-            "task_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["task_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -3403,12 +3105,8 @@
           "name": "notifications_user_id_users_id_fk",
           "tableFrom": "notifications",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -3416,12 +3114,8 @@
           "name": "notifications_organization_id_organizations_id_fk",
           "tableFrom": "notifications",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }

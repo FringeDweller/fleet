@@ -15,7 +15,11 @@ async function onSubmit(data: Record<string, unknown>) {
     toast.add({ title: 'Schedule created', color: 'success' })
     router.push('/maintenance-schedules')
   } catch (e: unknown) {
-    toast.add({ title: 'Error creating schedule', description: (e as Error).message, color: 'error' })
+    toast.add({
+      title: 'Error creating schedule',
+      description: (e as Error).message,
+      color: 'error'
+    })
   }
 }
 </script>

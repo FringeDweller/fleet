@@ -17,10 +17,11 @@ const columns = [
 
 const filteredSchedules = computed(() => {
   if (!search.value) return schedules.value
-  return schedules.value.filter(s =>
-    (s.name as string).toLowerCase().includes(search.value.toLowerCase())
-    || (s.taskName as string)?.toLowerCase().includes(search.value.toLowerCase())
-    || (s.targetName as string)?.toLowerCase().includes(search.value.toLowerCase())
+  return schedules.value.filter(
+    (s) =>
+      (s.name as string).toLowerCase().includes(search.value.toLowerCase()) ||
+      (s.taskName as string)?.toLowerCase().includes(search.value.toLowerCase()) ||
+      (s.targetName as string)?.toLowerCase().includes(search.value.toLowerCase())
   )
 })
 

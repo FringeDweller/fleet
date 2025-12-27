@@ -1,15 +1,18 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
 import { breakpointsTailwind } from '@vueuse/core'
+import { computed, ref, watch } from 'vue'
 import type { Mail } from '~/types'
 
-const tabItems = [{
-  label: 'All',
-  value: 'all'
-}, {
-  label: 'Unread',
-  value: 'unread'
-}]
+const tabItems = [
+  {
+    label: 'All',
+    value: 'all'
+  },
+  {
+    label: 'Unread',
+    value: 'unread'
+  }
+]
 const selectedTab = ref('all')
 
 const { data: mails } = await useFetch<Mail[]>('/api/mails', { default: () => [] })
@@ -17,7 +20,7 @@ const { data: mails } = await useFetch<Mail[]>('/api/mails', { default: () => []
 // Filter mails based on the selected tab
 const filteredMails = computed(() => {
   if (selectedTab.value === 'unread') {
-    return mails.value.filter(mail => !!mail.unread)
+    return mails.value.filter((mail) => !!mail.unread)
   }
 
   return mails.value
@@ -38,7 +41,7 @@ const isMailPanelOpen = computed({
 
 // Reset selected mail if it's not in the filtered mails
 watch(filteredMails, () => {
-  if (!filteredMails.value.find(mail => mail.id === selectedMail.value?.id)) {
+  if (!filteredMails.value.find((mail) => mail.id === selectedMail.value?.id)) {
     selectedMail.value = null
   }
 })

@@ -1,6 +1,6 @@
-import { pgTable, uuid, decimal, timestamp } from 'drizzle-orm/pg-core'
-import { maintenanceTasks } from './maintenance-tasks'
+import { decimal, pgTable, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { parts } from './inventory'
+import { maintenanceTasks } from './maintenance-tasks'
 
 export const taskParts = pgTable('task_parts', {
   id: uuid('id').primaryKey().defaultRandom(),

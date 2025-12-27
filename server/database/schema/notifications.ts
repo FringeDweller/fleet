@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, boolean, varchar } from 'drizzle-orm/pg-core'
+import { boolean, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
 import { organizations } from './organizations'
 import { users } from './users'
 

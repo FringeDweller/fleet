@@ -1,19 +1,21 @@
-import { eq, and } from 'drizzle-orm'
-import { db } from '../utils/db'
+import { and, eq } from 'drizzle-orm'
 import { maintenanceTasks, taskGroups, taskParts } from '../database/schema'
+import { db } from '../utils/db'
 
 export const taskService = {
   async listTasks(organizationId: string) {
-    return await db.select().from(maintenanceTasks).where(eq(maintenanceTasks.organizationId, organizationId))
+    return await db
+      .select()
+      .from(maintenanceTasks)
+      .where(eq(maintenanceTasks.organizationId, organizationId))
   },
 
   async getTaskById(id: string, organizationId: string) {
-    const results = await db.select().from(maintenanceTasks).where(
-      and(
-        eq(maintenanceTasks.id, id),
-        eq(maintenanceTasks.organizationId, organizationId)
-      )
-    ).limit(1)
+    const results = await db
+      .select()
+      .from(maintenanceTasks)
+      .where(and(eq(maintenanceTasks.id, id), eq(maintenanceTasks.organizationId, organizationId)))
+      .limit(1)
     return results[0]
   },
 

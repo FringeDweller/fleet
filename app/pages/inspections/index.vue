@@ -11,10 +11,14 @@ const columns = [
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'passed': return 'success'
-    case 'failed': return 'error'
-    case 'pending': return 'warning'
-    default: return 'neutral'
+    case 'passed':
+      return 'success'
+    case 'failed':
+      return 'error'
+    case 'pending':
+      return 'warning'
+    default:
+      return 'neutral'
   }
 }
 </script>

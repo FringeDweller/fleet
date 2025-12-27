@@ -1,8 +1,8 @@
-import { pgTable, uuid, text, timestamp, decimal } from 'drizzle-orm/pg-core'
+import { decimal, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { assetCategories } from './asset-categories'
+import { assets } from './assets'
 import { organizations } from './organizations'
 import { users } from './users'
-import { assets } from './assets'
-import { assetCategories } from './asset-categories'
 
 export const partCategories = pgTable('part_categories', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -21,8 +21,7 @@ export const parts = pgTable('parts', {
   name: text('name').notNull(),
   description: text('description'),
   unit: text('unit').notNull().default('pcs'),
-  categoryId: uuid('category_id')
-    .references(() => partCategories.id),
+  categoryId: uuid('category_id').references(() => partCategories.id),
   reorderThreshold: decimal('reorder_threshold', { precision: 10, scale: 2 }).default('0'),
   reorderQuantity: decimal('reorder_quantity', { precision: 10, scale: 2 }).default('0'),
   quantityOnHand: decimal('quantity_on_hand', { precision: 10, scale: 2 }).default('0'),
@@ -39,7 +38,9 @@ export const inventoryLocations = pgTable('inventory_locations', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
   description: text('description'),
-  type: text('type', { enum: ['warehouse', 'truck', 'shop', 'other'] }).notNull().default('warehouse'),
+  type: text('type', { enum: ['warehouse', 'truck', 'shop', 'other'] })
+    .notNull()
+    .default('warehouse'),
   organizationId: uuid('organization_id')
     .notNull()
     .references(() => organizations.id),
@@ -68,10 +69,8 @@ export const stockMovements = pgTable('stock_movements', {
   partId: uuid('part_id')
     .notNull()
     .references(() => parts.id),
-  locationId: uuid('location_id')
-    .references(() => inventoryLocations.id),
-  toLocationId: uuid('to_location_id')
-    .references(() => inventoryLocations.id),
+  locationId: uuid('location_id').references(() => inventoryLocations.id),
+  toLocationId: uuid('to_location_id').references(() => inventoryLocations.id),
   type: text('type', { enum: ['in', 'out', 'adjustment', 'transfer'] }).notNull(),
   quantity: decimal('quantity', { precision: 10, scale: 2 }).notNull(),
   reason: text('reason'),
@@ -91,10 +90,8 @@ export const assetPartCompatibility = pgTable('asset_part_compatibility', {
   partId: uuid('part_id')
     .notNull()
     .references(() => parts.id),
-  assetCategoryId: uuid('asset_category_id')
-    .references(() => assetCategories.id),
-  assetId: uuid('asset_id')
-    .references(() => assets.id),
+  assetCategoryId: uuid('asset_category_id').references(() => assetCategories.id),
+  assetId: uuid('asset_id').references(() => assets.id),
   make: text('make'),
   model: text('model'),
   organizationId: uuid('organization_id')

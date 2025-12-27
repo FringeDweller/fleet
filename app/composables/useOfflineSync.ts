@@ -1,11 +1,11 @@
-import { openDB, type IDBPDatabase } from 'idb'
+import { type IDBPDatabase, openDB } from 'idb'
 
 export interface SyncOperation {
   id: string
   hlc: string
   collection: string
   action: 'create' | 'update' | 'delete'
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint:  @typescript-eslint/no-explicit-any
   data: any
   synced: boolean
 }
@@ -44,7 +44,7 @@ export const useOfflineSync = () => {
     return db.get(collection, id)
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint:  @typescript-eslint/no-explicit-any
   const putItem = async (collection: string, item: any) => {
     const db = await initDB()
     return db.put(collection, item)
@@ -57,8 +57,12 @@ export const useOfflineSync = () => {
 
   const { generate: generateHLC } = useHLC()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const queueOperation = async (collection: string, action: 'create' | 'update' | 'delete', data: any) => {
+  // biome-ignore lint:  @typescript-eslint/no-explicit-any
+  const queueOperation = async (
+    collection: string,
+    action: 'create' | 'update' | 'delete',
+    data: any
+  ) => {
     const db = await initDB()
     const id = crypto.randomUUID()
     const hlc = generateHLC()
@@ -105,10 +109,13 @@ export const useOfflineSync = () => {
 
     syncing.value = true
     try {
-      const { results } = await $fetch<{ results: { success: boolean, id: string }[] }>('/api/sync', {
-        method: 'POST',
-        body: { operations: queue }
-      })
+      const { results } = await $fetch<{ results: { success: boolean; id: string }[] }>(
+        '/api/sync',
+        {
+          method: 'POST',
+          body: { operations: queue }
+        }
+      )
 
       for (const res of results) {
         if (res.success) {

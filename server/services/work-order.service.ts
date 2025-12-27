@@ -1,10 +1,20 @@
-import { eq, and, desc, sql, ilike, or, getTableColumns } from 'drizzle-orm'
+import { and, desc, eq, getTableColumns, ilike, or, sql } from 'drizzle-orm'
 import type { PgTransaction } from 'drizzle-orm/pg-core'
+import {
+  assets,
+  partInventory,
+  parts,
+  stockMovements,
+  workOrderParts,
+  workOrders
+} from '../database/schema'
 import { db } from '../utils/db'
-import { workOrders, assets, workOrderParts, parts, stockMovements, partInventory } from '../database/schema'
 
 export const workOrderService = {
-  async listWorkOrders(organizationId: string, options: { status?: string, page?: number, limit?: number, q?: string } = {}) {
+  async listWorkOrders(
+    organizationId: string,
+    options: { status?: string; page?: number; limit?: number; q?: string } = {}
+  ) {
     const page = options.page || 1
     const limit = options.limit || 10
     const offset = (page - 1) * limit
@@ -18,10 +28,7 @@ export const workOrderService = {
     if (options.q) {
       const search = `%${options.q}%`
       whereConditions.push(
-        or(
-          ilike(workOrders.woNumber, search),
-          ilike(workOrders.description, search)
-        )!
+        or(ilike(workOrders.woNumber, search), ilike(workOrders.description, search))!
       )
     }
 
@@ -78,12 +85,7 @@ export const workOrderService = {
       })
       .from(workOrders)
       .leftJoin(assets, eq(workOrders.assetId, assets.id))
-      .where(
-        and(
-          eq(workOrders.id, id),
-          eq(workOrders.organizationId, organizationId)
-        )
-      )
+      .where(and(eq(workOrders.id, id), eq(workOrders.organizationId, organizationId)))
       .limit(1)
     return results[0]
   },
@@ -116,10 +118,13 @@ export const workOrderService = {
       if (!part) throw new Error('Part not found')
 
       // 2. Insert work order part
-      const [woPart] = await tx.insert(workOrderParts).values({
-        ...data,
-        unitCost: data.unitCost || part.unitCost
-      }).returning()
+      const [woPart] = await tx
+        .insert(workOrderParts)
+        .values({
+          ...data,
+          unitCost: data.unitCost || part.unitCost
+        })
+        .returning()
 
       // 3. Update work order parts cost
       await this._updateWorkOrderCosts(tx, data.workOrderId)
@@ -143,13 +148,19 @@ export const workOrderService = {
     })
   },
 
-  async completeWorkOrder(id: string, organizationId: string, userId: string, locationId: string, data: {
-    checklist?: Record<string, unknown>[]
-    completionMileage?: string
-    completionHours?: string
-    laborCost?: string
-  } = {}) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async completeWorkOrder(
+    id: string,
+    organizationId: string,
+    userId: string,
+    locationId: string,
+    data: {
+      checklist?: Record<string, unknown>[]
+      completionMileage?: string
+      completionHours?: string
+      laborCost?: string
+    } = {}
+  ) {
+    // biome-ignore lint:  @typescript-eslint/no-explicit-any
     return await db.transaction(async (tx: PgTransaction<any, any, any>) => {
       // 1. Get work order and parts
       const [wo] = await tx
@@ -190,7 +201,8 @@ export const workOrderService = {
 
         if (existing) {
           const newQty = Number(existing.quantity || 0) - Number(p.quantity)
-          await tx.update(partInventory)
+          await tx
+            .update(partInventory)
             .set({ quantity: newQty.toString(), updatedAt: new Date() })
             .where(eq(partInventory.id, existing.id))
         } else {
@@ -211,7 +223,8 @@ export const workOrderService = {
           .where(eq(partInventory.partId, p.partId))
 
         const total = levels[0]?.total || '0'
-        await tx.update(parts)
+        await tx
+          .update(parts)
           .set({ quantityOnHand: total, updatedAt: new Date() })
           .where(eq(parts.id, p.partId))
       }
@@ -235,7 +248,8 @@ export const workOrderService = {
 
       // 4. Update asset with completion readings
       if (data.completionMileage || data.completionHours) {
-        await tx.update(assets)
+        await tx
+          .update(assets)
           .set({
             currentMileage: data.completionMileage,
             currentHours: data.completionHours,
@@ -248,7 +262,7 @@ export const workOrderService = {
     })
   },
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint:  @typescript-eslint/no-explicit-any
   async _updateWorkOrderCosts(tx: PgTransaction<any, any, any>, workOrderId: string) {
     const partsCosts = await tx
       .select({
@@ -259,16 +273,13 @@ export const workOrderService = {
 
     const partsCost = partsCosts[0]?.total || '0'
 
-    const [wo] = await tx
-      .select()
-      .from(workOrders)
-      .where(eq(workOrders.id, workOrderId))
-      .limit(1)
+    const [wo] = await tx.select().from(workOrders).where(eq(workOrders.id, workOrderId)).limit(1)
 
     const laborCost = wo?.laborCost || '0'
     const totalCost = (Number(partsCost) + Number(laborCost)).toString()
 
-    await tx.update(workOrders)
+    await tx
+      .update(workOrders)
       .set({
         partsCost,
         totalCost,

@@ -1,8 +1,8 @@
-import { eq, and } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
+import { assets, customReports, inspections, parts, users, workOrders } from '../database/schema'
 import { db } from '../utils/db'
-import { customReports, assets, workOrders, inspections, parts, users } from '../database/schema'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint:  @typescript-eslint/no-explicit-any
 const TABLE_MAP: Record<string, any> = {
   assets,
   workOrders,
@@ -13,11 +13,18 @@ const TABLE_MAP: Record<string, any> = {
 
 export const customReportService = {
   async listReports(organizationId: string) {
-    return await db.select().from(customReports).where(eq(customReports.organizationId, organizationId))
+    return await db
+      .select()
+      .from(customReports)
+      .where(eq(customReports.organizationId, organizationId))
   },
 
   async getReport(id: string, organizationId: string) {
-    const [report] = await db.select().from(customReports).where(and(eq(customReports.id, id), eq(customReports.organizationId, organizationId))).limit(1)
+    const [report] = await db
+      .select()
+      .from(customReports)
+      .where(and(eq(customReports.id, id), eq(customReports.organizationId, organizationId)))
+      .limit(1)
     return report
   },
 

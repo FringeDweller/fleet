@@ -6,14 +6,17 @@ defineProps<{
   members: Member[]
 }>()
 
-const items = [{
-  label: 'Edit member',
-  onSelect: () => console.log('Edit member')
-}, {
-  label: 'Remove member',
-  color: 'error' as const,
-  onSelect: () => console.log('Remove member')
-}] satisfies DropdownMenuItem[]
+const items = [
+  {
+    label: 'Edit member',
+    onSelect: () => console.log('Edit member')
+  },
+  {
+    label: 'Remove member',
+    color: 'error' as const,
+    onSelect: () => console.log('Remove member')
+  }
+] satisfies DropdownMenuItem[]
 </script>
 
 <template>

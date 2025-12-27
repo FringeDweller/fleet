@@ -9,24 +9,28 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint:  @typescript-eslint/no-explicit-any
   (e: 'submitted', data?: Record<string, any>): void
 }>()
 const toast = useToast()
 const isSubmitting = ref(false)
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint:  @typescript-eslint/no-explicit-any
 const formData = ref<Record<string, any>>({})
 
 // Initialize form data
-watch(() => props.fields, (newFields) => {
-  newFields.forEach((f) => {
-    if (formData.value[f.key] === undefined) {
-      if (f.type === 'checkbox') formData.value[f.key] = false
-      else if (f.type === 'select') formData.value[f.key] = f.options?.[0]?.value || ''
-      else formData.value[f.key] = ''
-    }
-  })
-}, { immediate: true })
+watch(
+  () => props.fields,
+  (newFields) => {
+    newFields.forEach((f) => {
+      if (formData.value[f.key] === undefined) {
+        if (f.type === 'checkbox') formData.value[f.key] = false
+        else if (f.type === 'select') formData.value[f.key] = f.options?.[0]?.value || ''
+        else formData.value[f.key] = ''
+      }
+    })
+  },
+  { immediate: true }
+)
 
 function isVisible(field: FormField) {
   if (!field.logic || !field.logic.conditions.length) return true
@@ -36,18 +40,22 @@ function isVisible(field: FormField) {
   const results = conditions.map((cond) => {
     const val = formData.value[cond.field]
     switch (cond.operator) {
-      case 'eq': return val === cond.value
-      case 'neq': return val !== cond.value
-      case 'contains': return String(val).includes(String(cond.value))
-      case 'gt': return Number(val) > Number(cond.value)
-      case 'lt': return Number(val) < Number(cond.value)
-      default: return true
+      case 'eq':
+        return val === cond.value
+      case 'neq':
+        return val !== cond.value
+      case 'contains':
+        return String(val).includes(String(cond.value))
+      case 'gt':
+        return Number(val) > Number(cond.value)
+      case 'lt':
+        return Number(val) < Number(cond.value)
+      default:
+        return true
     }
   })
 
-  const isMatched = match === 'all'
-    ? results.every(r => r)
-    : results.some(r => r)
+  const isMatched = match === 'all' ? results.every((r) => r) : results.some((r) => r)
 
   return action === 'show' ? isMatched : !isMatched
 }

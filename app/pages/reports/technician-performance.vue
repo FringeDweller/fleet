@@ -19,15 +19,23 @@ interface TechPerformance {
   totalLaborCost: number
 }
 
-const { data: report, status, refresh } = await useAsyncData('tech-performance-report', () => {
-  const params = new URLSearchParams()
-  if (range.value.start) params.append('start', range.value.start.toISOString())
-  if (range.value.end) params.append('end', range.value.end.toISOString())
+const {
+  data: report,
+  status,
+  refresh
+} = await useAsyncData(
+  'tech-performance-report',
+  () => {
+    const params = new URLSearchParams()
+    if (range.value.start) params.append('start', range.value.start.toISOString())
+    if (range.value.end) params.append('end', range.value.end.toISOString())
 
-  return $fetch<TechPerformance[]>(`/api/reports/technician-performance?${params.toString()}`)
-}, {
-  watch: [range]
-})
+    return $fetch<TechPerformance[]>(`/api/reports/technician-performance?${params.toString()}`)
+  },
+  {
+    watch: [range]
+  }
+)
 
 const columns = [
   { key: 'technicianName', label: 'Technician' },

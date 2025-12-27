@@ -1,8 +1,17 @@
-import { pgTable, uuid, text, timestamp, integer, decimal, boolean, varchar } from 'drizzle-orm/pg-core'
-import { organizations } from './organizations'
-import { assets } from './assets'
+import {
+  boolean,
+  decimal,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+  varchar
+} from 'drizzle-orm/pg-core'
 import { assetCategories } from './asset-categories'
+import { assets } from './assets'
 import { maintenanceTasks } from './maintenance-tasks'
+import { organizations } from './organizations'
 
 export const maintenanceSchedules = pgTable('maintenance_schedules', {
   id: uuid('id').primaryKey().defaultRandom(),

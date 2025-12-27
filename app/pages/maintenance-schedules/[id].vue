@@ -32,7 +32,11 @@ async function onSubmit(data: Record<string, unknown>) {
     router.push('/maintenance-schedules')
   } catch (error: unknown) {
     console.error(error)
-    toast.add({ title: 'Error updating schedule', description: (error as Error).message, color: 'error' })
+    toast.add({
+      title: 'Error updating schedule',
+      description: (error as Error).message,
+      color: 'error'
+    })
   }
 }
 
@@ -44,7 +48,11 @@ async function onDelete() {
     router.push('/maintenance-schedules')
   } catch (error: unknown) {
     console.error(error)
-    toast.add({ title: 'Error deleting schedule', description: (error as Error).message, color: 'error' })
+    toast.add({
+      title: 'Error deleting schedule',
+      description: (error as Error).message,
+      color: 'error'
+    })
   }
 }
 </script>

@@ -1600,7 +1600,7 @@ As a developer, I want a fully configured Nuxt 4 project with TypeScript, lintin
 _Acceptance Criteria:_
 
 - **REQ-101-AC-01**: Nuxt 4 project initialised with TypeScript strict mode
-- **REQ-101-AC-02**: ESLint and Prettier configured with shared rules
+- **REQ-101-AC-02**: Biome configured for linting and formatting
 - **REQ-101-AC-03**: Vitest configured for unit testing
 - **REQ-101-AC-04**: Playwright configured for E2E testing
 - **REQ-101-AC-05**: GitHub Actions CI pipeline runs lint, type-check, and tests on PR
@@ -1664,19 +1664,19 @@ _Acceptance Criteria:_
 
 #### Implementation Tasks
 
-- [ ] Nuxt 4 project setup with dashboard template
-- [ ] TypeScript configuration with strict mode
-- [ ] ESLint, Prettier, and Husky setup
-- [ ] Vitest and Playwright configuration
-- [ ] GitHub Actions CI/CD pipeline
-- [ ] PostgreSQL database setup with Drizzle ORM
-- [ ] Redis setup for caching and sessions
-- [ ] BullMQ job queue configuration
-- [ ] Authentication system (nuxt-auth-utils)
-- [ ] RBAC middleware and composables
-- [ ] Organisation/tenant data model
-- [ ] Error handling and logging infrastructure
-- [ ] Environment configuration management
+- [x] Nuxt 4 project setup with dashboard template
+- [x] TypeScript configuration with strict mode
+- [x] Biome and Husky setup
+- [x] Vitest and Playwright configuration
+- [x] GitHub Actions CI/CD pipeline
+- [x] PostgreSQL database setup with Drizzle ORM
+- [x] Redis setup for caching and sessions
+- [x] BullMQ job queue configuration
+- [x] Authentication system (nuxt-auth-utils)
+- [x] RBAC middleware and composables
+- [x] Organisation/tenant data model
+- [x] Error handling and logging infrastructure
+- [x] Environment configuration management
 
 #### Test Criteria
 
@@ -3016,14 +3016,14 @@ _Acceptance Criteria:_
 
 #### Implementation Tasks
 
-- [ ] Dashboard framework with widget system
-- [ ] KPI calculation services
-- [ ] Dashboard customisation and persistence
-- [ ] Asset utilisation report
-- [ ] Maintenance cost report
-- [ ] Technician performance report
-- [ ] Compliance report
-- [ ] Report builder UI
+- [x] Dashboard framework with widget system
+- [x] KPI calculation services
+- [x] Dashboard customisation and persistence
+- [x] Asset utilisation report
+- [x] Maintenance cost report
+- [x] Technician performance report
+- [x] Compliance report
+- [x] Report builder UI
 - [ ] Report scheduling (BullMQ)
 - [ ] PDF/Excel/CSV export
 

@@ -1,15 +1,28 @@
 import { userService } from '../services/user.service'
 import { db } from '../utils/db'
-import { organizations, users, partCategories, parts, assets, assetCategories, assetPartCompatibility, inventoryLocations, partInventory } from './schema'
+import {
+  assetCategories,
+  assetPartCompatibility,
+  assets,
+  inventoryLocations,
+  organizations,
+  partCategories,
+  partInventory,
+  parts,
+  users
+} from './schema'
 
 async function seed() {
   console.log('Seeding database...')
 
   // Create organization
-  const [org] = await db.insert(organizations).values({
-    name: 'Fleet Demo',
-    slug: 'fleet-demo'
-  }).returning()
+  const [org] = await db
+    .insert(organizations)
+    .values({
+      name: 'Fleet Demo',
+      slug: 'fleet-demo'
+    })
+    .returning()
 
   // Create admin user
   const hashedPassword = await userService.hashPassword('admin123')
@@ -23,49 +36,64 @@ async function seed() {
   })
 
   // Asset Categories
-  const [assetCatTruck] = await db.insert(assetCategories).values({
-    name: 'Trucks',
-    slug: 'trucks',
-    organizationId: org.id
-  }).returning()
+  const [assetCatTruck] = await db
+    .insert(assetCategories)
+    .values({
+      name: 'Trucks',
+      slug: 'trucks',
+      organizationId: org.id
+    })
+    .returning()
 
   // Assets
-  const [asset1] = await db.insert(assets).values({
-    assetNumber: 'TRUCK-001',
-    make: 'Ford',
-    model: 'F-150',
-    year: 2022,
-    categoryId: assetCatTruck.id,
-    organizationId: org.id,
-    status: 'active'
-  }).returning()
+  const [asset1] = await db
+    .insert(assets)
+    .values({
+      assetNumber: 'TRUCK-001',
+      make: 'Ford',
+      model: 'F-150',
+      year: 2022,
+      categoryId: assetCatTruck.id,
+      organizationId: org.id,
+      status: 'active'
+    })
+    .returning()
 
   // Create Part Categories
-  const [catFilt] = await db.insert(partCategories).values({
-    name: 'Filters',
-    description: 'Oil, Air, Fuel filters',
-    organizationId: org.id
-  }).returning()
+  const [catFilt] = await db
+    .insert(partCategories)
+    .values({
+      name: 'Filters',
+      description: 'Oil, Air, Fuel filters',
+      organizationId: org.id
+    })
+    .returning()
 
-  const [catTires] = await db.insert(partCategories).values({
-    name: 'Tires',
-    description: 'Vehicle tires',
-    organizationId: org.id
-  }).returning()
+  const [catTires] = await db
+    .insert(partCategories)
+    .values({
+      name: 'Tires',
+      description: 'Vehicle tires',
+      organizationId: org.id
+    })
+    .returning()
 
   // Create Parts
-  const [partOil] = await db.insert(parts).values({
-    sku: 'OIL-FLT-01',
-    name: 'Standard Oil Filter',
-    description: 'Generic oil filter for light trucks',
-    unit: 'pcs',
-    categoryId: catFilt.id,
-    reorderThreshold: '5',
-    reorderQuantity: '20',
-    quantityOnHand: '15',
-    unitCost: '12.50',
-    organizationId: org.id
-  }).returning()
+  const [partOil] = await db
+    .insert(parts)
+    .values({
+      sku: 'OIL-FLT-01',
+      name: 'Standard Oil Filter',
+      description: 'Generic oil filter for light trucks',
+      unit: 'pcs',
+      categoryId: catFilt.id,
+      reorderThreshold: '5',
+      reorderQuantity: '20',
+      quantityOnHand: '15',
+      unitCost: '12.50',
+      organizationId: org.id
+    })
+    .returning()
 
   await db.insert(parts).values([
     {
@@ -102,17 +130,23 @@ async function seed() {
   })
 
   // Inventory Locations
-  const [locShop] = await db.insert(inventoryLocations).values({
-    name: 'Main Shop',
-    type: 'shop',
-    organizationId: org.id
-  }).returning()
+  const [locShop] = await db
+    .insert(inventoryLocations)
+    .values({
+      name: 'Main Shop',
+      type: 'shop',
+      organizationId: org.id
+    })
+    .returning()
 
-  const [locTruck] = await db.insert(inventoryLocations).values({
-    name: 'Service Truck 1',
-    type: 'truck',
-    organizationId: org.id
-  }).returning()
+  const [locTruck] = await db
+    .insert(inventoryLocations)
+    .values({
+      name: 'Service Truck 1',
+      type: 'truck',
+      organizationId: org.id
+    })
+    .returning()
 
   // Initial Inventory Levels
   await db.insert(partInventory).values([

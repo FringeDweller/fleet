@@ -1,11 +1,19 @@
-import { db } from '../utils/db'
-import { operatorSessions } from '../database/schema/operator-sessions'
+import { and, eq, gte, isNull } from 'drizzle-orm'
 import { assets } from '../database/schema/assets'
 import { certifications } from '../database/schema/certifications'
-import { eq, and, isNull, gte } from 'drizzle-orm'
+import { operatorSessions } from '../database/schema/operator-sessions'
+import { db } from '../utils/db'
 
 export const operatorService = {
-  async startSession(data: { operatorId: string, assetId: string, organizationId: string, startOdometer?: string, startHours?: string, hlc?: string, previousSessionId?: string }) {
+  async startSession(data: {
+    operatorId: string
+    assetId: string
+    organizationId: string
+    startOdometer?: string
+    startHours?: string
+    hlc?: string
+    previousSessionId?: string
+  }) {
     // 1. Get asset to check required certification
     const asset = await db.query.assets.findFirst({
       where: eq(assets.id, data.assetId)
@@ -28,7 +36,9 @@ export const operatorService = {
       })
 
       if (!cert) {
-        throw new Error(`Valid certification '${asset.requiredCertification}' required to operate this vehicle`)
+        throw new Error(
+          `Valid certification '${asset.requiredCertification}' required to operate this vehicle`
+        )
       }
     }
 
@@ -45,14 +55,18 @@ export const operatorService = {
       throw new Error('Operator already has an active session')
     }
 
-    const [session] = await db.insert(operatorSessions).values({
-      ...data,
-      startTime: new Date()
-    }).returning()
+    const [session] = await db
+      .insert(operatorSessions)
+      .values({
+        ...data,
+        startTime: new Date()
+      })
+      .returning()
 
     // Update asset with current readings
     if (data.startOdometer || data.startHours) {
-      await db.update(assets)
+      await db
+        .update(assets)
         .set({
           currentMileage: data.startOdometer ? data.startOdometer.toString() : undefined,
           currentHours: data.startHours ? data.startHours.toString() : undefined,
@@ -64,22 +78,26 @@ export const operatorService = {
     return session
   },
 
-  async endSession(id: string, data: { endOdometer?: string, endHours?: string, organizationId: string, hlc?: string }) {
-    const [session] = await db.update(operatorSessions)
+  async endSession(
+    id: string,
+    data: { endOdometer?: string; endHours?: string; organizationId: string; hlc?: string }
+  ) {
+    const [session] = await db
+      .update(operatorSessions)
       .set({
         ...data,
         endTime: new Date(),
         updatedAt: new Date()
       })
-      .where(and(
-        eq(operatorSessions.id, id),
-        eq(operatorSessions.organizationId, data.organizationId)
-      ))
+      .where(
+        and(eq(operatorSessions.id, id), eq(operatorSessions.organizationId, data.organizationId))
+      )
       .returning()
 
     // Update asset with final readings
     if (session && (data.endOdometer || data.endHours)) {
-      await db.update(assets)
+      await db
+        .update(assets)
         .set({
           currentMileage: data.endOdometer ? data.endOdometer.toString() : undefined,
           currentHours: data.endHours ? data.endHours.toString() : undefined,

@@ -1,6 +1,15 @@
-import { eq, and, gte, lte, sql } from 'drizzle-orm'
+import { and, eq, gte, lte, sql } from 'drizzle-orm'
+import {
+  assetCategories,
+  assets,
+  certifications,
+  inspections,
+  maintenanceSchedules,
+  operatorSessions,
+  users,
+  workOrders
+} from '../database/schema'
 import { db } from '../utils/db'
-import { operatorSessions, assets, assetCategories, workOrders, users, inspections, maintenanceSchedules, certifications } from '../database/schema'
 
 export interface AssetUtilisation {
   assetId: string
@@ -14,8 +23,15 @@ export interface AssetUtilisation {
 }
 
 export const reportService = {
-  async getAssetUtilisation(organizationId: string, range: { start: Date, end: Date }, categoryId?: string) {
-    const daysInPeriod = Math.max(1, Math.round((range.end.getTime() - range.start.getTime()) / (1000 * 60 * 60 * 24)))
+  async getAssetUtilisation(
+    organizationId: string,
+    range: { start: Date; end: Date },
+    categoryId?: string
+  ) {
+    const daysInPeriod = Math.max(
+      1,
+      Math.round((range.end.getTime() - range.start.getTime()) / (1000 * 60 * 60 * 24))
+    )
 
     const whereConditions = [
       eq(operatorSessions.organizationId, organizationId),
@@ -44,8 +60,14 @@ export const reportService = {
 
     // Calculate fleet averages for comparison
     const fleetAvg = {
-      km: results.length > 0 ? results.reduce((acc, r) => acc + Number(r.totalKm), 0) / results.length : 0,
-      hours: results.length > 0 ? results.reduce((acc, r) => acc + Number(r.totalHours), 0) / results.length : 0
+      km:
+        results.length > 0
+          ? results.reduce((acc, r) => acc + Number(r.totalKm), 0) / results.length
+          : 0,
+      hours:
+        results.length > 0
+          ? results.reduce((acc, r) => acc + Number(r.totalHours), 0) / results.length
+          : 0
     }
 
     const utilisation: AssetUtilisation[] = results.map((r) => {
@@ -79,7 +101,11 @@ export const reportService = {
     }
   },
 
-  async getMaintenanceCosts(organizationId: string, range: { start: Date, end: Date }, categoryId?: string) {
+  async getMaintenanceCosts(
+    organizationId: string,
+    range: { start: Date; end: Date },
+    categoryId?: string
+  ) {
     const whereConditions = [
       eq(workOrders.organizationId, organizationId),
       gte(workOrders.createdAt, range.start),
@@ -109,17 +135,19 @@ export const reportService = {
       .where(and(...whereConditions))
       .groupBy(assets.id, assets.assetNumber, assetCategories.name)
 
-    return results.map(r => ({
-      assetId: r.assetId,
-      assetNumber: r.assetNumber,
-      categoryName: r.categoryName || 'Uncategorized',
-      laborCost: Number(r.laborCost || 0),
-      partsCost: Number(r.partsCost || 0),
-      totalCost: Number(r.totalCost || 0)
-    })).sort((a, b) => b.totalCost - a.totalCost)
+    return results
+      .map((r) => ({
+        assetId: r.assetId,
+        assetNumber: r.assetNumber,
+        categoryName: r.categoryName || 'Uncategorized',
+        laborCost: Number(r.laborCost || 0),
+        partsCost: Number(r.partsCost || 0),
+        totalCost: Number(r.totalCost || 0)
+      }))
+      .sort((a, b) => b.totalCost - a.totalCost)
   },
 
-  async getTechnicianPerformance(organizationId: string, range: { start: Date, end: Date }) {
+  async getTechnicianPerformance(organizationId: string, range: { start: Date; end: Date }) {
     const results = await db
       .select({
         technicianId: users.id,
@@ -130,62 +158,76 @@ export const reportService = {
       })
       .from(workOrders)
       .innerJoin(users, eq(workOrders.assignedToId, users.id))
-      .where(and(
-        eq(workOrders.organizationId, organizationId),
-        eq(workOrders.status, 'completed'),
-        gte(workOrders.createdAt, range.start),
-        lte(workOrders.createdAt, range.end)
-      ))
+      .where(
+        and(
+          eq(workOrders.organizationId, organizationId),
+          eq(workOrders.status, 'completed'),
+          gte(workOrders.createdAt, range.start),
+          lte(workOrders.createdAt, range.end)
+        )
+      )
       .groupBy(users.id, users.firstName, users.lastName)
 
-    return results.map(r => ({
-      technicianId: r.technicianId,
-      technicianName: r.technicianName,
-      completedOrders: Number(r.completedOrders || 0),
-      avgCompletionTimeHrs: Number(r.avgCompletionTimeHrs || 0),
-      totalLaborCost: Number(r.totalLaborCost || 0)
-    })).sort((a, b) => b.completedOrders - a.completedOrders)
+    return results
+      .map((r) => ({
+        technicianId: r.technicianId,
+        technicianName: r.technicianName,
+        completedOrders: Number(r.completedOrders || 0),
+        avgCompletionTimeHrs: Number(r.avgCompletionTimeHrs || 0),
+        totalLaborCost: Number(r.totalLaborCost || 0)
+      }))
+      .sort((a, b) => b.completedOrders - a.completedOrders)
   },
 
-  async getComplianceReport(organizationId: string, range: { start: Date, end: Date }) {
-    const [
-      inspectionStats,
-      maintenanceCompliance,
-      expiringCerts
-    ] = await Promise.all([
+  async getComplianceReport(organizationId: string, range: { start: Date; end: Date }) {
+    const [inspectionStats, maintenanceCompliance, expiringCerts] = await Promise.all([
       // Inspection Completion
-      db.select({
-        total: sql<number>`count(*)`,
-        passed: sql<number>`count(*) FILTER (WHERE status = 'passed')`,
-        failed: sql<number>`count(*) FILTER (WHERE status = 'failed')`
-      }).from(inspections).where(and(
-        eq(inspections.organizationId, organizationId),
-        gte(inspections.createdAt, range.start),
-        lte(inspections.createdAt, range.end)
-      )),
+      db
+        .select({
+          total: sql<number>`count(*)`,
+          passed: sql<number>`count(*) FILTER (WHERE status = 'passed')`,
+          failed: sql<number>`count(*) FILTER (WHERE status = 'failed')`
+        })
+        .from(inspections)
+        .where(
+          and(
+            eq(inspections.organizationId, organizationId),
+            gte(inspections.createdAt, range.start),
+            lte(inspections.createdAt, range.end)
+          )
+        ),
 
       // Maintenance Compliance (Schedules nextDueAt in range)
-      db.select({
-        total: sql<number>`count(*)`,
-        overdue: sql<number>`count(*) FILTER (WHERE next_due_at < now())`
-      }).from(maintenanceSchedules).where(and(
-        eq(maintenanceSchedules.organizationId, organizationId),
-        gte(maintenanceSchedules.nextDueAt, range.start),
-        lte(maintenanceSchedules.nextDueAt, range.end)
-      )),
+      db
+        .select({
+          total: sql<number>`count(*)`,
+          overdue: sql<number>`count(*) FILTER (WHERE next_due_at < now())`
+        })
+        .from(maintenanceSchedules)
+        .where(
+          and(
+            eq(maintenanceSchedules.organizationId, organizationId),
+            gte(maintenanceSchedules.nextDueAt, range.start),
+            lte(maintenanceSchedules.nextDueAt, range.end)
+          )
+        ),
 
       // Expiring Certifications (next 30 days)
-      db.select({
-        id: certifications.id,
-        userName: sql<string>`${users.firstName} || ' ' || ${users.lastName}`,
-        type: certifications.type,
-        expiryDate: certifications.expiryDate
-      }).from(certifications)
+      db
+        .select({
+          id: certifications.id,
+          userName: sql<string>`${users.firstName} || ' ' || ${users.lastName}`,
+          type: certifications.type,
+          expiryDate: certifications.expiryDate
+        })
+        .from(certifications)
         .innerJoin(users, eq(certifications.userId, users.id))
-        .where(and(
-          eq(certifications.organizationId, organizationId),
-          lte(certifications.expiryDate, sql`current_date + interval '30 days'`)
-        ))
+        .where(
+          and(
+            eq(certifications.organizationId, organizationId),
+            lte(certifications.expiryDate, sql`current_date + interval '30 days'`)
+          )
+        )
     ])
 
     return {

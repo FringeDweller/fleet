@@ -1,5 +1,11 @@
 <script setup lang="ts">
-const { currentInspection, startInspection, recordCheckpoint, submitInspection, loading: inspectionLoading } = usePreStartInspection()
+const {
+  currentInspection,
+  startInspection,
+  recordCheckpoint,
+  submitInspection,
+  loading: inspectionLoading
+} = usePreStartInspection()
 const { scanTag, isScanning: nfcScanning } = useNfc()
 const { startScan: scanQr, isScanning: qrScanning } = useQrScanner()
 const { getCurrentPosition, loading: locationLoading } = useGeolocation()
@@ -7,13 +13,15 @@ const { takePhoto } = useNativeCamera()
 const toast = useToast()
 
 const step = ref(1) // 1: Start, 2: Checkpoints, 3: Checklist, 4: Sign-off
-const checklist = ref<{
-  id: string
-  label: string
-  status: 'passed' | 'failed' | null
-  photo?: string
-  comment?: string
-}[]>([])
+const checklist = ref<
+  {
+    id: string
+    label: string
+    status: 'passed' | 'failed' | null
+    photo?: string
+    comment?: string
+  }[]
+>([])
 const loading = computed(() => inspectionLoading.value || locationLoading.value)
 
 const signatureCaptured = ref(false)
@@ -51,11 +59,15 @@ const onCheckpointScan = async (method: 'nfc' | 'qr') => {
       toast.add({ title: `Checkpoint ${id} Recorded`, color: 'success' })
     }
   } catch (error: unknown) {
-    toast.add({ title: 'Checkpoint Scan Failed', description: (error as Error).message, color: 'error' })
+    toast.add({
+      title: 'Checkpoint Scan Failed',
+      description: (error as Error).message,
+      color: 'error'
+    })
   }
 }
 
-const handleFail = async (item: { status: string | null, photo?: string }) => {
+const handleFail = async (item: { status: string | null; photo?: string }) => {
   item.status = 'failed'
   // REQ-902-AC-03: Failed items require photo
   if (!item.photo) {
@@ -75,9 +87,13 @@ const finishCheckpoints = () => {
 }
 
 const finishChecklist = () => {
-  const failedWithoutComment = checklist.value.some(i => i.status === 'failed' && !i.comment)
+  const failedWithoutComment = checklist.value.some((i) => i.status === 'failed' && !i.comment)
   if (failedWithoutComment) {
-    toast.add({ title: 'Comment required', description: 'Please provide details for failed items.', color: 'warning' })
+    toast.add({
+      title: 'Comment required',
+      description: 'Please provide details for failed items.',
+      color: 'warning'
+    })
     return
   }
   step.value = 4
@@ -88,7 +104,7 @@ const submit = async () => {
     toast.add({ title: 'Signature required', color: 'warning' })
     return
   }
-  const failed = checklist.value.some(i => i.status === 'failed')
+  const failed = checklist.value.some((i) => i.status === 'failed')
   await submitInspection(failed ? 'failed' : 'passed', checklist.value, 'mock-signature-url')
   toast.add({ title: 'Inspection submitted successfully', color: 'success' })
   step.value = 1

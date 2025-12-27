@@ -1,13 +1,16 @@
 <script setup lang="ts">
-const { data: fuelAnomalies, pending } = await useFetch<{
-  id: string
-  assetId: string
-  assetNumber: string
-  message: string
-  createdAt: string
-  consumption: number
-  percentageAboveAvg: number
-}[]>('/api/fuel/anomalies')
+const { data: fuelAnomalies, pending } =
+  await useFetch<
+    {
+      id: string
+      assetId: string
+      assetNumber: string
+      message: string
+      createdAt: string
+      consumption: number
+      percentageAboveAvg: number
+    }[]
+  >('/api/fuel/anomalies')
 </script>
 
 <template>

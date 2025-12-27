@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, decimal, type AnyPgColumn } from 'drizzle-orm/pg-core'
+import { type AnyPgColumn, decimal, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { organizations } from './organizations'
 
 export const taskGroups = pgTable('task_groups', {

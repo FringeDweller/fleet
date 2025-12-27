@@ -1,6 +1,6 @@
-import { db } from '../../utils/db'
+import { and, eq } from 'drizzle-orm'
 import { inspections } from '../../database/schema'
-import { eq, and } from 'drizzle-orm'
+import { db } from '../../utils/db'
 
 export default defineEventHandler(async (event) => {
   const session = await getUserSession(event)
@@ -12,10 +12,7 @@ export default defineEventHandler(async (event) => {
   if (!id) throw createError({ statusCode: 400, message: 'Missing ID' })
 
   const result = await db.query.inspections.findFirst({
-    where: and(
-      eq(inspections.id, id),
-      eq(inspections.organizationId, session.user.organizationId)
-    ),
+    where: and(eq(inspections.id, id), eq(inspections.organizationId, session.user.organizationId)),
     with: {
       // Assuming relations are configured
     }

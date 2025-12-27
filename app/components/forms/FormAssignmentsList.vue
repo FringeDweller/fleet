@@ -3,15 +3,18 @@ const props = defineProps<{
   formId: string
 }>()
 
-const { data: assignments, refresh } = await useFetch<Record<string, unknown>[]>('/api/settings/forms/assignments', {
-  query: { formId: props.formId }
-})
+const { data: assignments, refresh } = await useFetch<Record<string, unknown>[]>(
+  '/api/settings/forms/assignments',
+  {
+    query: { formId: props.formId }
+  }
+)
 
-// eslint-disable-next-line vue/no-expose-after-await
+// biome-ignore lint:  vue/no-expose-after-await
 defineExpose({ refresh })
 
 async function deleteAssignment(id: string) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint:  @typescript-eslint/no-explicit-any
   await $fetch(`/api/settings/forms/assignments/${id}`, { method: 'DELETE' as any })
   refresh()
 }

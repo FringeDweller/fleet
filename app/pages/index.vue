@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { sub } from 'date-fns'
 import type { DropdownMenuItem } from '@nuxt/ui'
-import type { Period, Range, WidgetConfig, DashboardConfig } from '~/types'
+import { sub } from 'date-fns'
 import { VueDraggable } from 'vue-draggable-plus'
+import type { DashboardConfig, Period, Range, WidgetConfig } from '~/types'
 
 definePageMeta({
   middleware: 'auth'
@@ -11,7 +11,8 @@ definePageMeta({
 const { isNotificationsSlideoverOpen } = useDashboard()
 const toast = useToast()
 
-const { data: config, refresh: refreshConfig } = await useFetch<DashboardConfig>('/api/dashboard/config')
+const { data: config, refresh: refreshConfig } =
+  await useFetch<DashboardConfig>('/api/dashboard/config')
 const layout = ref<WidgetConfig[]>([])
 
 watchEffect(() => {
@@ -23,7 +24,7 @@ watchEffect(() => {
 const isEditMode = ref(false)
 const isSaving = ref(false)
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint:  @typescript-eslint/no-explicit-any
 const widgetComponents: Record<string, any> = {
   DashboardStats: resolveComponent('DashboardStats'),
   HomeChart: resolveComponent('HomeChart'),
@@ -51,7 +52,7 @@ async function saveLayout() {
 }
 
 function removeWidget(id: string) {
-  layout.value = layout.value.filter(w => w.id !== id)
+  layout.value = layout.value.filter((w) => w.id !== id)
 }
 
 const availableWidgets = [
@@ -62,7 +63,7 @@ const availableWidgets = [
   { id: 'fuel', type: 'HomeFuelAnomalyWidget', label: 'Fuel Anomalies', icon: 'i-lucide-fuel' }
 ]
 
-function addWidget(widget: typeof availableWidgets[0]) {
+function addWidget(widget: (typeof availableWidgets)[0]) {
   const id = `${widget.id}_${Date.now()}`
   layout.value.push({
     id,
@@ -73,15 +74,20 @@ function addWidget(widget: typeof availableWidgets[0]) {
   })
 }
 
-const items = [[{
-  label: 'New mail',
-  icon: 'i-lucide-send',
-  to: '/inbox'
-}, {
-  label: 'New customer',
-  icon: 'i-lucide-user-plus',
-  to: '/customers'
-}]] satisfies DropdownMenuItem[][]
+const items = [
+  [
+    {
+      label: 'New mail',
+      icon: 'i-lucide-send',
+      to: '/inbox'
+    },
+    {
+      label: 'New customer',
+      icon: 'i-lucide-user-plus',
+      to: '/customers'
+    }
+  ]
+] satisfies DropdownMenuItem[][]
 
 const range = shallowRef<Range>({
   start: sub(new Date(), { days: 14 }),

@@ -47,7 +47,7 @@ export const useBluetoothObd = () => {
       await BleClient.requestLEScan({}, (result) => {
         if (result.device && result.device.name) {
           // Filter for common OBD dongle names or allow all
-          if (!devices.value.some(d => d.deviceId === result.device.deviceId)) {
+          if (!devices.value.some((d) => d.deviceId === result.device.deviceId)) {
             devices.value.push(result.device)
           }
         }
@@ -71,7 +71,7 @@ export const useBluetoothObd = () => {
         connectedDevice.value = null
       })
 
-      const device = devices.value.find(d => d.deviceId === deviceId)
+      const device = devices.value.find((d) => d.deviceId === deviceId)
       if (device) {
         connectedDevice.value = device
         isConnected.value = true
@@ -95,29 +95,39 @@ export const useBluetoothObd = () => {
     }
   }
 
-  const liveData = ref<{ rpm: number, speed: number, temp: number, fuel: number, odometer: number }>({ rpm: 0, speed: 0, temp: 0, fuel: 0, odometer: 125000.5 })
+  const liveData = ref<{
+    rpm: number
+    speed: number
+    temp: number
+    fuel: number
+    odometer: number
+  }>({ rpm: 0, speed: 0, temp: 0, fuel: 0, odometer: 125000.5 })
   const dtcCodes = ref<string[]>([])
   const pollingInterval = ref<ReturnType<typeof setInterval> | null>(null)
   const { activeSession } = useOperatorSession()
 
   // Sync DTCs to backend when they change
-  watch(dtcCodes, async (newCodes) => {
-    if (newCodes.length > 0 && activeSession.value) {
-      try {
-        await $fetch('/api/obd/readings', {
-          method: 'POST',
-          body: {
-            assetId: activeSession.value.assetId,
-            dtcCodes: newCodes,
-            odometer: liveData.value.odometer,
-            fuelLevel: liveData.value.fuel
-          }
-        })
-      } catch (e) {
-        console.error('Failed to sync OBD readings', e)
+  watch(
+    dtcCodes,
+    async (newCodes) => {
+      if (newCodes.length > 0 && activeSession.value) {
+        try {
+          await $fetch('/api/obd/readings', {
+            method: 'POST',
+            body: {
+              assetId: activeSession.value.assetId,
+              dtcCodes: newCodes,
+              odometer: liveData.value.odometer,
+              fuelLevel: liveData.value.fuel
+            }
+          })
+        } catch (e) {
+          console.error('Failed to sync OBD readings', e)
+        }
       }
-    }
-  }, { deep: true })
+    },
+    { deep: true }
+  )
 
   const startPolling = async () => {
     if (!isConnected.value || !connectedDevice.value) return
@@ -129,7 +139,7 @@ export const useBluetoothObd = () => {
         speed: Math.floor(Math.random() * 100),
         temp: Math.floor(Math.random() * (110 - 80) + 80),
         fuel: Math.floor(Math.random() * 100),
-        odometer: liveData.value.odometer + (liveData.value.speed / 3600)
+        odometer: liveData.value.odometer + liveData.value.speed / 3600
       }
 
       // Randomly simulate a DTC appearing (rare)

@@ -5,16 +5,20 @@ const props = defineProps<{
   range: Range
 }>()
 
-const { data: stats, status } = await useAsyncData<Stat[]>('dashboard-stats', () => {
-  const params = new URLSearchParams()
-  if (props.range.start) params.append('start', props.range.start.toISOString())
-  if (props.range.end) params.append('end', props.range.end.toISOString())
+const { data: stats, status } = await useAsyncData<Stat[]>(
+  'dashboard-stats',
+  () => {
+    const params = new URLSearchParams()
+    if (props.range.start) params.append('start', props.range.start.toISOString())
+    if (props.range.end) params.append('end', props.range.end.toISOString())
 
-  return $fetch(`/api/dashboard/stats?${params.toString()}`)
-}, {
-  watch: [() => props.range],
-  default: () => []
-})
+    return $fetch(`/api/dashboard/stats?${params.toString()}`)
+  },
+  {
+    watch: [() => props.range],
+    default: () => []
+  }
+)
 
 const loading = computed(() => status.value === 'pending')
 </script>

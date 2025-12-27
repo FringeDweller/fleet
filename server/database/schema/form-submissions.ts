@@ -1,6 +1,6 @@
-import { pgTable, uuid, text, timestamp, jsonb } from 'drizzle-orm/pg-core'
-import { organizations } from './organizations'
+import { jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { customForms } from './custom-forms'
+import { organizations } from './organizations'
 import { users } from './users'
 
 export const formSubmissions = pgTable('form_submissions', {

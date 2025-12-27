@@ -1,7 +1,7 @@
-import { pgTable, uuid, text, timestamp, decimal, varchar } from 'drizzle-orm/pg-core'
+import { decimal, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
+import { assets } from './assets'
 import { organizations } from './organizations'
 import { users } from './users'
-import { assets } from './assets'
 
 export const fuelTransactions = pgTable('fuel_transactions', {
   id: uuid('id').primaryKey().defaultRandom(),

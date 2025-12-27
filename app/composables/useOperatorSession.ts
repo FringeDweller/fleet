@@ -1,5 +1,5 @@
 export const useOperatorSession = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint:  @typescript-eslint/no-explicit-any
   const activeSession = ref<any>(null)
   const loading = ref(false)
 
@@ -32,7 +32,10 @@ export const useOperatorSession = () => {
     }
   }
 
-  const logOn = async (assetId: string, data: { startOdometer?: string, startHours?: string, previousSessionId?: string } = {}) => {
+  const logOn = async (
+    assetId: string,
+    data: { startOdometer?: string; startHours?: string; previousSessionId?: string } = {}
+  ) => {
     loading.value = true
     try {
       if (online.value) {
@@ -62,7 +65,7 @@ export const useOperatorSession = () => {
     }
   }
 
-  const logOff = async (data: { endOdometer?: string, endHours?: string } = {}) => {
+  const logOff = async (data: { endOdometer?: string; endHours?: string } = {}) => {
     if (!activeSession.value) return
 
     loading.value = true

@@ -1,5 +1,5 @@
 import type { AnyPgColumn } from 'drizzle-orm/pg-core'
-import { pgTable, uuid, text, timestamp } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { organizations } from './organizations'
 
 export const assetCategories = pgTable('asset_categories', {

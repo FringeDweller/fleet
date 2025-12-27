@@ -11,7 +11,7 @@ const { data: submissions } = await useFetch<Record<string, unknown>[]>(`/api/fo
 })
 
 const columns = computed(() => {
-  const cols: { key: string, label: string }[] = [
+  const cols: { key: string; label: string }[] = [
     { key: 'createdAt', label: 'Date' },
     { key: 'targetModule', label: 'Module' },
     { key: 'submittedBy', label: 'User' }
@@ -32,19 +32,23 @@ const columns = computed(() => {
 function exportToCsv() {
   if (!submissions.value) return
 
-  const headers = columns.value.map(c => c.label).join(',')
-  const rows = submissions.value.map((sub) => {
-    return columns.value.map((col) => {
-      if (col.key === 'createdAt') return new Date(sub.createdAt as string).toLocaleString()
-      if (col.key === 'targetModule') return sub.targetModule
-      if (col.key === 'submittedBy') return sub.submittedBy
-      if (col.key.startsWith('data.')) {
-        const key = col.key.split('.')[1] as string
-        return `"${(sub.data as Record<string, unknown>)?.[key] || ''}"`
-      }
-      return ''
-    }).join(',')
-  }).join('\n')
+  const headers = columns.value.map((c) => c.label).join(',')
+  const rows = submissions.value
+    .map((sub) => {
+      return columns.value
+        .map((col) => {
+          if (col.key === 'createdAt') return new Date(sub.createdAt as string).toLocaleString()
+          if (col.key === 'targetModule') return sub.targetModule
+          if (col.key === 'submittedBy') return sub.submittedBy
+          if (col.key.startsWith('data.')) {
+            const key = col.key.split('.')[1] as string
+            return `"${(sub.data as Record<string, unknown>)?.[key] || ''}"`
+          }
+          return ''
+        })
+        .join(',')
+    })
+    .join('\n')
 
   const csvContent = 'data:text/csv;charset=utf-8,' + headers + '\n' + rows
   const encodedUri = encodeURI(csvContent)

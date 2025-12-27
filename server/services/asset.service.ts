@@ -1,9 +1,12 @@
-import { eq, and, ilike, or, sql, getTableColumns } from 'drizzle-orm'
+import { and, eq, getTableColumns, ilike, or, sql } from 'drizzle-orm'
+import { assetCategories, assets } from '../database/schema'
 import { db } from '../utils/db'
-import { assets, assetCategories } from '../database/schema'
 
 export const assetService = {
-  async listAssets(organizationId: string, options: { q?: string, status?: string, page?: number, limit?: number } = {}) {
+  async listAssets(
+    organizationId: string,
+    options: { q?: string; status?: string; page?: number; limit?: number } = {}
+  ) {
     const page = options.page || 1
     const limit = options.limit || 10
     const offset = (page - 1) * limit
@@ -56,12 +59,7 @@ export const assetService = {
       })
       .from(assets)
       .leftJoin(assetCategories, eq(assets.categoryId, assetCategories.id))
-      .where(
-        and(
-          eq(assets.id, id),
-          eq(assets.organizationId, organizationId)
-        )
-      )
+      .where(and(eq(assets.id, id), eq(assets.organizationId, organizationId)))
       .limit(1)
     return results[0]
   },
@@ -72,6 +70,9 @@ export const assetService = {
   },
 
   async listCategories(organizationId: string) {
-    return await db.select().from(assetCategories).where(eq(assetCategories.organizationId, organizationId))
+    return await db
+      .select()
+      .from(assetCategories)
+      .where(eq(assetCategories.organizationId, organizationId))
   }
 }

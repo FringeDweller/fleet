@@ -60,12 +60,8 @@
           "name": "asset_categories_parent_id_asset_categories_id_fk",
           "tableFrom": "asset_categories",
           "tableTo": "asset_categories",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -73,12 +69,8 @@
           "name": "asset_categories_organization_id_organizations_id_fk",
           "tableFrom": "asset_categories",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -190,12 +182,8 @@
           "name": "assets_category_id_asset_categories_id_fk",
           "tableFrom": "assets",
           "tableTo": "asset_categories",
-          "columnsFrom": [
-            "category_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["category_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -203,12 +191,8 @@
           "name": "assets_organization_id_organizations_id_fk",
           "tableFrom": "assets",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -218,9 +202,7 @@
         "assets_asset_number_unique": {
           "name": "assets_asset_number_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "asset_number"
-          ]
+          "columns": ["asset_number"]
         }
       },
       "policies": {},
@@ -272,9 +254,7 @@
         "organizations_slug_unique": {
           "name": "organizations_slug_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "slug"
-          ]
+          "columns": ["slug"]
         }
       },
       "policies": {},
@@ -350,12 +330,8 @@
           "name": "users_organization_id_organizations_id_fk",
           "tableFrom": "users",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -365,9 +341,7 @@
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},
@@ -437,12 +411,8 @@
           "name": "parts_organization_id_organizations_id_fk",
           "tableFrom": "parts",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -452,9 +422,7 @@
         "parts_sku_unique": {
           "name": "parts_sku_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "sku"
-          ]
+          "columns": ["sku"]
         }
       },
       "policies": {},
@@ -524,12 +492,8 @@
           "name": "maintenance_tasks_group_id_task_groups_id_fk",
           "tableFrom": "maintenance_tasks",
           "tableTo": "task_groups",
-          "columnsFrom": [
-            "group_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["group_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -537,12 +501,8 @@
           "name": "maintenance_tasks_organization_id_organizations_id_fk",
           "tableFrom": "maintenance_tasks",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -603,12 +563,8 @@
           "name": "task_groups_parent_id_task_groups_id_fk",
           "tableFrom": "task_groups",
           "tableTo": "task_groups",
-          "columnsFrom": [
-            "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -616,12 +572,8 @@
           "name": "task_groups_organization_id_organizations_id_fk",
           "tableFrom": "task_groups",
           "tableTo": "organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -683,12 +635,8 @@
           "name": "task_parts_task_id_maintenance_tasks_id_fk",
           "tableFrom": "task_parts",
           "tableTo": "maintenance_tasks",
-          "columnsFrom": [
-            "task_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["task_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -696,12 +644,8 @@
           "name": "task_parts_part_id_parts_id_fk",
           "tableFrom": "task_parts",
           "tableTo": "parts",
-          "columnsFrom": [
-            "part_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["part_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }

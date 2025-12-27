@@ -9,19 +9,22 @@ export const useGps = () => {
   const startTracking = async () => {
     if (watchId.value) return
 
-    watchId.value = await Geolocation.watchPosition({
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0
-    }, (position, err) => {
-      if (err) {
-        console.error('GPS Watch Error:', err)
-        return
+    watchId.value = await Geolocation.watchPosition(
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      },
+      (position, err) => {
+        if (err) {
+          console.error('GPS Watch Error:', err)
+          return
+        }
+        if (position) {
+          handleNewLocation(position)
+        }
       }
-      if (position) {
-        handleNewLocation(position)
-      }
-    })
+    )
   }
 
   const stopTracking = async () => {
@@ -31,7 +34,7 @@ export const useGps = () => {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint:  @typescript-eslint/no-explicit-any
   const handleNewLocation = async (position: any) => {
     const coords = position.coords as Record<string, unknown>
     lastLocation.value = coords

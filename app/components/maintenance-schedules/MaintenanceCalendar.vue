@@ -1,5 +1,16 @@
 <script setup lang="ts">
-import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, format, isSameMonth, isSameDay, addMonths, subMonths } from 'date-fns'
+import {
+  addMonths,
+  eachDayOfInterval,
+  endOfMonth,
+  endOfWeek,
+  format,
+  isSameDay,
+  isSameMonth,
+  startOfMonth,
+  startOfWeek,
+  subMonths
+} from 'date-fns'
 
 const props = defineProps<{
   schedules: Record<string, unknown>[]
@@ -44,7 +55,7 @@ const events = computed(() => {
 })
 
 function getEventsForDay(date: Date) {
-  return events.value.filter(e => isSameDay(e.date as Date, date))
+  return events.value.filter((e) => isSameDay(e.date as Date, date))
 }
 
 function nextMonth() {

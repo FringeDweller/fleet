@@ -10,11 +10,18 @@ export const useInventory = () => {
   const { getCollection, putItem, getItem, queueOperation } = useOfflineSync()
   const online = useOnline()
 
-  const fetchParts = async (params?: { q?: string, categoryId?: string, page?: number, limit?: number }) => {
+  const fetchParts = async (params?: {
+    q?: string
+    categoryId?: string
+    page?: number
+    limit?: number
+  }) => {
     loading.value = true
     try {
       if (online.value) {
-        const response = await $fetch<{ items: Part[], total: number }>('/api/inventory/parts', { params })
+        const response = await $fetch<{ items: Part[]; total: number }>('/api/inventory/parts', {
+          params
+        })
         parts.value = response.items
         total.value = response.total
         // Cache to IndexedDB

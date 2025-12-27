@@ -19,7 +19,7 @@ const dataSources = [
   { label: 'Inventory', value: 'inventory' }
 ]
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint:  @typescript-eslint/no-explicit-any
 const results = ref<Record<string, any>[]>([])
 const isExecuting = ref(false)
 const isSaving = ref(false)
@@ -27,7 +27,7 @@ const isSaving = ref(false)
 async function executeReport() {
   isExecuting.value = true
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // biome-ignore lint:  @typescript-eslint/no-explicit-any
     results.value = await $fetch<any[]>('/api/reports/custom/execute', {
       method: 'POST',
       body: definition.value
@@ -67,12 +67,10 @@ async function saveReport() {
 const columns = computed(() => {
   if (results.value.length === 0 || !results.value[0]) return []
 
-  return Object.keys(results.value[0]).map(key => ({
-
+  return Object.keys(results.value[0]).map((key) => ({
     key,
 
     label: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')
-
   }))
 })
 </script>

@@ -21,11 +21,15 @@ maintenanceWorker.on('failed', (job, err) => {
 async function setupRecurringJobs() {
   // Remove existing repeatable jobs to avoid duplicates if pattern changes (optional but good practice)
   // For now, just add. BullMQ handles deduplication by job ID/pattern usually.
-  await maintenanceQueue.add('daily-check', {}, {
-    repeat: {
-      pattern: '0 0 * * *' // Daily at midnight
+  await maintenanceQueue.add(
+    'daily-check',
+    {},
+    {
+      repeat: {
+        pattern: '0 0 * * *' // Daily at midnight
+      }
     }
-  })
+  )
   console.log('Scheduled daily maintenance check.')
 }
 

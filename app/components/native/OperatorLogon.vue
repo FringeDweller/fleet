@@ -5,7 +5,13 @@ const { startScan: scanQr, isScanning: qrScanning } = useQrScanner()
 const { isConnected: obdConnected, liveData: obdData } = useBluetoothObd()
 const { clear } = useUserSession()
 const toast = useToast()
-const handoverContext = useCookie<{ assetId: string, odometer?: string, hours?: string, sessionId: string, timestamp: number } | null>('handover-context')
+const handoverContext = useCookie<{
+  assetId: string
+  odometer?: string
+  hours?: string
+  sessionId: string
+  timestamp: number
+} | null>('handover-context')
 
 const assetId = ref('')
 const startOdometer = ref('')
@@ -25,7 +31,11 @@ onMounted(() => {
       startOdometer.value = ctx.odometer || ''
       startHours.value = ctx.hours || ''
       showManualForm.value = true
-      toast.add({ title: 'Shift Handover', description: 'Continuing from previous operator.', color: 'info' })
+      toast.add({
+        title: 'Shift Handover',
+        description: 'Continuing from previous operator.',
+        color: 'info'
+      })
     } else {
       handoverContext.value = null // Expired
     }
@@ -74,7 +84,8 @@ const handleLogOn = async (id: string) => {
 
 const submitLogOn = async () => {
   try {
-    const previousSessionId = handoverContext.value?.assetId === assetId.value ? handoverContext.value.sessionId : undefined
+    const previousSessionId =
+      handoverContext.value?.assetId === assetId.value ? handoverContext.value.sessionId : undefined
 
     await logOn(assetId.value, {
       startOdometer: startOdometer.value,
@@ -107,7 +118,11 @@ const submitLogOff = async () => {
 
 const onHandover = async () => {
   if (!endOdometer.value && !endHours.value && !obdConnected.value) {
-    toast.add({ title: 'Readings required', description: 'Please enter odometer or hours for handover.', color: 'warning' })
+    toast.add({
+      title: 'Readings required',
+      description: 'Please enter odometer or hours for handover.',
+      color: 'warning'
+    })
     return
   }
 

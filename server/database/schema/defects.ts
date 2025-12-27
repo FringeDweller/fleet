@@ -1,9 +1,9 @@
-import { pgTable, uuid, text, timestamp, varchar } from 'drizzle-orm/pg-core'
-import { organizations } from './organizations'
+import { pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
 import { assets } from './assets'
 import { inspections } from './inspections'
-import { workOrders } from './work-orders'
+import { organizations } from './organizations'
 import { users } from './users'
+import { workOrders } from './work-orders'
 
 export const defects = pgTable('defects', {
   id: uuid('id').primaryKey().defaultRandom(),

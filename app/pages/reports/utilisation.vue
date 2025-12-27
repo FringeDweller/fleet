@@ -11,15 +11,23 @@ const range = ref<Range>({
   end: new Date()
 })
 
-const { data: report, status, refresh } = await useAsyncData('utilisation-report', () => {
-  const params = new URLSearchParams()
-  if (range.value.start) params.append('start', range.value.start.toISOString())
-  if (range.value.end) params.append('end', range.value.end.toISOString())
+const {
+  data: report,
+  status,
+  refresh
+} = await useAsyncData(
+  'utilisation-report',
+  () => {
+    const params = new URLSearchParams()
+    if (range.value.start) params.append('start', range.value.start.toISOString())
+    if (range.value.end) params.append('end', range.value.end.toISOString())
 
-  return $fetch(`/api/reports/utilisation?${params.toString()}`)
-}, {
-  watch: [range]
-})
+    return $fetch(`/api/reports/utilisation?${params.toString()}`)
+  },
+  {
+    watch: [range]
+  }
+)
 
 const columns = [
   { key: 'assetNumber', label: 'Asset' },

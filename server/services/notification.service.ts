@@ -1,6 +1,6 @@
-import { eq, and, desc } from 'drizzle-orm'
-import { db } from '../utils/db'
+import { and, desc, eq } from 'drizzle-orm'
 import { notifications } from '../database/schema'
+import { db } from '../utils/db'
 
 export const notificationService = {
   async createNotification(data: {
@@ -11,14 +11,17 @@ export const notificationService = {
     type?: 'info' | 'warning' | 'error' | 'success'
     link?: string
   }) {
-    return await db.insert(notifications).values({
-      userId: data.userId,
-      organizationId: data.organizationId,
-      title: data.title,
-      message: data.message,
-      type: data.type || 'info',
-      link: data.link
-    }).returning()
+    return await db
+      .insert(notifications)
+      .values({
+        userId: data.userId,
+        organizationId: data.organizationId,
+        title: data.title,
+        message: data.message,
+        type: data.type || 'info',
+        link: data.link
+      })
+      .returning()
   },
 
   async getNotifications(organizationId: string, userId?: string) {
@@ -35,12 +38,10 @@ export const notificationService = {
   },
 
   async markAsRead(id: string, organizationId: string) {
-    return await db.update(notifications)
+    return await db
+      .update(notifications)
       .set({ isRead: true, updatedAt: new Date() })
-      .where(and(
-        eq(notifications.id, id),
-        eq(notifications.organizationId, organizationId)
-      ))
+      .where(and(eq(notifications.id, id), eq(notifications.organizationId, organizationId)))
   },
 
   async markAllAsRead(organizationId: string, userId?: string) {
@@ -49,7 +50,8 @@ export const notificationService = {
       filters.push(eq(notifications.userId, userId))
     }
 
-    return await db.update(notifications)
+    return await db
+      .update(notifications)
       .set({ isRead: true, updatedAt: new Date() })
       .where(and(...filters))
   }

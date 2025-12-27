@@ -11,5 +11,9 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Layout required' })
   }
 
-  return await dashboardConfigService.saveConfig(session.user.id, session.user.organizationId, body.layout)
+  return await dashboardConfigService.saveConfig(
+    session.user.id,
+    session.user.organizationId,
+    body.layout
+  )
 })

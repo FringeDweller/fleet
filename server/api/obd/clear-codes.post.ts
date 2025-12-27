@@ -1,6 +1,6 @@
-import { obdService } from '../../services/obd.service'
+import { and, eq } from 'drizzle-orm'
 import { workOrders } from '../../database/schema'
-import { eq, and } from 'drizzle-orm'
+import { obdService } from '../../services/obd.service'
 import { db } from '../../utils/db'
 
 export default defineEventHandler(async (event) => {
@@ -43,9 +43,11 @@ export default defineEventHandler(async (event) => {
 
     if (wo) {
       // Append to description
-      const newDesc = (wo.description || '') + `\n\n[${new Date().toISOString()}] DTC Codes cleared via OBD.`
+      const newDesc =
+        (wo.description || '') + `\n\n[${new Date().toISOString()}] DTC Codes cleared via OBD.`
 
-      await db.update(workOrders)
+      await db
+        .update(workOrders)
         .set({ description: newDesc, updatedAt: new Date() })
         .where(eq(workOrders.id, wo.id))
     }

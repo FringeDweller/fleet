@@ -10,10 +10,7 @@ const { workOrders, fetchWorkOrders } = useWorkOrders()
 const loading = ref(true)
 
 onMounted(async () => {
-  await Promise.all([
-    fetchSchedules(),
-    fetchWorkOrders({ limit: 100 })
-  ])
+  await Promise.all([fetchSchedules(), fetchWorkOrders({ limit: 100 })])
   loading.value = false
 })
 </script>

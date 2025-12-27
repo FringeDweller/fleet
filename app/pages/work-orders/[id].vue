@@ -3,17 +3,27 @@ const route = useRoute()
 const id = route.params.id as string
 const toast = useToast()
 
-const { data: wo, pending, refresh: refreshWo } = await useFetch<Record<string, unknown>>(`/api/work-orders/${id}`)
-const { data: woParts, refresh: refreshParts } = await useFetch<Record<string, unknown>[]>(`/api/work-orders/${id}/parts`)
+const {
+  data: wo,
+  pending,
+  refresh: refreshWo
+} = await useFetch<Record<string, unknown>>(`/api/work-orders/${id}`)
+const { data: woParts, refresh: refreshParts } = await useFetch<Record<string, unknown>[]>(
+  `/api/work-orders/${id}/parts`
+)
 const { parts: allParts, fetchParts, locations, fetchLocations } = useInventory()
 
 const checklist = ref<Record<string, unknown>[]>([])
 
-watch(wo, (newWo) => {
-  if (newWo?.checklist) {
-    checklist.value = JSON.parse(JSON.stringify(newWo.checklist))
-  }
-}, { immediate: true })
+watch(
+  wo,
+  (newWo) => {
+    if (newWo?.checklist) {
+      checklist.value = JSON.parse(JSON.stringify(newWo.checklist))
+    }
+  },
+  { immediate: true }
+)
 
 const isAddPartModalOpen = ref(false)
 const isCompleteModalOpen = ref(false)
@@ -50,7 +60,11 @@ async function onRemovePart(woPartId: string) {
     toast.add({ title: 'Part removed', color: 'success' })
     await Promise.all([refreshWo(), refreshParts()])
   } catch (error: unknown) {
-    toast.add({ title: 'Error removing part', description: (error as Error).message, color: 'error' })
+    toast.add({
+      title: 'Error removing part',
+      description: (error as Error).message,
+      color: 'error'
+    })
   }
 }
 
@@ -78,7 +92,11 @@ async function onComplete() {
     isCompleteModalOpen.value = false
     await refreshWo()
   } catch (error: unknown) {
-    toast.add({ title: 'Error completing work order', description: (error as Error).message, color: 'error' })
+    toast.add({
+      title: 'Error completing work order',
+      description: (error as Error).message,
+      color: 'error'
+    })
   }
 }
 
@@ -101,12 +119,18 @@ const items = [
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'open': return 'primary'
-    case 'in_progress': return 'info'
-    case 'pending_parts': return 'warning'
-    case 'completed': return 'success'
-    case 'closed': return 'neutral'
-    default: return 'neutral'
+    case 'open':
+      return 'primary'
+    case 'in_progress':
+      return 'info'
+    case 'pending_parts':
+      return 'warning'
+    case 'completed':
+      return 'success'
+    case 'closed':
+      return 'neutral'
+    default:
+      return 'neutral'
   }
 }
 </script>

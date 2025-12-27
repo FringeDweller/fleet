@@ -12,7 +12,6 @@ const range = ref<Range>({
 })
 
 interface MaintenanceCostAsset {
-
   assetId: string
 
   assetNumber: string
@@ -24,25 +23,29 @@ interface MaintenanceCostAsset {
   partsCost: number
 
   totalCost: number
-
 }
 
-const { data: report, status, refresh } = await useAsyncData('maintenance-costs-report', () => {
-  const params = new URLSearchParams()
+const {
+  data: report,
+  status,
+  refresh
+} = await useAsyncData(
+  'maintenance-costs-report',
+  () => {
+    const params = new URLSearchParams()
 
-  if (range.value.start) params.append('start', range.value.start.toISOString())
+    if (range.value.start) params.append('start', range.value.start.toISOString())
 
-  if (range.value.end) params.append('end', range.value.end.toISOString())
+    if (range.value.end) params.append('end', range.value.end.toISOString())
 
-  return $fetch<MaintenanceCostAsset[]>(`/api/reports/maintenance-costs?${params.toString()}`)
-}, {
-
-  watch: [range]
-
-})
+    return $fetch<MaintenanceCostAsset[]>(`/api/reports/maintenance-costs?${params.toString()}`)
+  },
+  {
+    watch: [range]
+  }
+)
 
 const columns = [
-
   { key: 'assetNumber', label: 'Asset' },
 
   { key: 'categoryName', label: 'Category' },
@@ -52,31 +55,31 @@ const columns = [
   { key: 'partsCost', label: 'Parts Cost' },
 
   { key: 'totalCost', label: 'Total Cost' }
-
 ]
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('en-AU', {
-
     style: 'currency',
 
     currency: 'AUD'
-
   }).format(value)
 }
 
 const totals = computed(() => {
   if (!report.value) return { labor: 0, parts: 0, total: 0 }
 
-  return report.value.reduce((acc, curr) => {
-    acc.labor += curr.laborCost
+  return report.value.reduce(
+    (acc, curr) => {
+      acc.labor += curr.laborCost
 
-    acc.parts += curr.partsCost
+      acc.parts += curr.partsCost
 
-    acc.total += curr.totalCost
+      acc.total += curr.totalCost
 
-    return acc
-  }, { labor: 0, parts: 0, total: 0 })
+      return acc
+    },
+    { labor: 0, parts: 0, total: 0 }
+  )
 })
 </script>
 

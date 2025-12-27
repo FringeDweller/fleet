@@ -2,14 +2,17 @@
 const route = useRoute()
 const id = route.params.id as string
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint:  @typescript-eslint/no-explicit-any
 const { data: inspection, pending } = await useFetch<any>(`/api/inspections/${id}`)
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'passed': return 'success'
-    case 'failed': return 'error'
-    default: return 'neutral'
+    case 'passed':
+      return 'success'
+    case 'failed':
+      return 'error'
+    default:
+      return 'neutral'
   }
 }
 </script>

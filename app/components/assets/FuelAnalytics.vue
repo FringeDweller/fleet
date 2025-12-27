@@ -5,13 +5,19 @@ const props = defineProps<{
   assetId: string
 }>()
 
-const { data: analytics, pending: loadingAnalytics } = await useFetch<FuelAnalytics>(`/api/fuel/analytics`, {
-  query: { assetId: props.assetId }
-})
+const { data: analytics, pending: loadingAnalytics } = await useFetch<FuelAnalytics>(
+  `/api/fuel/analytics`,
+  {
+    query: { assetId: props.assetId }
+  }
+)
 
-const { data: history, pending: loadingHistory } = await useFetch<FuelTransaction[]>(`/api/fuel/history`, {
-  query: { assetId: props.assetId }
-})
+const { data: history, pending: loadingHistory } = await useFetch<FuelTransaction[]>(
+  `/api/fuel/history`,
+  {
+    query: { assetId: props.assetId }
+  }
+)
 
 const stats = computed(() => {
   if (!analytics.value) return []

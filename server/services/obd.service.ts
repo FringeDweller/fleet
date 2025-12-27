@@ -1,7 +1,7 @@
-import { eq, and } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import type { PgTransaction } from 'drizzle-orm/pg-core'
-import { db } from '../utils/db'
 import { obdReadings, workOrders } from '../database/schema'
+import { db } from '../utils/db'
 
 export const obdService = {
   async recordReading(data: {
@@ -16,16 +16,19 @@ export const obdService = {
   }) {
     return await db.transaction(async (tx) => {
       // 1. Save the reading
-      const [reading] = await tx.insert(obdReadings).values({
-        assetId: data.assetId,
-        odometer: data.odometer?.toString(),
-        engineHours: data.engineHours?.toString(),
-        fuelLevel: data.fuelLevel?.toString(),
-        dtcCodes: data.dtcCodes || [],
-        rawData: data.rawData || {},
-        organizationId: data.organizationId,
-        hlc: data.hlc
-      }).returning()
+      const [reading] = await tx
+        .insert(obdReadings)
+        .values({
+          assetId: data.assetId,
+          odometer: data.odometer?.toString(),
+          engineHours: data.engineHours?.toString(),
+          fuelLevel: data.fuelLevel?.toString(),
+          dtcCodes: data.dtcCodes || [],
+          rawData: data.rawData || {},
+          organizationId: data.organizationId,
+          hlc: data.hlc
+        })
+        .returning()
 
       // 2. If critical DTCs are found, create a Work Order
       if (data.dtcCodes && data.dtcCodes.length > 0) {
@@ -44,11 +47,11 @@ export const obdService = {
     // Simple logic: codes starting with P0 (Powertrain) or P2 are often critical
     // In a real app, use a comprehensive look-up table
     const criticalPrefixes = ['P00', 'P01', 'P02', 'P03', 'P05', 'P06']
-    return criticalPrefixes.some(prefix => code.startsWith(prefix))
+    return criticalPrefixes.some((prefix) => code.startsWith(prefix))
   },
 
   async autoCreateWorkOrder(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // biome-ignore lint:  @typescript-eslint/no-explicit-any
     tx: PgTransaction<any, any, any>,
     assetId: string,
     dtcCode: string,
@@ -58,11 +61,13 @@ export const obdService = {
     const [existing] = await tx
       .select()
       .from(workOrders)
-      .where(and(
-        eq(workOrders.assetId, assetId),
-        eq(workOrders.status, 'open'),
-        eq(workOrders.organizationId, organizationId)
-      ))
+      .where(
+        and(
+          eq(workOrders.assetId, assetId),
+          eq(workOrders.status, 'open'),
+          eq(workOrders.organizationId, organizationId)
+        )
+      )
       .limit(1)
 
     if (existing && existing.description!.includes(dtcCode)) return

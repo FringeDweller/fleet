@@ -1,5 +1,5 @@
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
-import { Filesystem, Directory } from '@capacitor/filesystem'
+import { Directory, Filesystem } from '@capacitor/filesystem'
 
 export const useNativeCamera = () => {
   const { isNative } = useCapacitor()
@@ -16,7 +16,7 @@ export const useNativeCamera = () => {
           const file = (e.target as HTMLInputElement).files?.[0]
           if (file) {
             const reader = new FileReader()
-            reader.onload = re => resolve(re.target?.result as string)
+            reader.onload = (re) => resolve(re.target?.result as string)
             reader.readAsDataURL(file)
           }
         }
@@ -51,14 +51,15 @@ export const useNativeCamera = () => {
     return savedFile.uri
   }
 
-  const convertBlobToBase64 = (blob: Blob) => new Promise<string>((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onerror = reject
-    reader.onload = () => {
-      resolve(reader.result as string)
-    }
-    reader.readAsDataURL(blob)
-  })
+  const convertBlobToBase64 = (blob: Blob) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onerror = reject
+      reader.onload = () => {
+        resolve(reader.result as string)
+      }
+      reader.readAsDataURL(blob)
+    })
 
   return {
     takePhoto,

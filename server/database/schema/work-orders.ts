@@ -1,8 +1,8 @@
-import { pgTable, uuid, text, timestamp, varchar, date, jsonb, decimal } from 'drizzle-orm/pg-core'
-import { organizations } from './organizations'
+import { date, decimal, jsonb, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core'
 import { assets } from './assets'
-import { maintenanceTasks } from './maintenance-tasks'
 import { maintenanceSchedules } from './maintenance-schedules'
+import { maintenanceTasks } from './maintenance-tasks'
+import { organizations } from './organizations'
 import { users } from './users'
 
 export const workOrders = pgTable('work_orders', {

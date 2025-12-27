@@ -6,7 +6,10 @@ export const useMaintenanceSchedules = () => {
   const fetchSchedules = async (params: Record<string, unknown> = {}) => {
     loading.value = true
     try {
-      const data = await $fetch<{ items: Record<string, unknown>[] }>('/api/maintenance-schedules', { params })
+      const data = await $fetch<{ items: Record<string, unknown>[] }>(
+        '/api/maintenance-schedules',
+        { params }
+      )
       schedules.value = data.items
     } catch (e: unknown) {
       error.value = e as Error
@@ -37,7 +40,7 @@ export const useMaintenanceSchedules = () => {
     await $fetch(`/api/maintenance-schedules/${id}`, {
       method: 'DELETE'
     })
-    schedules.value = schedules.value.filter(s => s.id !== id)
+    schedules.value = schedules.value.filter((s) => s.id !== id)
   }
 
   return {

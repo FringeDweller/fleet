@@ -1,28 +1,31 @@
-import { pgTable, uuid, text, timestamp, decimal, index } from 'drizzle-orm/pg-core'
-import { organizations } from './organizations'
+import { decimal, index, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { assets } from './assets'
 import { operatorSessions } from './operator-sessions'
+import { organizations } from './organizations'
 
-export const assetLocations = pgTable('asset_locations', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  assetId: uuid('asset_id')
-    .notNull()
-    .references(() => assets.id),
-  sessionId: uuid('session_id')
-    .references(() => operatorSessions.id),
-  latitude: decimal('latitude', { precision: 10, scale: 7 }).notNull(),
-  longitude: decimal('longitude', { precision: 10, scale: 7 }).notNull(),
-  speed: decimal('speed', { precision: 5, scale: 2 }),
-  heading: decimal('heading', { precision: 5, scale: 2 }),
-  altitude: decimal('altitude', { precision: 8, scale: 2 }),
-  organizationId: uuid('organization_id')
-    .notNull()
-    .references(() => organizations.id),
-  hlc: text('hlc'),
-  createdAt: timestamp('created_at').defaultNow().notNull()
-}, (table) => {
-  return {
-    assetIdIdx: index('asset_locations_asset_id_idx').on(table.assetId),
-    createdAtIdx: index('asset_locations_created_at_idx').on(table.createdAt)
+export const assetLocations = pgTable(
+  'asset_locations',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    assetId: uuid('asset_id')
+      .notNull()
+      .references(() => assets.id),
+    sessionId: uuid('session_id').references(() => operatorSessions.id),
+    latitude: decimal('latitude', { precision: 10, scale: 7 }).notNull(),
+    longitude: decimal('longitude', { precision: 10, scale: 7 }).notNull(),
+    speed: decimal('speed', { precision: 5, scale: 2 }),
+    heading: decimal('heading', { precision: 5, scale: 2 }),
+    altitude: decimal('altitude', { precision: 8, scale: 2 }),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organizations.id),
+    hlc: text('hlc'),
+    createdAt: timestamp('created_at').defaultNow().notNull()
+  },
+  (table) => {
+    return {
+      assetIdIdx: index('asset_locations_asset_id_idx').on(table.assetId),
+      createdAtIdx: index('asset_locations_created_at_idx').on(table.createdAt)
+    }
   }
-})
+)

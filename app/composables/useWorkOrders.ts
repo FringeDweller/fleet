@@ -9,7 +9,9 @@ export const useWorkOrders = () => {
     loading.value = true
     try {
       if (online.value) {
-        const data = await $fetch<{ items: Record<string, unknown>[] }>('/api/work-orders', { params })
+        const data = await $fetch<{ items: Record<string, unknown>[] }>('/api/work-orders', {
+          params
+        })
         workOrders.value = data.items
         for (const wo of data.items) {
           await putItem('work-orders', wo)
@@ -47,12 +49,15 @@ export const useWorkOrders = () => {
     }
   }
 
-  const completeWorkOrder = async (id: string, data: {
-    checklist?: Record<string, unknown>[]
-    completionMileage?: string
-    completionHours?: string
-    laborCost?: string
-  }) => {
+  const completeWorkOrder = async (
+    id: string,
+    data: {
+      checklist?: Record<string, unknown>[]
+      completionMileage?: string
+      completionHours?: string
+      laborCost?: string
+    }
+  ) => {
     if (online.value) {
       return await $fetch(`/api/work-orders/${id}/complete`, {
         method: 'POST',
