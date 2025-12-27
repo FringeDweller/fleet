@@ -1,5 +1,22 @@
 import type { AvatarProps } from '@nuxt/ui'
 
+export interface WidgetConfig {
+  id: string
+  type: string
+  w: number
+  h: number
+  settings: Record<string, unknown>
+}
+
+export interface DashboardConfig {
+  id: string
+  userId: string
+  organizationId: string
+  layout: WidgetConfig[]
+  createdAt: string
+  updatedAt: string
+}
+
 export type UserStatus = 'subscribed' | 'unsubscribed' | 'bounced'
 export type SaleStatus = 'paid' | 'failed' | 'refunded'
 
@@ -84,99 +101,55 @@ export interface Asset {
 }
 
 export interface AssetCategory {
-
   id: string
-
   name: string
-
   slug: string
-
   parentId: string | null
-
   organizationId: string
-
   createdAt: string
-
   updatedAt: string
-
 }
 
 export interface Part {
-
   id: string
-
   sku: string
-
   name: string
-
   description: string | null
-
   unit: string
-
   categoryId: string | null
-
   reorderThreshold: string
-
   reorderQuantity: string
-
   quantityOnHand: string
-
   unitCost: string
-
   organizationId: string
-
   createdAt: string
-
   updatedAt: string
-
   categoryName?: string
-
   history?: StockMovement[]
-
   inventoryLevels?: { locationId: string, locationName: string, quantity: string }[]
-
 }
 
 export interface PartCategory {
-
   id: string
-
   name: string
-
   description: string | null
-
   organizationId: string
-
   createdAt: string
-
   updatedAt: string
-
 }
 
 export interface StockMovement {
-
   id: string
-
   partId: string
-
   type: 'in' | 'out' | 'adjustment'
-
   quantity: string
-
   reason: string | null
-
   referenceType: 'work_order' | 'purchase_order' | 'manual' | null
-
   referenceId: string | null
-
   userId: string
-
   userName?: string
-
   organizationId: string
-
   createdAt: string
-
 }
 
 export interface FuelTransaction {
