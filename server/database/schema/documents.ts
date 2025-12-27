@@ -1,4 +1,4 @@
-import { integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { boolean, integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { documentCategories } from './document-categories'
 import { organizations } from './organizations'
 import { users } from './users'
@@ -12,6 +12,10 @@ export const documents = pgTable('documents', {
 
   categoryId: uuid('category_id').references(() => documentCategories.id),
   expiryDate: timestamp('expiry_date'),
+
+  version: integer('version').default(1).notNull(),
+  rootId: uuid('root_id'), // Reference to the first version of this document
+  isLatest: boolean('is_latest').default(true).notNull(),
 
   organizationId: uuid('organization_id')
     .notNull()

@@ -1,19 +1,92 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, ilike } from 'drizzle-orm'
 import { documentCategories, documentLinks, documents } from '../database/schema'
 import { db } from '../utils/db'
 
 export const documentService = {
-  async listDocuments(organizationId: string, categoryId?: string) {
+  async listDocuments(
+    organizationId: string,
+    options?: { categoryId?: string; search?: string; allVersions?: boolean }
+  ) {
     const filters = [eq(documents.organizationId, organizationId)]
-    if (categoryId) {
-      filters.push(eq(documents.categoryId, categoryId))
+    if (!options?.allVersions) {
+      filters.push(eq(documents.isLatest, true))
+    }
+    if (options?.categoryId) {
+      filters.push(eq(documents.categoryId, options.categoryId))
+    }
+    if (options?.search) {
+      filters.push(ilike(documents.name, `%${options.search}%`))
     }
     return await db
       .select()
       .from(documents)
       .where(and(...filters))
+  },
+
+  async listDocumentVersions(organizationId: string, rootId: string) {
+    return await db
+      .select()
+      .from(documents)
+      .where(and(eq(documents.organizationId, organizationId), eq(documents.rootId, rootId)))
+      .orderBy(documents.version)
+  },
+
+  async uploadVersion(
+    organizationId: string,
+    userId: string,
+    rootId: string,
+    file: { name: string; type: string; size: number; buffer: Buffer }
+  ) {
+    const [originalDoc] = await db
+      .select()
+      .from(documents)
+      .where(and(eq(documents.id, rootId), eq(documents.organizationId, organizationId)))
+      .limit(1)
+    if (!originalDoc) throw new Error('Original document not found')
+
+    const [latestDoc] = await db
+      .select()
+      .from(documents)
+      .where(and(eq(documents.rootId, rootId), eq(documents.isLatest, true)))
+      .limit(1)
+
+    const nextVersion = (latestDoc?.version || originalDoc.version) + 1
+
+    // Mark old ones as not latest
+    await db
+      .update(documents)
+      .set({ isLatest: false })
+      .where(and(eq(documents.rootId, rootId), eq(documents.organizationId, organizationId)))
+
+    const uploadDir = path.join(process.cwd(), 'public/uploads', organizationId)
+    await fs.mkdir(uploadDir, { recursive: true })
+
+    const fileName = `${Date.now()}-${file.name}`
+    const filePath = path.join(uploadDir, fileName)
+    await fs.writeFile(filePath, file.buffer)
+
+    const url = `/uploads/${organizationId}/${fileName}`
+
+    const [newDoc] = await db
+      .insert(documents)
+      .values({
+        name: file.name,
+        mimeType: file.type,
+        size: file.size,
+        url,
+        organizationId,
+        createdBy: userId,
+        categoryId: originalDoc.categoryId,
+        expiryDate: originalDoc.expiryDate,
+        rootId,
+        version: nextVersion,
+        isLatest: true
+      })
+      .returning()
+
+    return newDoc
   },
 
   async listEntityDocuments(organizationId: string, entityType: string, entityId: string) {

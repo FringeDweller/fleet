@@ -1,0 +1,1 @@
+ALTER TABLE "documents" ADD COLUMN "is_latest" boolean DEFAULT true NOT NULL;

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 const _selectedCategoryId = ref<string | 'all'>('all')
+const _searchQuery = ref('')
 
 const { data: _documents, refresh: _refresh } = await useFetch<any[]>('/api/documents', {
   query: computed(() => ({
-    categoryId: _selectedCategoryId.value === 'all' ? undefined : _selectedCategoryId.value
+    categoryId: _selectedCategoryId.value === 'all' ? undefined : _selectedCategoryId.value,
+    search: _searchQuery.value || undefined
   }))
 })
 
@@ -20,10 +22,43 @@ const _columns = [
   { key: 'mimeType', label: 'Type' },
   { key: 'categoryId', label: 'Category' },
   { key: 'size', label: 'Size' },
+  { key: 'version', label: 'v' },
   { key: 'expiryDate', label: 'Expiry' },
   { key: 'createdAt', label: 'Uploaded' },
   { key: 'actions', label: '' }
 ]
+
+const _isVersionModalOpen = ref(false)
+const _selectedDocForVersions = ref<any>(null)
+const { data: _versions, refresh: _refreshVersions } = await useFetch<any[]>(() =>
+  _selectedDocForVersions.value
+    ? `/api/documents/${_selectedDocForVersions.value.id}/versions`
+    : null
+)
+
+function _showVersions(doc: any) {
+  _selectedDocForVersions.value = doc
+  _isVersionModalOpen.value = true
+}
+
+const _versionFileInput = ref<HTMLInputElement | null>(null)
+async function _uploadNewVersion(e: Event) {
+  const target = e.target as HTMLInputElement
+  if (target.files && target.files.length > 0 && _selectedDocForVersions.value) {
+    const file = target.files[0]
+    const formData = new FormData()
+    formData.append('file', file)
+
+    await $fetch(`/api/documents/${_selectedDocForVersions.value.id}/versions`, {
+      method: 'POST',
+      body: formData
+    })
+
+    _refreshVersions()
+    _refresh()
+  }
+}
+</script>
 
 function _formatSize(bytes: number) {
   if (bytes === 0) return '0 Bytes'
@@ -71,6 +106,12 @@ const _categoryOptions = computed(() => {
           <UDashboardSidebarCollapse />
         </template>
         <template #right>
+          <UInput
+            v-model="_searchQuery"
+            icon="i-lucide-search"
+            placeholder="Search documents..."
+            class="w-64"
+          />
           <USelectMenu
             v-model="_selectedCategoryId"
             :options="_categoryOptions"
@@ -107,11 +148,46 @@ const _categoryOptions = computed(() => {
           {{ new Date(row.original.createdAt).toLocaleDateString() }}
         </template>
         <template #actions-cell="{ row }">
-          <div class="flex justify-end">
+          <div class="flex justify-end gap-2">
+            <UButton icon="i-lucide-history" variant="ghost" size="xs" @click="_showVersions(row.original)" />
             <UButton icon="i-lucide-trash-2" color="error" variant="ghost" @click="_deleteDoc(row.original.id)" />
           </div>
         </template>
       </UTable>
+
+      <UModal v-model="_isVersionModalOpen">
+        <div class="p-6 space-y-6">
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-bold">Version History</h3>
+            <UButton label="Upload New Version" icon="i-lucide-upload" size="xs" @click="_versionFileInput?.click()" />
+            <input ref="_versionFileInput" type="file" class="hidden" @change="_uploadNewVersion" />
+          </div>
+
+          <UTable
+            :data="_versions || []"
+            :columns="[
+              { key: 'version', label: 'Ver' },
+              { key: 'name', label: 'Name' },
+              { key: 'createdAt', label: 'Date' },
+              { key: 'actions', label: '' }
+            ]"
+          >
+            <template #name-cell="{ row }">
+              <a :href="row.original.url" target="_blank" class="text-primary hover:underline">{{ row.original.name }}</a>
+            </template>
+            <template #createdAt-cell="{ row }">
+              {{ new Date(row.original.createdAt).toLocaleString() }}
+            </template>
+            <template #actions-cell="{ row }">
+              <UBadge v-if="row.original.isLatest" color="success" size="xs">Latest</UBadge>
+            </template>
+          </UTable>
+
+          <div class="flex justify-end">
+            <UButton label="Close" variant="ghost" @click="_isVersionModalOpen = false" />
+          </div>
+        </div>
+      </UModal>
 
       <UModal v-model="_isUploadModalOpen">
         <DocumentUploadModal @uploaded="() => { _isUploadModalOpen = false; _refresh() }" />
