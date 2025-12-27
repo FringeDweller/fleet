@@ -1,29 +1,49 @@
 <script setup lang="ts">
 const toast = useToast()
 
-const { data: _prefs, refresh } = await useFetch('/api/settings/notifications')
+const { data: prefs, refresh } = await useFetch<any>('/api/settings/notifications')
 
-const _state = ref({
-  preferences: _prefs.value?.preferences || {},
-  quietHours: _prefs.value?.quietHours || { enabled: false, start: '22:00', end: '07:00' }
+const state = ref({
+  preferences: (prefs.value?.preferences || {}) as Record<string, any>,
+  quietHours: prefs.value?.quietHours || { enabled: false, start: '22:00', end: '07:00' }
 })
 
-const _eventTypes = [
-  { key: 'maintenance_due', label: 'Maintenance Due', description: 'When an asset maintenance schedule is due.' },
-  { key: 'inspection_failed', label: 'Inspection Failed', description: 'When a pre-start inspection has critical failures.' },
-  { key: 'low_stock', label: 'Low Stock Alert', description: 'When inventory parts fall below threshold.' },
-  { key: 'geofence_entry', label: 'Geofence Entry', description: 'When an asset enters a restricted zone.' },
-  { key: 'geofence_exit', label: 'Geofence Exit', description: 'When an asset leaves a designated zone.' }
+const eventTypes = [
+  {
+    key: 'maintenance_due',
+    label: 'Maintenance Due',
+    description: 'When an asset maintenance schedule is due.'
+  },
+  {
+    key: 'inspection_failed',
+    label: 'Inspection Failed',
+    description: 'When a pre-start inspection has critical failures.'
+  },
+  {
+    key: 'low_stock',
+    label: 'Low Stock Alert',
+    description: 'When inventory parts fall below threshold.'
+  },
+  {
+    key: 'geofence_entry',
+    label: 'Geofence Entry',
+    description: 'When an asset enters a restricted zone.'
+  },
+  {
+    key: 'geofence_exit',
+    label: 'Geofence Exit',
+    description: 'When an asset leaves a designated zone.'
+  }
 ]
 
-const _isSaving = ref(false)
+const isSaving = ref(false)
 
-async function _savePreferences() {
-  _isSaving.value = true
+async function savePreferences() {
+  isSaving.value = true
   try {
     await $fetch('/api/settings/notifications', {
       method: 'PUT',
-      body: _state.value
+      body: state.value
     })
     toast.add({ title: 'Preferences saved', color: 'success' })
     await refresh()
@@ -31,15 +51,15 @@ async function _savePreferences() {
     console.error(error)
     toast.add({ title: 'Failed to save preferences', color: 'error' })
   } finally {
-    _isSaving.value = false
+    isSaving.value = false
   }
 }
 
-function _toggleChannel(eventKey: string, channel: 'inApp' | 'push' | 'email') {
-  if (!_state.value.preferences[eventKey]) {
-    _state.value.preferences[eventKey] = { inApp: false, push: false, email: false }
+function toggleChannel(eventKey: string, channel: 'inApp' | 'push' | 'email') {
+  if (!state.value.preferences[eventKey]) {
+    state.value.preferences[eventKey] = { inApp: false, push: false, email: false }
   }
-  _state.value.preferences[eventKey][channel] = !_state.value.preferences[eventKey][channel]
+  state.value.preferences[eventKey][channel] = !state.value.preferences[eventKey][channel]
 }
 </script>
 
@@ -53,8 +73,8 @@ function _toggleChannel(eventKey: string, channel: 'inApp' | 'push' | 'email') {
       <template #right>
         <UButton
           label="Save Changes"
-          :loading="_isSaving"
-          @click="_savePreferences"
+          :loading="isSaving"
+          @click="savePreferences"
         />
       </template>
     </UPageCard>
@@ -71,30 +91,30 @@ function _toggleChannel(eventKey: string, channel: 'inApp' | 'push' | 'email') {
             </tr>
           </thead>
           <tbody class="divide-y divide-default">
-            <tr v-for="event in _eventTypes" :key="event.key">
+            <tr v-for="event in eventTypes" :key="event.key">
               <td class="py-4">
                 <div class="font-medium text-highlighted">{{ event.label }}</div>
                 <div class="text-xs text-dimmed">{{ event.description }}</div>
               </td>
               <td class="py-4 text-center">
                 <UCheckbox
-                  :model-value="_state.preferences[event.key]?.inApp"
+                  :model-value="state.preferences[event.key]?.inApp"
                   class="inline-flex"
-                  @update:model-value="_toggleChannel(event.key, 'inApp')"
+                  @update:model-value="toggleChannel(event.key, 'inApp')"
                 />
               </td>
               <td class="py-4 text-center">
                 <UCheckbox
-                  :model-value="_state.preferences[event.key]?.push"
+                  :model-value="state.preferences[event.key]?.push"
                   class="inline-flex"
-                  @update:model-value="_toggleChannel(event.key, 'push')"
+                  @update:model-value="toggleChannel(event.key, 'push')"
                 />
               </td>
               <td class="py-4 text-center">
                 <UCheckbox
-                  :model-value="_state.preferences[event.key]?.email"
+                  :model-value="state.preferences[event.key]?.email"
                   class="inline-flex"
-                  @update:model-value="_toggleChannel(event.key, 'email')"
+                  @update:model-value="toggleChannel(event.key, 'email')"
                 />
               </td>
             </tr>
@@ -112,15 +132,15 @@ function _toggleChannel(eventKey: string, channel: 'inApp' | 'push' | 'email') {
     <UPageCard variant="subtle">
       <div class="space-y-4">
         <UFormField label="Enable Quiet Hours" description="Turn off push notifications during a specific time.">
-          <USwitch v-model="_state.quietHours.enabled" />
+          <USwitch v-model="state.quietHours.enabled" />
         </UFormField>
 
-        <div v-if="_state.quietHours.enabled" class="grid grid-cols-2 gap-4">
+        <div v-if="state.quietHours.enabled" class="grid grid-cols-2 gap-4">
           <UFormField label="Start Time">
-            <UInput v-model="_state.quietHours.start" type="time" />
+            <UInput v-model="state.quietHours.start" type="time" />
           </UFormField>
           <UFormField label="End Time">
-            <UInput v-model="_state.quietHours.end" type="time" />
+            <UInput v-model="state.quietHours.end" type="time" />
           </UFormField>
         </div>
       </div>

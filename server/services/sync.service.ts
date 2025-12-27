@@ -34,7 +34,7 @@ export const syncService = {
   },
 
   async processOperation(op: SyncOperation, organizationId: string) {
-    const tableMap: Record<string, Table<Record<string, unknown>>> = {
+    const tableMap: Record<string, any> = {
       assets,
       'work-orders': workOrders,
       inventory: parts,
@@ -42,7 +42,7 @@ export const syncService = {
       'asset-locations': assetLocations
     }
 
-    const table = tableMap[op.collection] as Table<Record<string, unknown>>
+    const table = tableMap[op.collection] as any
     if (!table) throw new Error(`Unknown collection: ${op.collection}`)
 
     const recordId = (op.data.id as string) || (op.collection === 'asset-locations' ? op.id : null)

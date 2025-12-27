@@ -30,7 +30,7 @@ const teams = ref([
 ])
 const selectedTeam = ref(teams.value[0])
 
-const _items = computed<DropdownMenuItem[][]>(() => {
+const items = computed<DropdownMenuItem[][]>(() => {
   return [
     teams.value.map((team) => ({
       ...team,

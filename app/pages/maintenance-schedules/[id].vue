@@ -6,7 +6,7 @@ definePageMeta({
 const route = useRoute()
 const router = useRouter()
 const toast = useToast()
-const { getSchedule, updateSchedule, deleteSchedule, loading: _loading } = useMaintenanceSchedules()
+const { getSchedule, updateSchedule, deleteSchedule, loading } = useMaintenanceSchedules()
 
 const schedule = ref<Record<string, unknown> | null>(null)
 const initialLoading = ref(true)
@@ -23,7 +23,7 @@ onMounted(async () => {
   }
 })
 
-async function _onSubmit(data: Record<string, unknown>) {
+async function onSubmit(data: Record<string, unknown>) {
   try {
     await updateSchedule(route.params.id as string, data)
     toast.add({ title: 'Schedule updated', color: 'success' })
@@ -38,7 +38,7 @@ async function _onSubmit(data: Record<string, unknown>) {
   }
 }
 
-async function _onDelete() {
+async function onDelete() {
   if (!confirm('Are you sure you want to delete this schedule?')) return
   try {
     await deleteSchedule(route.params.id as string)

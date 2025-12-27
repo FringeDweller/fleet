@@ -1,8 +1,8 @@
 <script setup lang="ts">
-const { recordTransaction, loading: _loading } = useFuel()
+const { recordTransaction, loading } = useFuel()
 const { activeSession } = useOperatorSession()
-const { scanTag, isScanning: _nfcScanning } = useNfc()
-const { startScan: scanQr, isScanning: _qrScanning } = useQrScanner()
+const { scanTag, isScanning: nfcScanning } = useNfc()
+const { startScan: scanQr, isScanning: qrScanning } = useQrScanner()
 const { takePhoto } = useNativeCamera()
 const toast = useToast()
 
@@ -14,14 +14,14 @@ const fuelType = ref('diesel')
 const stationName = ref('')
 const receiptImage = ref('')
 
-const _fuelTypes = [
+const fuelTypes = [
   { label: 'Diesel', value: 'diesel' },
   { label: 'Unleaded', value: 'unleaded' },
   { label: 'AdBlue', value: 'adblue' },
   { label: 'LPG', value: 'lpg' }
 ]
 
-const _onScan = async (method: 'nfc' | 'qr') => {
+const onScan = async (method: 'nfc' | 'qr') => {
   try {
     const id = method === 'nfc' ? await scanTag() : await scanQr()
     if (id) {
@@ -33,7 +33,7 @@ const _onScan = async (method: 'nfc' | 'qr') => {
   }
 }
 
-const _onCaptureReceipt = async () => {
+const onCaptureReceipt = async () => {
   try {
     const photo = await takePhoto()
     if (photo) {
@@ -44,7 +44,7 @@ const _onCaptureReceipt = async () => {
   }
 }
 
-const _submit = async () => {
+const submit = async () => {
   if (!assetId.value || !quantity.value || !totalCost.value) {
     toast.add({
       title: 'Missing Information',

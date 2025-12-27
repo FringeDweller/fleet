@@ -32,9 +32,7 @@ async function _saveSettings() {
   }
 }
 
-const _timezones = [
-  'UTC', 'London/Europe', 'New_York/America', 'Sydney/Australia', 'Tokyo/Asia'
-]
+const _timezones = ['UTC', 'London/Europe', 'New_York/America', 'Sydney/Australia', 'Tokyo/Asia']
 </script>
 
 <template>

@@ -7,20 +7,20 @@ interface Form {
   organizationId: string
 }
 
-const { data: _forms, refresh } = await useFetch<Form[]>('/api/settings/forms')
+const { data: forms, refresh } = await useFetch<Form[]>('/api/settings/forms')
 
-const _columns: Record<string, unknown>[] = [
-  { key: 'title', label: 'Title' },
-  { key: 'version', label: 'Version' },
-  { key: 'status', label: 'Status' },
-  { key: 'createdAt', label: 'Created' },
-  { key: 'actions', label: '' }
+const columns = [
+  { accessorKey: 'title', header: 'Title' },
+  { accessorKey: 'version', header: 'Version' },
+  { accessorKey: 'status', header: 'Status' },
+  { accessorKey: 'createdAt', header: 'Created' },
+  { accessorKey: 'actions', header: '' }
 ]
 
 const isOpen = ref(false)
 const newFormTitle = ref('')
 
-async function _createForm() {
+async function createForm() {
   if (!newFormTitle.value) return
   await $fetch('/api/settings/forms', {
     method: 'POST',
@@ -34,24 +34,24 @@ async function _createForm() {
 
 <template>
   <div class="space-y-4">
-    <div class="flex justify-between items-center">
-      <h2 class="text-lg font-semibold">
+    <div class="flex justify-between items-center px-1">
+      <h2 class="text-lg font-semibold text-highlighted">
         Custom Forms
       </h2>
-      <UButton label="Create Form" @click="isOpen = true" />
+      <UButton label="Create Form" icon="i-lucide-plus" @click="isOpen = true" />
     </div>
 
-    <UTable :rows="(forms as Form[]) || []" :columns="columns as any[]">
-      <template #status-data="{ row }">
-        <UBadge :color="(row as any).status === 'published' ? 'success' : 'neutral'">
-          {{ (row as any).status }}
+    <UTable :data="forms || []" :columns="columns">
+      <template #status-cell="{ row }">
+        <UBadge :color="row.original.status === 'published' ? 'success' : 'neutral'" variant="subtle">
+          {{ row.original.status }}
         </UBadge>
       </template>
-      <template #createdAt-data="{ row }">
-        {{ new Date((row as any).createdAt).toLocaleDateString() }}
+      <template #createdAt-cell="{ row }">
+        {{ new Date(row.original.createdAt).toLocaleDateString() }}
       </template>
-      <template #actions-data="{ row }">
-        <UButton icon="i-lucide-edit" variant="ghost" :to="`/settings/forms/${(row as any).id}`" />
+      <template #actions-cell="{ row }">
+        <UButton icon="i-lucide-pencil" variant="ghost" color="neutral" size="xs" :to="`/settings/forms/${row.original.id}`" />
       </template>
     </UTable>
 

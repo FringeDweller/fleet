@@ -10,7 +10,7 @@ const loading = ref(false)
 
 const toast = useToast()
 
-async function _onLogin() {
+async function onLogin() {
   loading.value = true
   try {
     await $fetch('/api/auth/login', {

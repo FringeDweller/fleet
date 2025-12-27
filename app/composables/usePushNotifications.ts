@@ -52,12 +52,16 @@ export const usePushNotifications = () => {
   }
 
   // Update badge count
-  watch(unreadCount, (count) => {
-    if (isNative.value) {
-      PushNotifications.removeAllDeliveredNotifications() // Optional: clear notifications if desired
-      // PushNotifications.setBadge({ count }) // Note: check plugin support for setBadge
-    }
-  }, { immediate: true })
+  watch(
+    unreadCount,
+    (count) => {
+      if (isNative.value) {
+        PushNotifications.removeAllDeliveredNotifications() // Optional: clear notifications if desired
+        // PushNotifications.setBadge({ count }) // Note: check plugin support for setBadge
+      }
+    },
+    { immediate: true }
+  )
 
   return {
     register,

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 const {
-  currentInspection: _currentInspection,
+  currentInspection,
   startInspection,
   recordCheckpoint,
   submitInspection,
-  loading: _inspectionLoading
+  loading: inspectionLoading
 } = usePreStartInspection()
-const { scanTag, isScanning: _nfcScanning } = useNfc()
-const { startScan: scanQr, isScanning: _qrScanning } = useQrScanner()
+const { scanTag, isScanning: nfcScanning } = useNfc()
+const { startScan: scanQr, isScanning: qrScanning } = useQrScanner()
 const { getCurrentPosition, loading: locationLoading } = useGeolocation()
 const { takePhoto } = useNativeCamera()
 const toast = useToast()
@@ -22,11 +22,11 @@ const checklist = ref<
     comment?: string
   }[]
 >([])
-const _loading = computed(() => inspectionLoading.value || locationLoading.value)
+const loading = computed(() => inspectionLoading.value || locationLoading.value)
 
 const signatureCaptured = ref(false)
 
-const _onStartScan = async (method: 'nfc' | 'qr') => {
+const onStartScan = async (method: 'nfc' | 'qr') => {
   try {
     const id = method === 'nfc' ? await scanTag() : await scanQr()
     if (id) {
@@ -50,7 +50,7 @@ const _onStartScan = async (method: 'nfc' | 'qr') => {
   }
 }
 
-const _onCheckpointScan = async (method: 'nfc' | 'qr') => {
+const onCheckpointScan = async (method: 'nfc' | 'qr') => {
   try {
     const id = method === 'nfc' ? await scanTag() : await scanQr()
     if (id) {
@@ -67,7 +67,7 @@ const _onCheckpointScan = async (method: 'nfc' | 'qr') => {
   }
 }
 
-const _handleFail = async (item: { status: string | null; photo?: string }) => {
+const handleFail = async (item: { status: string | null; photo?: string }) => {
   item.status = 'failed'
   // REQ-902-AC-03: Failed items require photo
   if (!item.photo) {
@@ -82,11 +82,11 @@ const _handleFail = async (item: { status: string | null; photo?: string }) => {
   }
 }
 
-const _finishCheckpoints = () => {
+const finishCheckpoints = () => {
   step.value = 3
 }
 
-const _finishChecklist = () => {
+const finishChecklist = () => {
   const failedWithoutComment = checklist.value.some((i) => i.status === 'failed' && !i.comment)
   if (failedWithoutComment) {
     toast.add({
@@ -99,7 +99,7 @@ const _finishChecklist = () => {
   step.value = 4
 }
 
-const _submit = async () => {
+const submit = async () => {
   if (!signatureCaptured.value) {
     toast.add({ title: 'Signature required', color: 'warning' })
     return

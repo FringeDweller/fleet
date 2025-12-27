@@ -966,6 +966,7 @@ All device features on mobile devices use Capacitor plugins exclusively:
 - **Coverage**: Minimum 80% code coverage for core business logic and services.
 - **Execution**: Automated via Vitest; must run on every commit and PR.
 - **Component Testing**: Critical UI components tested for state transitions and event emission.
+- **Acceptance Criteria Coverage**: Unit tests MUST be written for ALL acceptance criteria (REQ-*-AC-*) defined in this PRD.
 
 #### Type Checking [TR-TST-02]
 - **Scope**: Entire codebase (Frontend, Backend, and Shared Types).

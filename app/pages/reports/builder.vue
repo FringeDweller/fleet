@@ -73,7 +73,11 @@ const _columns = computed(() => {
 })
 function _exportResults() {
   if (results.value.length === 0) return
-  exportToCSV(results.value, _columns.value, `custom-report-${new Date().toISOString().split('T')[0]}`)
+  exportToCSV(
+    results.value,
+    _columns.value,
+    `custom-report-${new Date().toISOString().split('T')[0]}`
+  )
 }
 </script>
 

@@ -1,22 +1,22 @@
 <script setup lang="ts">
-const { data: _logs, refresh } = await useFetch('/api/settings/audit-logs')
+const { data: logs, refresh } = await useFetch<any[]>('/api/settings/audit-logs')
 
-const _columns = [
-  { key: 'createdAt', label: 'Time' },
-  { key: 'user', label: 'User' },
-  { key: 'action', label: 'Action' },
-  { key: 'entityType', label: 'Entity' },
-  { key: 'details', label: 'Details' }
+const columns = [
+  { accessorKey: 'createdAt', header: 'Time' },
+  { accessorKey: 'user', header: 'User' },
+  { accessorKey: 'action', header: 'Action' },
+  { accessorKey: 'entityType', header: 'Entity' },
+  { accessorKey: 'details', header: 'Details' }
 ]
 
-function _exportLogs() {
-  if (!_logs.value) return
-  const data = _logs.value.map((l: any) => ({
+function exportLogs() {
+  if (!logs.value) return
+  const data = logs.value.map((l: any) => ({
     ...l,
     user: l.user?.name || 'System',
     details: JSON.stringify(l.details)
   }))
-  exportToCSV(data, _columns, `audit-logs-${new Date().toISOString().split('T')[0]}`)
+  exportToCSV(data, columns, `audit-logs-${new Date().toISOString().split('T')[0]}`)
 }
 </script>
 
@@ -33,42 +33,42 @@ function _exportLogs() {
           label="Export CSV"
           variant="soft"
           color="neutral"
-          @click="_exportLogs"
+          @click="exportLogs"
         />
       </template>
     </UPageCard>
 
     <UPageCard variant="subtle" :ui="{ body: 'p-0' }">
       <UTable
-        :rows="_logs || []"
-        :columns="_columns"
+        :data="logs || []"
+        :columns="columns"
       >
-        <template #createdAt-data="{ row }">
+        <template #createdAt-cell="{ row }">
           <div class="text-xs text-dimmed">
-            {{ new Date(row.createdAt).toLocaleString() }}
+            {{ new Date(row.original.createdAt).toLocaleString() }}
           </div>
         </template>
 
-        <template #user-data="{ row }">
+        <template #user-cell="{ row }">
           <div class="text-sm font-medium text-highlighted">
-            {{ row.user?.name || 'System' }}
+            {{ row.original.user?.name || 'System' }}
           </div>
         </template>
 
-        <template #action-data="{ row }">
+        <template #action-cell="{ row }">
           <UBadge
-            :color="row.action === 'delete' ? 'error' : (row.action === 'create' ? 'success' : 'primary')"
+            :color="row.original.action === 'delete' ? 'error' : (row.original.action === 'create' ? 'success' : 'primary')"
             variant="subtle"
             size="xs"
             class="capitalize"
           >
-            {{ row.action }}
+            {{ row.original.action }}
           </UBadge>
         </template>
 
-        <template #details-data="{ row }">
-          <div class="text-xs text-dimmed max-w-xs truncate" :title="JSON.stringify(row.details)">
-            {{ row.details }}
+        <template #details-cell="{ row }">
+          <div class="text-xs text-dimmed max-w-xs truncate" :title="JSON.stringify(row.original.details)">
+            {{ row.original.details }}
           </div>
         </template>
       </UTable>

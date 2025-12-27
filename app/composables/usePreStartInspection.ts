@@ -23,7 +23,12 @@ export const usePreStartInspection = () => {
       location,
       status: 'pending',
       results: [],
-      checkpoints: []
+      checkpoints: [],
+      data: {},
+      notes: null,
+      organizationId: (user.value as any)?.organizationId || '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     }
     currentInspection.value = inspection
     return inspection
@@ -34,6 +39,9 @@ export const usePreStartInspection = () => {
     location?: { latitude: number; longitude: number }
   ) => {
     if (!currentInspection.value) return
+    if (!currentInspection.value.checkpoints) {
+      currentInspection.value.checkpoints = []
+    }
     currentInspection.value.checkpoints.push({
       id: checkpointId,
       timestamp: new Date().toISOString(),

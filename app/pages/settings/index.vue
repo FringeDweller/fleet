@@ -22,7 +22,7 @@ const profile = reactive<Partial<ProfileSchema>>({
   bio: undefined
 })
 const toast = useToast()
-async function _onSubmit(event: FormSubmitEvent<ProfileSchema>) {
+async function onSubmit(event: FormSubmitEvent<ProfileSchema>) {
   toast.add({
     title: 'Success',
     description: 'Your settings have been updated.',
@@ -32,7 +32,7 @@ async function _onSubmit(event: FormSubmitEvent<ProfileSchema>) {
   console.log(event.data)
 }
 
-function _onFileChange(e: Event) {
+function onFileChange(e: Event) {
   const input = e.target as HTMLInputElement
 
   if (!input.files?.length) {
@@ -42,7 +42,7 @@ function _onFileChange(e: Event) {
   profile.avatar = URL.createObjectURL(input.files[0]!)
 }
 
-function _onFileClick() {
+function onFileClick() {
   fileRef.value?.click()
 }
 </script>

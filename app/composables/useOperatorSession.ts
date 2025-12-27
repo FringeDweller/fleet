@@ -55,10 +55,20 @@ export const useOperatorSession = () => {
           operatorId: user.value?.id as string,
           startTime: new Date().toISOString(),
           endTime: null,
+          startMileage: null,
+          endMileage: null,
           startOdometer: data.startOdometer || null,
-          startHours: data.startHours || null,
           endOdometer: null,
-          endHours: null
+          startHours: data.startHours || null,
+          endHours: null,
+          startLocationLat: null,
+          startLocationLng: null,
+          endLocationLat: null,
+          endLocationLng: null,
+          organizationId: (user.value as any)?.organizationId || '',
+          status: 'active',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         }
         await queueOperation('operator-sessions', 'create', session)
         activeSession.value = session

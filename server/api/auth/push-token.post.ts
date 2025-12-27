@@ -19,10 +19,7 @@ export default defineEventHandler(async (event) => {
   })
 
   if (existing) {
-    await db
-      .update(pushTokens)
-      .set({ updatedAt: new Date() })
-      .where(eq(pushTokens.id, existing.id))
+    await db.update(pushTokens).set({ updatedAt: new Date() }).where(eq(pushTokens.id, existing.id))
   } else {
     await db.insert(pushTokens).values({
       userId: session.user.id,

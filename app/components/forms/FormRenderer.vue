@@ -28,7 +28,7 @@ watch(
   { immediate: true }
 )
 
-function _isVisible(field: FormField) {
+function isVisible(field: FormField) {
   if (!field.logic || !field.logic.conditions.length) return true
 
   const { action, match, conditions } = field.logic
@@ -56,7 +56,7 @@ function _isVisible(field: FormField) {
   return action === 'show' ? isMatched : !isMatched
 }
 
-async function _handleSubmit() {
+async function handleSubmit() {
   if (!props.targetId || !props.targetModule) {
     emit('submitted', formData.value)
     return

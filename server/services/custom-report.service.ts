@@ -2,12 +2,12 @@ import { and, eq, type Table } from 'drizzle-orm'
 import { assets, customReports, inspections, parts, users, workOrders } from '../database/schema'
 import { db } from '../utils/db'
 
-const TABLE_MAP: Record<string, Table> = {
-  assets: assets as unknown as Table,
-  workOrders: workOrders as unknown as Table,
-  inspections: inspections as unknown as Table,
-  inventory: parts as unknown as Table,
-  users: users as unknown as Table
+const TABLE_MAP: Record<string, any> = {
+  assets,
+  workOrders,
+  inspections,
+  inventory: parts,
+  users
 }
 
 export const customReportService = {
@@ -33,7 +33,7 @@ export const customReportService = {
   },
 
   async executeReport(definition: Record<string, unknown>, organizationId: string) {
-    const table = TABLE_MAP[definition.dataSource as string]
+    const table = TABLE_MAP[definition.dataSource as string] as any
     if (!table) throw new Error('Invalid data source')
 
     // In a real implementation, we would build the dynamic query here

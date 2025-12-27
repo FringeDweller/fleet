@@ -9,12 +9,12 @@ const passwordSchema = z.object({
 
 type PasswordSchema = z.output<typeof passwordSchema>
 
-const _password = reactive<Partial<PasswordSchema>>({
+const password = reactive<Partial<PasswordSchema>>({
   current: undefined,
   new: undefined
 })
 
-const _validate = (state: Partial<PasswordSchema>): FormError[] => {
+const validate = (state: Partial<PasswordSchema>): FormError[] => {
   const errors: FormError[] = []
   if (state.current && state.new && state.current === state.new) {
     errors.push({ name: 'new', message: 'Passwords must be different' })

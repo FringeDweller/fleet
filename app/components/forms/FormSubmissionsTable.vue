@@ -11,37 +11,38 @@ const { data: submissions } = await useFetch<Record<string, unknown>[]>(`/api/fo
 })
 
 const columns = computed(() => {
-  const cols: { key: string; label: string }[] = [
-    { key: 'createdAt', label: 'Date' },
-    { key: 'targetModule', label: 'Module' },
-    { key: 'submittedBy', label: 'User' }
+  const cols: { accessorKey: string; header: string }[] = [
+    { accessorKey: 'createdAt', header: 'Date' },
+    { accessorKey: 'targetModule', header: 'Module' },
+    { accessorKey: 'submittedBy', header: 'User' }
   ]
 
   // Add first 3 fields from schema as columns
   if (props.schema) {
     props.schema.slice(0, 3).forEach((f) => {
       if (f.type !== 'section') {
-        cols.push({ key: `data.${f.key}`, label: f.label })
+        cols.push({ accessorKey: `data.${f.key}`, header: f.label })
       }
     })
   }
 
-  cols.push({ key: 'actions', label: '' })
+  cols.push({ accessorKey: 'actions', header: '' })
   return cols
 })
-function _exportToCsv() {
+function exportToCSV() {
   if (!submissions.value) return
 
-  const headers = columns.value.map((c) => c.label).join(',')
+  const headers = columns.value.map((c) => c.header).join(',')
   const rows = submissions.value
     .map((sub) => {
       return columns.value
         .map((col) => {
-          if (col.key === 'createdAt') return new Date(sub.createdAt as string).toLocaleString()
-          if (col.key === 'targetModule') return sub.targetModule
-          if (col.key === 'submittedBy') return sub.submittedBy
-          if (col.key.startsWith('data.')) {
-            const key = col.key.split('.')[1] as string
+          if (col.accessorKey === 'createdAt')
+            return new Date(sub.createdAt as string).toLocaleString()
+          if (col.accessorKey === 'targetModule') return sub.targetModule
+          if (col.accessorKey === 'submittedBy') return sub.submittedBy
+          if (col.accessorKey.startsWith('data.')) {
+            const key = col.accessorKey.split('.')[1] as string
             return `"${(sub.data as Record<string, unknown>)?.[key] || ''}"`
           }
           return ''
@@ -62,7 +63,7 @@ function _exportToCsv() {
 const selectedSubmission = ref<Record<string, unknown> | null>(null)
 const showModal = ref(false)
 
-function _viewDetail(sub: Record<string, unknown>) {
+function viewDetail(sub: Record<string, unknown>) {
   selectedSubmission.value = sub
   showModal.value = true
 }
@@ -78,22 +79,22 @@ function _viewDetail(sub: Record<string, unknown>) {
         icon="i-lucide-download"
         label="Export CSV"
         variant="soft"
-        @click="exportToCsv"
+        @click="exportToCSV"
       />
     </div>
 
-    <UTable :rows="(submissions as any[]) || []" :columns="(columns as any[])">
-      <template #createdAt-data="{ row }">
+    <UTable :data="(submissions as any[]) || []" :columns="(columns as any[])">
+      <template #createdAt-cell="{ row }">
         {{ new Date((row as any).createdAt).toLocaleDateString() }}
       </template>
-      <template #actions-data="{ row }">
+      <template #actions-cell="{ row }">
         <UButton icon="i-lucide-eye" variant="ghost" @click="viewDetail(row as any)" />
       </template>
 
       <!-- Dynamic data columns -->
-      <template v-for="col in (columns as any[]).filter((c: any) => c.key.startsWith('data.'))" :key="col.key" #[`${col.key}-data`]="{ row }: any">
+      <template v-for="col in (columns as any[]).filter((c: any) => c.accessorKey.startsWith('data.'))" :key="col.accessorKey" #[`${col.accessorKey}-cell`]="{ row }: any">
         <span class="truncate max-w-[150px] inline-block">
-          {{ (row as any).data?.[col.key.split('.')[1]] }}
+          {{ (row as any).data?.[col.accessorKey.split('.')[1]] }}
         </span>
       </template>
     </UTable>

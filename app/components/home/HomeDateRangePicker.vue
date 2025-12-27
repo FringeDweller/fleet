@@ -2,13 +2,13 @@
 import { CalendarDate, DateFormatter, getLocalTimeZone, today } from '@internationalized/date'
 import type { Range } from '~/types'
 
-const _df = new DateFormatter('en-US', {
+const df = new DateFormatter('en-US', {
   dateStyle: 'medium'
 })
 
 const selected = defineModel<Range>({ required: true })
 
-const _ranges = [
+const ranges = [
   { label: 'Last 7 days', days: 7 },
   { label: 'Last 14 days', days: 14 },
   { label: 'Last 30 days', days: 30 },
@@ -21,7 +21,7 @@ const toCalendarDate = (date: Date) => {
   return new CalendarDate(date.getFullYear(), date.getMonth() + 1, date.getDate())
 }
 
-const _calendarRange = computed({
+const calendarRange = computed({
   get: () => ({
     start: selected.value.start ? toCalendarDate(selected.value.start) : undefined,
     end: selected.value.end ? toCalendarDate(selected.value.end) : undefined
@@ -34,7 +34,7 @@ const _calendarRange = computed({
   }
 })
 
-const _isRangeSelected = (range: { days?: number; months?: number; years?: number }) => {
+const isRangeSelected = (range: { days?: number; months?: number; years?: number }) => {
   if (!selected.value.start || !selected.value.end) return false
 
   const currentDate = today(getLocalTimeZone())
@@ -54,7 +54,7 @@ const _isRangeSelected = (range: { days?: number; months?: number; years?: numbe
   return selectedStart.compare(startDate) === 0 && selectedEnd.compare(currentDate) === 0
 }
 
-const _selectRange = (range: { days?: number; months?: number; years?: number }) => {
+const selectRange = (range: { days?: number; months?: number; years?: number }) => {
   const endDate = today(getLocalTimeZone())
   let startDate = endDate.copy()
 

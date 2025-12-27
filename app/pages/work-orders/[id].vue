@@ -3,15 +3,13 @@ const route = useRoute()
 const id = route.params.id as string
 const toast = useToast()
 
-const {
-  data: wo,
-  pending: _pending,
-  refresh: _refreshWo
-} = await useFetch<Record<string, unknown>>(`/api/work-orders/${id}`)
-const { data: _woParts, refresh: _refreshParts } = await useFetch<Record<string, unknown>[]>(
+const { data: wo, status, refresh: refreshWo } = await useFetch<any>(`/api/work-orders/${id}`)
+const { data: woParts, refresh: refreshParts } = await useFetch<any[]>(
   `/api/work-orders/${id}/parts`
 )
-const { parts: _allParts, fetchParts, locations: _locations, fetchLocations } = useInventory()
+const { parts: allParts, fetchParts, locations, fetchLocations } = useInventory()
+
+const pending = computed(() => status.value === 'pending')
 
 const checklist = ref<Record<string, unknown>[]>([])
 
@@ -33,7 +31,7 @@ const selectedLocationId = ref('')
 
 await Promise.all([fetchParts(), fetchLocations()])
 
-async function _onAddPart() {
+async function onAddPart() {
   try {
     await $fetch(`/api/work-orders/${id}/parts`, {
       method: 'POST',
@@ -52,7 +50,7 @@ async function _onAddPart() {
   }
 }
 
-async function _onRemovePart(woPartId: string) {
+async function onRemovePart(woPartId: string) {
   try {
     await $fetch(`/api/work-orders/parts/${woPartId}`, {
       method: 'DELETE'
@@ -72,7 +70,7 @@ const completionMileage = ref('')
 const completionHours = ref('')
 const laborCost = ref('0')
 
-async function _onComplete() {
+async function onComplete() {
   if (!selectedLocationId.value) {
     toast.add({ title: 'Please select a location', color: 'error' })
     return
@@ -100,14 +98,14 @@ async function _onComplete() {
   }
 }
 
-const _updateChecklistStatus = (index: number, status: string) => {
+const updateChecklistStatus = (index: number, status: string) => {
   if (wo.value?.status === 'completed') return
   if (checklist.value[index]) {
     checklist.value[index].status = status
   }
 }
 
-const _items = [
+const items = [
   { label: 'Details', slot: 'details' },
   { label: 'Checklist', slot: 'checklist' },
   { label: 'Parts', slot: 'parts' },
@@ -117,7 +115,7 @@ const _items = [
   { label: 'History', slot: 'history', disabled: true }
 ]
 
-const _getStatusColor = (status: string) => {
+const getStatusColor = (status: string) => {
   switch (status) {
     case 'open':
       return 'primary'
@@ -277,27 +275,27 @@ const _getStatusColor = (status: string) => {
             </template>
 
             <UTable
-              :rows="woParts || []"
+              :data="woParts || []"
               :columns="[
-                { key: 'partSku', label: 'SKU' },
-                { key: 'partName', label: 'Part' },
-                { key: 'quantity', label: 'Qty' },
-                { key: 'unit', label: 'Unit' },
-                { key: 'unitCost', label: 'Unit Cost' },
-                { key: 'actions' }
-              ] as any[]"
+                { accessorKey: 'partSku', header: 'SKU' },
+                { accessorKey: 'partName', header: 'Part' },
+                { accessorKey: 'quantity', header: 'Qty' },
+                { accessorKey: 'unit', header: 'Unit' },
+                { accessorKey: 'unitCost', header: 'Unit Cost' },
+                { accessorKey: 'actions', header: '' }
+              ]"
             >
-              <template #unitCost-data="{ row }">
-                ${{ (row as any).unitCost }}
+              <template #unitCost-cell="{ row }">
+                ${{ row.original.unitCost }}
               </template>
-              <template #actions-data="{ row }">
+              <template #actions-cell="{ row }">
                 <UButton
                   v-if="wo.status !== 'completed'"
-                  icon="i-heroicons-trash"
+                  icon="i-lucide-trash"
                   size="xs"
                   color="error"
                   variant="ghost"
-                  @click="onRemovePart((row as any).id as string)"
+                  @click="onRemovePart(row.original.id as string)"
                 />
               </template>
             </UTable>

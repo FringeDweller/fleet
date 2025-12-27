@@ -65,10 +65,10 @@ const _unlinkedDocuments = computed(() => {
     <UTable
       :data="documents || []"
       :columns="[
-        { key: 'name', label: 'Name' },
-        { key: 'size', label: 'Size' },
-        { key: 'createdAt', label: 'Linked' },
-        { key: 'actions', label: '' }
+        { accessorKey: 'name', header: 'Name' },
+        { accessorKey: 'size', header: 'Size' },
+        { accessorKey: 'createdAt', header: 'Linked' },
+        { accessorKey: 'actions', header: '' }
       ]"
     >
       <template #name-cell="{ row }">
@@ -78,14 +78,14 @@ const _unlinkedDocuments = computed(() => {
         </div>
       </template>
       <template #size-cell="{ row }">
-        {{ formatSize(row.original.size) }}
+        {{ _formatSize(row.original.size) }}
       </template>
       <template #createdAt-cell="{ row }">
         {{ new Date(row.original.createdAt).toLocaleDateString() }}
       </template>
       <template #actions-cell="{ row }">
         <div class="flex justify-end">
-          <UButton icon="i-lucide-link-2-off" color="error" variant="ghost" size="xs" @click="unlinkDocument(row.original.id)" />
+          <UButton icon="i-lucide-link-2-off" color="error" variant="ghost" size="xs" @click="_unlinkDocument(row.original.id)" />
         </div>
       </template>
     </UTable>
@@ -97,7 +97,7 @@ const _unlinkedDocuments = computed(() => {
         <UFormGroup label="Select Document">
           <USelectMenu
             v-model="selectedDocId"
-            :options="unlinkedDocuments"
+            :options="_unlinkedDocuments"
             value-attribute="id"
             option-attribute="name"
             searchable
@@ -107,7 +107,7 @@ const _unlinkedDocuments = computed(() => {
 
         <div class="flex justify-end gap-2">
           <UButton label="Cancel" variant="ghost" @click="isLinkModalOpen = false" />
-          <UButton label="Link" :disabled="!selectedDocId" @click="linkDocument" />
+          <UButton label="Link" :disabled="!selectedDocId" @click="_linkDocument" />
         </div>
       </div>
     </UModal>

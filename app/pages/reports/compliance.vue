@@ -61,7 +61,11 @@ const _maintenanceCompliance = computed(() => {
 })
 function _exportReport() {
   if (!report.value) return
-  exportToCSV(report.value.expiringCertifications, _certColumns, `compliance-expiring-certs-${new Date().toISOString().split('T')[0]}`)
+  exportToCSV(
+    report.value.expiringCertifications,
+    _certColumns,
+    `compliance-expiring-certs-${new Date().toISOString().split('T')[0]}`
+  )
 }
 </script>
 

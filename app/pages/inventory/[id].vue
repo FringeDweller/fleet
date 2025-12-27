@@ -7,16 +7,16 @@ const toast = useToast()
 const {
   fetchPart,
   updatePart,
-  categories: _categories,
+  categories,
   fetchCategories,
   recordMovement,
-  locations: _locations,
+  locations,
   fetchLocations
 } = useInventory()
 
 const partId = route.params.id as string
 const loading = ref(true)
-const part = ref<Part | null>(null)
+const part = ref<any>(null)
 const isMovementModalOpen = ref(false)
 
 const movementState = reactive({
@@ -30,7 +30,7 @@ const movementState = reactive({
 
 const recordingMovement = ref(false)
 
-async function _onRecordMovement() {
+async function onRecordMovement() {
   recordingMovement.value = true
   try {
     await recordMovement({
@@ -87,7 +87,7 @@ const editState = reactive({
 
 const updating = ref(false)
 
-async function _onUpdate() {
+async function onUpdate() {
   updating.value = true
   try {
     await updatePart(partId, editState)
@@ -107,22 +107,22 @@ async function _onUpdate() {
   }
 }
 
-const _historyColumns = [
-  { key: 'createdAt', label: 'Date' },
-  { key: 'type', label: 'Type' },
-  { key: 'quantity', label: 'Quantity' },
-  { key: 'locationName', label: 'Location' },
-  { key: 'userName', label: 'User' },
-  { key: 'reason', label: 'Reason' }
+const historyColumns = [
+  { accessorKey: 'createdAt', header: 'Date' },
+  { accessorKey: 'type', header: 'Type' },
+  { accessorKey: 'quantity', header: 'Quantity' },
+  { accessorKey: 'locationName', header: 'Location' },
+  { accessorKey: 'userName', header: 'User' },
+  { accessorKey: 'reason', header: 'Reason' }
 ]
 
-const _formatCurrency = (value: string) => {
+const formatCurrency = (value: string) => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
     Number(value)
   )
 }
 
-const _formatDate = (date: string) => {
+const formatDate = (date: string) => {
   return new Date(date).toLocaleString()
 }
 </script>
@@ -319,19 +319,19 @@ const _formatDate = (date: string) => {
 
         <!-- Usage History -->
         <section>
-          <h2 class="text-lg font-semibold mb-4">
+          <h2 class="text-lg font-semibold mb-4 text-highlighted">
             Usage & Movement History
           </h2>
           <UTable
-            :rows="part?.history || []"
-            :columns="historyColumns as any[]"
+            :data="part?.history || []"
+            :columns="historyColumns"
           >
-            <template #createdAt-data="{ row }">
-              {{ formatDate((row as any).createdAt) }}
+            <template #createdAt-cell="{ row }">
+              {{ formatDate(row.original.createdAt as string) }}
             </template>
-            <template #type-data="{ row }">
-              <UBadge :color="(row as any).type === 'in' ? 'success' : (row as any).type === 'out' ? 'error' : (row as any).type === 'transfer' ? 'info' : 'neutral'">
-                {{ (row as any).type.toUpperCase() }}
+            <template #type-cell="{ row }">
+              <UBadge :color="row.original.type === 'in' ? 'success' : (row.original.type === 'out' ? 'error' : (row.original.type === 'transfer' ? 'info' : 'neutral'))">
+                {{ (row.original.type as string).toUpperCase() }}
               </UBadge>
             </template>
           </UTable>

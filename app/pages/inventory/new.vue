@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { categories: _categories, fetchCategories, createPart } = useInventory()
+const { categories, fetchCategories, createPart } = useInventory()
 const toast = useToast()
 const router = useRouter()
 
@@ -18,7 +18,7 @@ const state = reactive({
 
 const loading = ref(false)
 
-async function _onSubmit() {
+async function onSubmit() {
   loading.value = true
   try {
     await createPart(state)

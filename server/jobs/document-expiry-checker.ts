@@ -21,9 +21,7 @@ export async function documentExpiryCheckerProcessor() {
     const expiringDocs = await db
       .select()
       .from(documents)
-      .where(
-        sql`DATE(${documents.expiryDate}) = ${targetDateStr} AND ${documents.isLatest} = true`
-      )
+      .where(sql`DATE(${documents.expiryDate}) = ${targetDateStr} AND ${documents.isLatest} = true`)
 
     for (const doc of expiringDocs) {
       await notificationService.createNotification({

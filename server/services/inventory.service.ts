@@ -214,10 +214,10 @@ export const inventoryService = {
   },
 
   async _updateLocationInventory(
-    tx: PgTransaction<Record<string, unknown>, unknown, unknown>,
+    tx: PgTransaction<any, any, any>,
     partId: string,
     locationId: string,
-    _quantity: number,
+    delta: number,
     organizationId: string
   ) {
     const [existing] = await tx
@@ -243,7 +243,7 @@ export const inventoryService = {
   },
 
   async _setLocationInventory(
-    tx: PgTransaction<Record<string, unknown>, unknown, unknown>,
+    tx: PgTransaction<any, any, any>,
     partId: string,
     locationId: string,
     quantity: number,
@@ -270,10 +270,7 @@ export const inventoryService = {
     }
   },
 
-  async _updateTotalQuantity(
-    tx: PgTransaction<Record<string, unknown>, unknown, unknown>,
-    partId: string
-  ) {
+  async _updateTotalQuantity(tx: PgTransaction<any, any, any>, partId: string) {
     const levels = await tx
       .select({
         total: sql<string>`sum(${partInventory.quantity})`

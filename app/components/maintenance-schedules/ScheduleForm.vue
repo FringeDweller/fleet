@@ -7,28 +7,33 @@ const props = defineProps<{
 
 const emit = defineEmits(['submit'])
 
-const { assets: _assets, categories: _categories, fetchAssets, fetchCategories } = useAssets()
-const { tasks: _tasks, fetchTasks } = useMaintenanceTasks()
+const { assets, categories, fetchAssets, fetchCategories } = useAssets()
+const { tasks, fetchTasks } = useMaintenanceTasks()
 
 onMounted(async () => {
   await Promise.all([fetchAssets(), fetchCategories(), fetchTasks()])
 })
 
-const _state = ref({
-  name: props.initialData?.name || '',
-  description: props.initialData?.description || '',
-  targetType: props.initialData?.targetType || 'asset',
-  assetId: props.initialData?.assetId || null,
-  categoryId: props.initialData?.categoryId || null,
-  taskId: props.initialData?.taskId || '',
-  intervalType: props.initialData?.intervalType || 'meter',
-  meterInterval: props.initialData?.meterInterval || null,
-  timeIntervalValue: props.initialData?.timeIntervalValue || null,
-  timeIntervalUnit: props.initialData?.timeIntervalValue || 'days',
-  organizationId: props.initialData?.organizationId || ''
+const state = ref({
+  name: (props.initialData?.name as string) || '',
+  description: (props.initialData?.description as string) || '',
+  targetType: (props.initialData?.targetType as string) || 'asset',
+  assetId: (props.initialData?.assetId as string) || null,
+  categoryId: (props.initialData?.categoryId as string) || null,
+  taskId: (props.initialData?.taskId as string) || '',
+  type: (props.initialData?.type as string) || 'time',
+  timeInterval: (props.initialData?.timeInterval as number) || null,
+  timeUnit: (props.initialData?.timeUnit as string) || 'days',
+  usageIntervalKm: (props.initialData?.usageIntervalKm as number) || null,
+  usageIntervalHours: (props.initialData?.usageIntervalHours as number) || null,
+  leadTimeDays: (props.initialData?.leadTimeDays as number) || 7,
+  isActive: props.initialData?.isActive !== false,
+  organizationId: (props.initialData?.organizationId as string) || ''
 })
 
-async function _onSubmit(event: FormSubmitEvent<Record<string, unknown>>) {
+const loading = ref(false)
+
+async function onSubmit(event: FormSubmitEvent<any>) {
   const data = { ...event.data }
 
   // Clean up based on targetType
@@ -42,7 +47,7 @@ async function _onSubmit(event: FormSubmitEvent<Record<string, unknown>>) {
 </script>
 
 <template>
-  <UForm :state="_state" class="space-y-4" @submit="_onSubmit">
+  <UForm :state="state" class="space-y-4" @submit="onSubmit">
     <UFormGroup label="Schedule Name" name="name" required>
       <UInput v-model="state.name" />
     </UFormGroup>

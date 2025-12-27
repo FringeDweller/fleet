@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import type { Row, TableColumn } from '@nuxt/ui'
+import type { TableColumn, TableRow } from '@nuxt/ui'
+import { getPaginationRowModel } from '@tanstack/vue-table'
+import { upperFirst } from 'scule'
 import type { User } from '~/types'
 
 const UAvatar = resolveComponent('UAvatar')
@@ -11,65 +13,65 @@ const UCheckbox = resolveComponent('UCheckbox')
 const toast = useToast()
 const table = useTemplateRef('table')
 
-const _columnFilters = ref([
+const columnFilters = ref([
   {
     id: 'email',
     value: ''
   }
 ])
-const _columnVisibility = ref()
-const _rowSelection = ref({ 1: true })
+const columnVisibility = ref()
+const rowSelection = ref({ 1: true })
 
-const { data: _data, status: _status } = await useFetch<User[]>('/api/customers', {
+const { data, status } = await useFetch<User[]>('/api/customers', {
   lazy: true
 })
 
-function getRowItems(row: Row<User>) {
+function getRowItems(row: TableRow<User>) {
   return [
-    {
-      type: 'label',
-      label: 'Actions'
-    },
-    {
-      label: 'Copy customer ID',
-      icon: 'i-lucide-copy',
-      onSelect() {
-        navigator.clipboard.writeText(row.original.id.toString())
-        toast.add({
-          title: 'Copied to clipboard',
-          description: 'Customer ID copied to clipboard'
-        })
+    [
+      {
+        type: 'label',
+        label: 'Actions'
+      },
+      {
+        label: 'Copy customer ID',
+        icon: 'i-lucide-copy',
+        onSelect() {
+          navigator.clipboard.writeText(row.original.id.toString())
+          toast.add({
+            title: 'Copied to clipboard',
+            description: 'Customer ID copied to clipboard'
+          })
+        }
       }
-    },
-    {
-      type: 'separator'
-    },
-    {
-      label: 'View customer details',
-      icon: 'i-lucide-list'
-    },
-    {
-      label: 'View customer payments',
-      icon: 'i-lucide-wallet'
-    },
-    {
-      type: 'separator'
-    },
-    {
-      label: 'Delete customer',
-      icon: 'i-lucide-trash',
-      color: 'error',
-      onSelect() {
-        toast.add({
-          title: 'Customer deleted',
-          description: 'The customer has been deleted.'
-        })
+    ],
+    [
+      {
+        label: 'View customer details',
+        icon: 'i-lucide-list'
+      },
+      {
+        label: 'View customer payments',
+        icon: 'i-lucide-wallet'
       }
-    }
+    ],
+    [
+      {
+        label: 'Delete customer',
+        icon: 'i-lucide-trash',
+        color: 'error' as const,
+        onSelect() {
+          toast.add({
+            title: 'Customer deleted',
+            description: 'The customer has been deleted.'
+          })
+        }
+      }
+    ]
   ]
 }
 
-const _columns: TableColumn<User>[] = [
+const columns: TableColumn<User>[] = [
   {
     id: 'select',
     header: ({ table }) =>
@@ -98,7 +100,7 @@ const _columns: TableColumn<User>[] = [
     cell: ({ row }) => {
       return h('div', { class: 'flex items-center gap-3' }, [
         h(UAvatar, {
-          ...row.original.avatar,
+          ...(row.original.avatar as any),
           size: 'lg'
         }),
         h('div', undefined, [
@@ -191,7 +193,7 @@ watch(
   }
 )
 
-const _email = computed({
+const email = computed({
   get: (): string => {
     return (table.value?.tableApi?.getColumn('email')?.getFilterValue() as string) || ''
   },
@@ -200,7 +202,7 @@ const _email = computed({
   }
 })
 
-const _pagination = ref({
+const pagination = ref({
   pageIndex: 0,
   pageSize: 10
 })

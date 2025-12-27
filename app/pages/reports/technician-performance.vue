@@ -37,16 +37,24 @@ const {
   }
 )
 
-const _columns = [
-  { key: 'technicianName', label: 'Technician' },
-  { key: 'completedOrders', label: 'Orders Completed' },
-  { key: 'avgCompletionTimeHrs', label: 'Avg Time (hrs)' },
-  { key: 'totalLaborCost', label: 'Total Labor Cost' }
+const columns = [
+  { accessorKey: 'technicianName', header: 'Technician' },
+  { accessorKey: 'completedOrders', header: 'Orders Completed' },
+  { accessorKey: 'avgCompletionTimeHrs', header: 'Avg Time (hrs)' },
+  { accessorKey: 'totalLaborCost', header: 'Total Labor Cost' }
 ]
+
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value)
+}
 
 function _exportReport() {
   if (!_report.value) return
-  exportToCSV(_report.value, _columns, `tech-performance-report-${new Date().toISOString().split('T')[0]}`)
+  exportToCSV(
+    _report.value,
+    columns,
+    `tech-performance-report-${new Date().toISOString().split('T')[0]}`
+  )
 }
 </script>
 
@@ -90,17 +98,17 @@ function _exportReport() {
             </span>
           </UPageCard>
           <UPageCard title="Total Labor Efficiency" icon="i-lucide-trending-up">
-            <span class="text-2xl font-bold text-primary">{{ _formatCurrency(_report.reduce((acc, curr) => acc + curr.totalLaborCost, 0)) }}</span>
+            <span class="text-2xl font-bold text-primary">{{ formatCurrency(_report.reduce((acc, curr) => acc + curr.totalLaborCost, 0)) }}</span>
           </UPageCard>
         </div>
 
         <!-- Data Table -->
-        <UTable :data="_report" :columns="_columns as any[]" class="bg-elevated/50 rounded-lg border border-default">
+        <UTable :data="_report" :columns="columns" class="bg-elevated/50 rounded-lg border border-default">
           <template #avgCompletionTimeHrs-cell="{ row }">
             {{ row.original.avgCompletionTimeHrs.toFixed(1) }} hrs
           </template>
           <template #totalLaborCost-cell="{ row }">
-            {{ _formatCurrency(row.original.totalLaborCost) }}
+            {{ formatCurrency(row.original.totalLaborCost) }}
           </template>
         </UTable>
       </div>

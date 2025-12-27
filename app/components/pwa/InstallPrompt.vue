@@ -9,7 +9,7 @@ onMounted(() => {
   }
 })
 
-const _install = async () => {
+const install = async () => {
   if ($pwa?.install) {
     await $pwa.install()
     showInstallPrompt.value = false

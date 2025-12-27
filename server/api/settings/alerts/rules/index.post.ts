@@ -8,11 +8,14 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event)
-  
-  const [rule] = await db.insert(alertRules).values({
-    ...body,
-    organizationId: session.user.organizationId
-  }).returning()
+
+  const [rule] = await db
+    .insert(alertRules)
+    .values({
+      ...body,
+      organizationId: session.user.organizationId
+    })
+    .returning()
 
   return rule
 })

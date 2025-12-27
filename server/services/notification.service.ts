@@ -1,5 +1,5 @@
 import { and, desc, eq } from 'drizzle-orm'
-import { notifications, pushTokens, notificationPreferences } from '../database/schema'
+import { notificationPreferences, notifications, pushTokens, users } from '../database/schema'
 import { db } from '../utils/db'
 
 export const notificationService = {
@@ -25,7 +25,7 @@ export const notificationService = {
 
     let notification: any = null
     if (eventPrefs.inApp) {
-      [notification] = await db
+      ;[notification] = await db
         .insert(notifications)
         .values({
           userId: data.userId,
@@ -42,22 +42,26 @@ export const notificationService = {
       const promises = []
 
       if (eventPrefs.push && !this.isInQuietHours(prefs?.quietHours)) {
-        promises.push(this.sendPushNotification(data.userId, {
-          title: data.title,
-          body: data.message,
-          data: {
-            link: data.link || '',
-            notificationId: notification?.id || ''
-          }
-        }))
+        promises.push(
+          this.sendPushNotification(data.userId, {
+            title: data.title,
+            body: data.message,
+            data: {
+              link: data.link || '',
+              notificationId: notification?.id || ''
+            }
+          })
+        )
       }
 
       if (eventPrefs.email) {
-        promises.push(this.sendEmailNotification(data.userId, {
-          subject: data.title,
-          message: data.message,
-          link: data.link
-        }))
+        promises.push(
+          this.sendEmailNotification(data.userId, {
+            subject: data.title,
+            message: data.message,
+            link: data.link
+          })
+        )
       }
 
       await Promise.all(promises)
@@ -71,7 +75,7 @@ export const notificationService = {
 
     const now = new Date()
     const time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`
-    
+
     const { start, end } = quietHours
     if (start < end) {
       return time >= start && time <= end
@@ -81,11 +85,14 @@ export const notificationService = {
     }
   },
 
-  async sendEmailNotification(userId: string, payload: {
-    subject: string
-    message: string
-    link?: string
-  }) {
+  async sendEmailNotification(
+    userId: string,
+    payload: {
+      subject: string
+      message: string
+      link?: string
+    }
+  ) {
     const user = await db.query.users.findFirst({
       where: eq(users.id, userId)
     })
@@ -93,7 +100,7 @@ export const notificationService = {
     if (!user) return
 
     console.log(`Sending email notification to user ${user.email}: ${payload.subject}`)
-    
+
     // In a real app, you would use nodemailer, sendgrid, postmark, etc.
     // const html = `
     //   <div style="font-family: sans-serif; color: #333;">
@@ -107,19 +114,24 @@ export const notificationService = {
     // await mailer.send({ to: user.email, subject: payload.subject, html })
   },
 
-  async sendPushNotification(userId: string, payload: {
-    title: string
-    body: string
-    data?: Record<string, string>
-  }) {
+  async sendPushNotification(
+    userId: string,
+    payload: {
+      title: string
+      body: string
+      data?: Record<string, string>
+    }
+  ) {
     const tokens = await db.query.pushTokens.findMany({
       where: eq(pushTokens.userId, userId)
     })
 
     if (tokens.length === 0) return
 
-    console.log(`Sending push notification to user ${userId} (${tokens.length} devices): ${payload.title}`)
-    
+    console.log(
+      `Sending push notification to user ${userId} (${tokens.length} devices): ${payload.title}`
+    )
+
     // In a real app, you would use firebase-admin or similar here
     // for each token in tokens:
     //   await admin.messaging().send({ token: token.token, notification: { title, body }, data })

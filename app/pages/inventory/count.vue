@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Part } from '~/types'
 
-const { categories: _categories, fetchCategories, recordMovement } = useInventory()
+const { categories, fetchCategories, recordMovement } = useInventory()
 const toast = useToast()
 const router = useRouter()
 
@@ -11,7 +11,7 @@ const loading = ref(false)
 
 await fetchCategories()
 
-async function _onCategoryChange() {
+async function onCategoryChange() {
   if (!selectedCategoryId.value) {
     partsToCount.value = []
     return
@@ -30,7 +30,7 @@ async function _onCategoryChange() {
 
 const adjusting = ref(false)
 
-async function _onAdjust() {
+async function onAdjust() {
   adjusting.value = true
   try {
     for (const part of partsToCount.value) {
@@ -58,6 +58,14 @@ async function _onAdjust() {
     adjusting.value = false
   }
 }
+
+const columns = [
+  { accessorKey: 'sku', header: 'SKU' },
+  { accessorKey: 'name', header: 'Part' },
+  { accessorKey: 'quantityOnHand', header: 'System Qty' },
+  { accessorKey: 'physicalCount', header: 'Physical Qty' },
+  { accessorKey: 'variance', header: 'Variance' }
+]
 </script>
 
 <template>
@@ -66,7 +74,7 @@ async function _onAdjust() {
       <UDashboardNavbar title="Inventory Count">
         <template #left>
           <UButton
-            icon="i-heroicons-arrow-left"
+            icon="i-lucide-arrow-left"
             color="neutral"
             variant="ghost"
             to="/inventory"
@@ -85,31 +93,25 @@ async function _onAdjust() {
         </UFormGroup>
 
         <div v-if="loading" class="flex justify-center p-8">
-          <UIcon name="i-heroicons-arrow-path" class="animate-spin text-2xl" />
+          <UIcon name="i-lucide-refresh-cw" class="animate-spin text-2xl" />
         </div>
 
         <div v-else-if="partsToCount.length" class="space-y-4">
           <UTable
-            :rows="partsToCount"
-            :columns="[
-              { key: 'sku', label: 'SKU' },
-              { key: 'name', label: 'Part' },
-              { key: 'quantityOnHand', label: 'System Qty' },
-              { key: 'physicalCount', label: 'Physical Qty' },
-              { key: 'variance', label: 'Variance' }
-            ] as any[]"
+            :data="partsToCount"
+            :columns="columns"
           >
-            <template #physicalCount-data="{ row }">
+            <template #physicalCount-cell="{ row }">
               <UInput
-                v-model="(row as any).physicalCount"
+                v-model="row.original.physicalCount"
                 type="number"
                 step="0.01"
                 class="w-32"
               />
             </template>
-            <template #variance-data="{ row }">
-              <span :class="{ 'text-error-500 font-bold': Number((row as any).physicalCount) !== Number((row as any).quantityOnHand) }">
-                {{ Number((row as any).physicalCount) - Number((row as any).quantityOnHand) }}
+            <template #variance-cell="{ row }">
+              <span :class="{ 'text-error-500 font-bold': Number(row.original.physicalCount) !== Number(row.original.quantityOnHand) }">
+                {{ Number(row.original.physicalCount) - Number(row.original.quantityOnHand) }}
               </span>
             </template>
           </UTable>

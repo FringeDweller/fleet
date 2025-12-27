@@ -51,7 +51,7 @@ export const obdService = {
   },
 
   async autoCreateWorkOrder(
-    tx: PgTransaction<Record<string, unknown>, unknown, unknown>,
+    tx: PgTransaction<any, any, any>,
     assetId: string,
     dtcCode: string,
     organizationId: string

@@ -1,6 +1,9 @@
-const { data: _lowStockParts, pending: _pending } = await useFetch('/api/inventory/parts', {
+<script setup lang="ts">
+const { data: lowStockParts, status } = await useFetch<any>('/api/inventory/parts', {
   query: { lowStock: 'true', limit: 5 }
 })
+
+const pending = computed(() => status.value === 'pending')
 </script>
 
 <template>
@@ -12,18 +15,18 @@ const { data: _lowStockParts, pending: _pending } = await useFetch('/api/invento
       </div>
     </template>
 
-    <div v-if="_pending" class="space-y-3">
+    <div v-if="pending" class="space-y-3">
       <USkeleton class="h-10 w-full" />
       <USkeleton class="h-10 w-full" />
     </div>
 
-    <div v-else-if="!_lowStockParts?.items || _lowStockParts.items.length === 0" class="text-center py-6 text-dimmed">
+    <div v-else-if="!lowStockParts?.items || lowStockParts.items.length === 0" class="text-center py-6 text-dimmed">
       All inventory levels healthy
     </div>
 
     <div v-else class="space-y-3">
       <div
-        v-for="part in (_lowStockParts.items as any[])"
+        v-for="part in (lowStockParts.items as any[])"
         :key="part.id"
         class="flex items-center justify-between text-sm"
       >

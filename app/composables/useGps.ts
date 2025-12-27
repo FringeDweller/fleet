@@ -34,9 +34,9 @@ export const useGps = () => {
     }
   }
 
-  const handleNewLocation = async (position: GeolocationPosition) => {
-    const coords = position.coords as Record<string, unknown>
-    lastLocation.value = coords
+  const handleNewLocation = async (position: any) => {
+    const coords = position.coords
+    lastLocation.value = { ...coords }
 
     // Only track if there's an active session
     if (!activeSession.value) return
@@ -46,9 +46,15 @@ export const useGps = () => {
       sessionId: activeSession.value.id as string,
       latitude: String(coords.latitude),
       longitude: String(coords.longitude),
-      speed: coords.speed ? String(coords.speed) : undefined,
-      heading: coords.heading ? String(coords.heading) : undefined,
-      altitude: coords.altitude ? String(coords.altitude) : undefined
+      speed: coords.speed !== null && coords.speed !== undefined ? String(coords.speed) : undefined,
+      heading:
+        coords.heading !== null && coords.heading !== undefined
+          ? String(coords.heading)
+          : undefined,
+      altitude:
+        coords.altitude !== null && coords.altitude !== undefined
+          ? String(coords.altitude)
+          : undefined
     }
 
     // Queue for sync (high frequency, maybe throttle?)

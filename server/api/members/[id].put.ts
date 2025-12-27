@@ -1,6 +1,6 @@
 import { and, eq } from 'drizzle-orm'
-import { users } from '../../../database/schema'
-import { db } from '../../../utils/db'
+import { users } from '../../database/schema'
+import { db } from '../../utils/db'
 
 export default defineEventHandler(async (event) => {
   const session = await getUserSession(event)
@@ -23,6 +23,10 @@ export default defineEventHandler(async (event) => {
     })
     .where(and(eq(users.id, id), eq(users.organizationId, session.user.organizationId)))
     .returning()
+
+  if (!updated) {
+    throw createError({ statusCode: 404, message: 'Member not found' })
+  }
 
   return {
     id: updated.id,

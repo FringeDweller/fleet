@@ -3,7 +3,7 @@ import { breakpointsTailwind } from '@vueuse/core'
 import { computed, ref, watch } from 'vue'
 import type { Mail } from '~/types'
 
-const _tabItems = [
+const tabItems = [
   {
     label: 'All',
     value: 'all'
@@ -28,7 +28,7 @@ const filteredMails = computed(() => {
 
 const selectedMail = ref<Mail | null>()
 
-const _isMailPanelOpen = computed({
+const isMailPanelOpen = computed({
   get() {
     return !!selectedMail.value
   },
@@ -47,7 +47,7 @@ watch(filteredMails, () => {
 })
 
 const breakpoints = useBreakpoints(breakpointsTailwind)
-const _isMobile = breakpoints.smaller('lg')
+const isMobile = breakpoints.smaller('lg')
 </script>
 
 <template>

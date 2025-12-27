@@ -7,8 +7,7 @@ export const auditLogs = pgTable('audit_logs', {
   organizationId: uuid('organization_id')
     .notNull()
     .references(() => organizations.id),
-  userId: uuid('user_id')
-    .references(() => users.id),
+  userId: uuid('user_id').references(() => users.id),
   action: varchar('action', { length: 100 }).notNull(), // 'create', 'update', 'delete', 'login', etc.
   entityType: varchar('entity_type', { length: 100 }).notNull(), // 'asset', 'work_order', etc.
   entityId: uuid('entity_id'),

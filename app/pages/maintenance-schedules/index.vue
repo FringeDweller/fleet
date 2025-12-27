@@ -3,19 +3,19 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { schedules, loading: _loading, fetchSchedules } = useMaintenanceSchedules()
+const { schedules, loading, fetchSchedules } = useMaintenanceSchedules()
 
 const search = ref('')
-const _columns = [
-  { key: 'name', label: 'Name' },
-  { key: 'type', label: 'Type' },
-  { key: 'targetName', label: 'Target' },
-  { key: 'taskName', label: 'Task' },
-  { key: 'lastPerformedAt', label: 'Last Performed' },
-  { key: 'nextDueAt', label: 'Next Due' }
+const columns = [
+  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'type', header: 'Type' },
+  { accessorKey: 'targetName', header: 'Target' },
+  { accessorKey: 'taskName', header: 'Task' },
+  { accessorKey: 'lastPerformedAt', header: 'Last Performed' },
+  { accessorKey: 'nextDueAt', header: 'Next Due' }
 ]
 
-const _filteredSchedules = computed(() => {
+const filteredSchedules = computed(() => {
   if (!search.value) return schedules.value
   return schedules.value.filter(
     (s) =>
@@ -64,23 +64,23 @@ onMounted(() => {
 
     <template #body>
       <UTable
-        :rows="filteredSchedules"
-        :columns="columns as any[]"
+        :data="filteredSchedules"
+        :columns="columns"
         :loading="loading"
         class="w-full"
       >
-        <template #name-data="{ row }">
-          <NuxtLink :to="`/maintenance-schedules/${(row as any).id}`" class="text-primary hover:underline font-medium">
-            {{ (row as any).name }}
+        <template #name-cell="{ row }">
+          <NuxtLink :to="`/maintenance-schedules/${row.original.id}`" class="text-primary hover:underline font-medium">
+            {{ row.original.name }}
           </NuxtLink>
         </template>
 
-        <template #lastPerformedAt-data="{ row }">
-          {{ (row as any).lastPerformedAt ? new Date((row as any).lastPerformedAt).toLocaleDateString() : '-' }}
+        <template #lastPerformedAt-cell="{ row }">
+          {{ row.original.lastPerformedAt ? new Date(row.original.lastPerformedAt as string).toLocaleDateString() : '-' }}
         </template>
 
-        <template #nextDueAt-data="{ row }">
-          {{ (row as any).nextDueAt ? new Date((row as any).nextDueAt).toLocaleDateString() : '-' }}
+        <template #nextDueAt-cell="{ row }">
+          {{ row.original.nextDueAt ? new Date(row.original.nextDueAt as string).toLocaleDateString() : '-' }}
         </template>
       </UTable>
     </template>

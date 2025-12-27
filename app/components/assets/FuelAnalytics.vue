@@ -19,32 +19,32 @@ const { data: _history, status: _historyStatus } = await useFetch<FuelTransactio
   }
 )
 
-const _loadingAnalytics = computed(() => analyticsStatus.value === 'pending')
-const _loadingHistory = computed(() => historyStatus.value === 'pending')
+const loadingAnalytics = computed(() => analyticsStatus.value === 'pending')
+const loadingHistory = computed(() => _historyStatus.value === 'pending')
 
-const _stats = computed(() => {
+const stats = computed(() => {
   if (!analytics.value) return []
 
   return [
     {
       title: 'Avg Consumption',
       value: `${analytics.value.avgConsumption.toFixed(2)} L/100km`,
-      icon: 'i-heroicons-beaker'
+      icon: 'i-lucide-beaker'
     },
     {
       title: 'Avg Cost per km',
       value: `$${analytics.value.avgCostPerKm.toFixed(2)}`,
-      icon: 'i-heroicons-currency-dollar'
+      icon: 'i-lucide-dollar-sign'
     },
     {
       title: 'Total Fuel',
       value: `${analytics.value.totalLitres.toFixed(0)} L`,
-      icon: 'i-heroicons-truck'
+      icon: 'i-lucide-fuel'
     },
     {
       title: 'Total Cost',
       value: `$${analytics.value.totalCost.toFixed(2)}`,
-      icon: 'i-heroicons-credit-card'
+      icon: 'i-lucide-credit-card'
     }
   ]
 })
@@ -62,7 +62,7 @@ const _columns = [
 <template>
   <div class="space-y-6 mt-4">
     <div v-if="loadingAnalytics" class="flex justify-center p-8">
-      <UIcon name="i-heroicons-arrow-path" class="animate-spin text-2xl" />
+      <UIcon name="i-lucide-refresh-cw" class="animate-spin text-2xl" />
     </div>
     <div v-else-if="analytics">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -72,10 +72,10 @@ const _columns = [
               <UIcon :name="stat.icon" class="w-5 h-5 text-primary" />
             </div>
             <div>
-              <p class="text-sm text-gray-500">
+              <p class="text-sm text-dimmed">
                 {{ stat.title }}
               </p>
-              <p class="text-xl font-bold">
+              <p class="text-xl font-bold text-highlighted">
                 {{ stat.value }}
               </p>
             </div>
@@ -85,7 +85,7 @@ const _columns = [
 
       <UAlert
         v-if="analytics.anomalies && analytics.anomalies.length > 0"
-        icon="i-heroicons-exclamation-triangle"
+        icon="i-lucide-triangle-alert"
         color="error"
         variant="subtle"
         title="Fuel Anomalies Detected"
@@ -124,7 +124,7 @@ const _columns = [
             Fuel History
           </h3>
           <UButton
-            icon="i-heroicons-plus"
+            icon="i-lucide-plus"
             size="xs"
             color="primary"
             label="Record Fuel"
@@ -133,16 +133,24 @@ const _columns = [
         </div>
       </template>
 
-    <template #body>
-      <div v-if="_historyStatus === 'pending'" class="flex justify-center py-8">
-        <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-dimmed" />
+      <div v-if="loadingHistory" class="flex justify-center py-8">
+        <UIcon name="i-lucide-refresh-cw" class="w-8 h-8 animate-spin text-dimmed" />
       </div>
       <div v-else-if="!_history || _history.length === 0" class="text-center py-8 text-dimmed">
         No fuel transactions found
       </div>
       <div v-else class="space-y-4">
         <div v-for="tx in _history" :key="tx.id" class="flex justify-between items-center text-sm border-b border-elevated pb-2">
-
+          <div>
+            <div class="font-medium text-highlighted">{{ new Date(tx.transactionDate).toLocaleDateString() }}</div>
+            <div class="text-xs text-dimmed">{{ tx.fuelType }} @ {{ tx.stationName || 'Unknown Station' }}</div>
+          </div>
+          <div class="text-right">
+            <div class="font-bold text-primary">{{ tx.totalCost }}</div>
+            <div class="text-xs text-dimmed">{{ tx.quantity }} L</div>
+          </div>
+        </div>
+      </div>
     </UCard>
   </div>
 </template>

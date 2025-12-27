@@ -1,11 +1,13 @@
 <script setup lang="ts">
 const toast = useToast()
 
-const { data: _permissionsMap, refresh } = await useFetch<Record<string, string[]>>('/api/settings/roles/permissions')
+const { data: permissionsMap, refresh } = await useFetch<Record<string, string[]>>(
+  '/api/settings/roles/permissions'
+)
 
-const _roles = ['owner', 'manager', 'technician', 'operator']
+const roles = ['owner', 'manager', 'technician', 'operator']
 
-const _availablePermissions = [
+const availablePermissions = [
   { key: 'assets.view', label: 'View Assets' },
   { key: 'assets.manage', label: 'Manage Assets' },
   { key: 'work_orders.view', label: 'View Work Orders' },
@@ -16,16 +18,20 @@ const _availablePermissions = [
   { key: 'settings.manage', label: 'Manage Settings' }
 ]
 
-const _isSaving = ref(false)
+const isSaving = ref(false)
 
-async function _updatePermission(role: string, permissionKey: string, enabled: boolean) {
-  const currentPermissions = _permissionsMap.value?.[role] || []
+async function updatePermission(
+  role: string,
+  permissionKey: string,
+  enabled: boolean | 'indeterminate'
+) {
+  const currentPermissions = permissionsMap.value?.[role] || []
   let newPermissions: string[]
-  
-  if (enabled) {
+
+  if (enabled === true) {
     newPermissions = [...currentPermissions, permissionKey]
   } else {
-    newPermissions = currentPermissions.filter(p => p !== permissionKey)
+    newPermissions = currentPermissions.filter((p) => p !== permissionKey)
   }
 
   try {
@@ -43,8 +49,8 @@ async function _updatePermission(role: string, permissionKey: string, enabled: b
   }
 }
 
-function _isPermissionEnabled(role: string, permissionKey: string) {
-  return _permissionsMap.value?.[role]?.includes(permissionKey) || false
+function isPermissionEnabled(role: string, permissionKey: string) {
+  return permissionsMap.value?.[role]?.includes(permissionKey) || false
 }
 </script>
 
@@ -62,23 +68,23 @@ function _isPermissionEnabled(role: string, permissionKey: string) {
           <thead>
             <tr class="border-b border-default text-xs uppercase text-dimmed">
               <th class="py-3 px-4 font-semibold">Permission</th>
-              <th v-for="role in _roles" :key="role" class="py-3 px-4 font-semibold text-center">
+              <th v-for="role in roles" :key="role" class="py-3 px-4 font-semibold text-center">
                 {{ role }}
               </th>
             </tr>
           </thead>
           <tbody class="divide-y divide-default">
-            <tr v-for="perm in _availablePermissions" :key="perm.key">
+            <tr v-for="perm in availablePermissions" :key="perm.key">
               <td class="py-4 px-4">
                 <div class="font-medium text-highlighted">{{ perm.label }}</div>
                 <div class="text-xs text-dimmed">{{ perm.key }}</div>
               </td>
-              <td v-for="role in _roles" :key="role" class="py-4 px-4 text-center">
+              <td v-for="role in roles" :key="role" class="py-4 px-4 text-center">
                 <UCheckbox
-                  :model-value="_isPermissionEnabled(role, perm.key)"
+                  :model-value="isPermissionEnabled(role, perm.key)"
                   class="inline-flex"
                   :disabled="role === 'owner'"
-                  @update:model-value="(val) => _updatePermission(role, perm.key, val)"
+                  @update:model-value="(val) => updatePermission(role, perm.key, val)"
                 />
               </td>
             </tr>

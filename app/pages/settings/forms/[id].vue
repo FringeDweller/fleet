@@ -18,13 +18,13 @@ const route = useRoute()
 const id = route.params.id as string
 const toast = useToast()
 
-const { data: _form, refresh } = await useFetch<CustomForm>(`/api/settings/forms/${id}`)
+const { data: form, refresh } = await useFetch<CustomForm>(`/api/settings/forms/${id}`)
 
-const { data: _versions, refresh: _refreshVersions } = await useFetch<CustomForm[]>(
+const { data: versions, refresh: refreshVersions } = await useFetch<CustomForm[]>(
   `/api/settings/forms/${id}/versions`
 )
 
-const _items = [
+const items = [
   { label: 'Builder', icon: 'i-lucide-layout-template', slot: 'builder' },
   { label: 'Assignments', icon: 'i-lucide-link', slot: 'assignments' },
   { label: 'Versions', icon: 'i-lucide-history', slot: 'versions' },
@@ -34,7 +34,7 @@ const _items = [
 const formFields = ref<FormField[]>([])
 const isSaving = ref(false)
 const isPublishing = ref(false)
-const _showPreview = ref(false)
+const showPreview = ref(false)
 const showAssignModal = ref(false)
 const assignmentsList = ref()
 
@@ -51,7 +51,7 @@ watchEffect(() => {
   }
 })
 
-async function _saveForm() {
+async function saveForm() {
   isSaving.value = true
   try {
     const res = await $fetch<CustomForm>(`/api/settings/forms/${id}`, {
@@ -78,7 +78,7 @@ async function _saveForm() {
   }
 }
 
-async function _publishForm() {
+async function publishForm() {
   isPublishing.value = true
   try {
     await $fetch(`/api/settings/forms/${id}/publish`, { method: 'POST' })
@@ -93,7 +93,7 @@ async function _publishForm() {
   }
 }
 
-async function _rollback(versionId: string) {
+async function rollback(versionId: string) {
   try {
     await $fetch(`/api/settings/forms/${versionId}/rollback`, { method: 'POST' })
     toast.add({ title: 'Rolled back to this version', color: 'success' })
@@ -109,7 +109,7 @@ async function _rollback(versionId: string) {
   }
 }
 
-async function _saveAssignment() {
+async function saveAssignment() {
   try {
     await $fetch('/api/settings/forms/assignments', {
       method: 'POST',
@@ -131,12 +131,12 @@ async function _saveAssignment() {
 const editTitle = ref(false)
 const titleInput = ref('')
 
-function _startTitleEdit() {
+function startTitleEdit() {
   titleInput.value = (form.value?.title as string) || ''
   editTitle.value = true
 }
 
-async function _saveTitle() {
+async function saveTitle() {
   if (form.value && titleInput.value !== form.value.title) {
     form.value.title = titleInput.value
     await $fetch(`/api/settings/forms/${id}`, {

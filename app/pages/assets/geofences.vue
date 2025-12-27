@@ -19,14 +19,22 @@ interface Geofence {
   createdAt: string
 }
 
-const { data: _geofences, refresh } = await useFetch<Geofence[]>('/api/geofences')
+interface GeofenceLog {
+  id: string
+  assetId: string
+  entryTime: string
+  exitTime: string | null
+  durationMinutes: number | null
+}
+
+const { data: geofences, refresh } = await useFetch<Geofence[]>('/api/geofences')
 
 const isModalOpen = ref(false)
 const isLogsModalOpen = ref(false)
 const selectedGeofence = ref<Partial<Geofence>>({})
-const logs = ref<Record<string, unknown>[]>([])
+const logs = ref<GeofenceLog[]>([])
 
-const _openCreateModal = () => {
+const openCreateModal = () => {
   selectedGeofence.value = {
     name: '',
     description: '',
@@ -43,20 +51,18 @@ const _openCreateModal = () => {
   isModalOpen.value = true
 }
 
-const _openEditModal = (geofence: Geofence) => {
+const openEditModal = (geofence: Geofence) => {
   selectedGeofence.value = { ...geofence }
   isModalOpen.value = true
 }
 
-const _openLogsModal = async (geofence: Geofence) => {
+const openLogsModal = async (geofence: Geofence) => {
   selectedGeofence.value = geofence
-  logs.value = await $fetch<Record<string, unknown>[]>(
-    `/api/geofences/logs?geofenceId=${geofence.id}`
-  )
+  logs.value = await $fetch<GeofenceLog[]>(`/api/geofences/logs?geofenceId=${geofence.id}`)
   isLogsModalOpen.value = true
 }
 
-const _saveGeofence = async () => {
+const saveGeofence = async () => {
   if (selectedGeofence.value.id) {
     await $fetch(`/api/geofences/${selectedGeofence.value.id}`, {
       method: 'PUT',
@@ -72,12 +78,12 @@ const _saveGeofence = async () => {
   refresh()
 }
 
-const _columns = [
-  { key: 'name', label: 'Name' },
-  { key: 'category', label: 'Category' },
-  { key: 'type', label: 'Type' },
-  { key: 'createdAt', label: 'Created' },
-  { key: 'actions', label: '' }
+const columns = [
+  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'category', header: 'Category' },
+  { accessorKey: 'type', header: 'Type' },
+  { accessorKey: 'createdAt', header: 'Created' },
+  { accessorKey: 'actions', header: '' }
 ]
 </script>
 
@@ -86,35 +92,35 @@ const _columns = [
     <template #header>
       <UDashboardNavbar title="Geofences">
         <template #right>
-          <UButton icon="i-heroicons-plus" label="New Geofence" @click="openCreateModal" />
+          <UButton icon="i-lucide-plus" label="New Geofence" @click="openCreateModal" />
         </template>
       </UDashboardNavbar>
     </template>
 
     <template #body>
       <UCard>
-        <UTable :rows="geofences as any[] || []" :columns="columns as any[]">
-          <template #category-data="{ row }">
-            <UBadge :color="(row as any).category === 'restricted' ? 'error' : 'primary'" variant="subtle">
-              {{ (row as any).category }}
+        <UTable :data="geofences || []" :columns="columns">
+          <template #category-cell="{ row }">
+            <UBadge :color="row.original.category === 'restricted' ? 'error' : 'primary'" variant="subtle">
+              {{ row.original.category }}
             </UBadge>
           </template>
-          <template #createdAt-data="{ row }">
-            {{ new Date((row as any).createdAt).toLocaleDateString() }}
+          <template #createdAt-cell="{ row }">
+            {{ new Date(row.original.createdAt).toLocaleDateString() }}
           </template>
-          <template #actions-data="{ row }">
+          <template #actions-cell="{ row }">
             <div class="flex items-center gap-2">
               <UButton
                 color="neutral"
                 variant="ghost"
-                icon="i-heroicons-clock"
-                @click="openLogsModal(row as any)"
+                icon="i-lucide-clock"
+                @click="openLogsModal(row.original)"
               />
               <UButton
                 color="neutral"
                 variant="ghost"
-                icon="i-heroicons-pencil-square"
-                @click="openEditModal(row as any)"
+                icon="i-lucide-pencil"
+                @click="openEditModal(row.original)"
               />
             </div>
           </template>
@@ -124,19 +130,19 @@ const _columns = [
       <UModal v-model:open="isLogsModalOpen" title="Geofence Activity Logs">
         <template #body>
           <UTable
-            :rows="logs"
+            :data="logs"
             :columns="[
-              { key: 'assetId', label: 'Asset' },
-              { key: 'entryTime', label: 'Entry' },
-              { key: 'exitTime', label: 'Exit' },
-              { key: 'durationMinutes', label: 'Duration (min)' }
-            ] as any[]"
+              { accessorKey: 'assetId', header: 'Asset' },
+              { accessorKey: 'entryTime', header: 'Entry' },
+              { accessorKey: 'exitTime', header: 'Exit' },
+              { accessorKey: 'durationMinutes', header: 'Duration (min)' }
+            ]"
           >
-            <template #entryTime-data="{ row }">
-              {{ new Date((row as any).entryTime).toLocaleString() }}
+            <template #entryTime-cell="{ row }">
+              {{ new Date(row.original.entryTime).toLocaleString() }}
             </template>
-            <template #exitTime-data="{ row }">
-              {{ (row as any).exitTime ? new Date((row as any).exitTime).toLocaleString() : '-' }}
+            <template #exitTime-cell="{ row }">
+              {{ row.original.exitTime ? new Date(row.original.exitTime).toLocaleString() : '-' }}
             </template>
           </UTable>
         </template>

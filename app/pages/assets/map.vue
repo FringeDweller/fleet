@@ -4,18 +4,18 @@ definePageMeta({
 })
 
 const {
-  data: _locations,
-  refresh: _refreshLocations,
-  pending: _loadingLocations
-} = await useFetch<{ assetId: string; latitude: number; longitude: number; assetName: string }[]>(
-  '/api/assets/locations/latest'
-)
+  data: locations,
+  refresh: refreshLocations,
+  status: loadStatus
+} = await useFetch<any[]>('/api/assets/locations/latest')
 
-const { data: _geofences } = await useFetch<Record<string, unknown>[]>('/api/geofences')
+const { data: geofences } = await useFetch<any[]>('/api/geofences')
 
-const _refresh = () => {
-  _refreshLocations()
+const refresh = () => {
+  refreshLocations()
 }
+
+const loadingLocations = computed(() => loadStatus.value === 'pending')
 </script>
 
 <template>
@@ -24,15 +24,15 @@ const _refresh = () => {
       <UDashboardNavbar title="Fleet Map">
         <template #right>
           <div class="flex items-center gap-2">
-            <span v-if="_loadingLocations" class="text-xs text-gray-500 flex items-center gap-1">
-              <UIcon name="i-heroicons-arrow-path" class="animate-spin" />
+            <span v-if="loadingLocations" class="text-xs text-gray-500 flex items-center gap-1">
+              <UIcon name="i-lucide-refresh-cw" class="animate-spin" />
               Updating...
             </span>
             <UButton
-              icon="i-heroicons-arrow-path"
+              icon="i-lucide-refresh-cw"
               color="neutral"
               variant="ghost"
-              @click="_refresh"
+              @click="refresh"
             />
           </div>
         </template>
@@ -41,7 +41,7 @@ const _refresh = () => {
 
     <template #body>
       <div class="flex-1 flex flex-col min-h-0 h-full">
-        <DashboardAssetMap :locations="_locations || []" :geofences="_geofences || []" class="flex-1" />
+        <DashboardAssetMap :locations="locations || []" :geofences="geofences || []" class="flex-1" />
       </div>
     </template>
   </UDashboardPanel>

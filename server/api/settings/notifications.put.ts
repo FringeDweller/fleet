@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
-import { notificationPreferences } from '../../../database/schema'
-import { db } from '../../../utils/db'
+import { notificationPreferences } from '../../database/schema'
+import { db } from '../../utils/db'
 
 export default defineEventHandler(async (event) => {
   const session = await getUserSession(event)

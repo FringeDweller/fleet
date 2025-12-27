@@ -1,12 +1,12 @@
 <script setup lang="ts">
-const _columns = [
-  { key: 'sku', label: 'SKU' },
-  { key: 'name', label: 'Name' },
-  { key: 'categoryName', label: 'Category' },
-  { key: 'quantityOnHand', label: 'On Hand' },
-  { key: 'unit', label: 'Unit' },
-  { key: 'unitCost', label: 'Unit Cost' },
-  { key: 'actions' }
+const columns = [
+  { accessorKey: 'sku', header: 'SKU' },
+  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'categoryName', header: 'Category' },
+  { accessorKey: 'quantityOnHand', header: 'On Hand' },
+  { accessorKey: 'unit', header: 'Unit' },
+  { accessorKey: 'unitCost', header: 'Unit Cost' },
+  { accessorKey: 'actions', header: '' }
 ]
 
 const search = ref('')
@@ -15,7 +15,7 @@ const showLowStockOnly = ref(false)
 const page = ref(1)
 const pageCount = 10
 
-const { data: _inventory, pending: _pending } = await useFetch<{
+const { data: inventory, status } = await useFetch<{
   items: Record<string, unknown>[]
   total: number
 }>('/api/inventory/parts', {
@@ -28,9 +28,11 @@ const { data: _inventory, pending: _pending } = await useFetch<{
   }
 })
 
+const pending = computed(() => status.value === 'pending')
+
 const { data: categories } = await useFetch<Record<string, unknown>[]>('/api/inventory/categories')
 
-const _categoryOptions = computed(() => {
+const categoryOptions = computed(() => {
   const options = [{ label: 'All Categories', value: '' }]
   if (categories.value) {
     options.push(
@@ -40,7 +42,7 @@ const _categoryOptions = computed(() => {
   return options
 })
 
-const _formatCurrency = (value: string) => {
+const formatCurrency = (value: string) => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
     Number(value)
   )
@@ -54,14 +56,14 @@ const _formatCurrency = (value: string) => {
         <template #right>
           <UButton
             to="/inventory/count"
-            icon="i-heroicons-clipboard-document-check"
+            icon="i-lucide-check-square"
             color="neutral"
             variant="ghost"
             class="mr-2"
           >
             Inventory Count
           </UButton>
-          <UButton to="/inventory/new" icon="i-heroicons-plus" color="primary">
+          <UButton to="/inventory/new" icon="i-lucide-plus" color="primary">
             New Part
           </UButton>
         </template>
@@ -71,7 +73,7 @@ const _formatCurrency = (value: string) => {
         <template #left>
           <UInput
             v-model="search"
-            icon="i-heroicons-magnifying-glass"
+            icon="i-lucide-search"
             placeholder="Search parts..."
             class="w-64"
           />
@@ -88,22 +90,22 @@ const _formatCurrency = (value: string) => {
       </UDashboardToolbar>
 
       <UTable
-        :rows="inventory?.items || []"
-        :columns="columns as any[]"
+        :data="inventory?.items || []"
+        :columns="columns"
         :loading="pending"
       >
-        <template #unitCost-data="{ row }">
-          {{ formatCurrency((row as any).unitCost) }}
+        <template #unitCost-cell="{ row }">
+          {{ formatCurrency(row.original.unitCost as string) }}
         </template>
-        <template #quantityOnHand-data="{ row }">
-          <span :class="{ 'text-error-500 font-bold': Number((row as any).quantityOnHand) <= Number((row as any).reorderThreshold) }">
-            {{ (row as any).quantityOnHand }}
+        <template #quantityOnHand-cell="{ row }">
+          <span :class="{ 'text-error-500 font-bold': Number(row.original.quantityOnHand) <= Number(row.original.reorderThreshold) }">
+            {{ row.original.quantityOnHand }}
           </span>
         </template>
-        <template #actions-data="{ row }">
+        <template #actions-cell="{ row }">
           <UButton
-            :to="`/inventory/${(row as any).id}`"
-            icon="i-heroicons-pencil-square"
+            :to="`/inventory/${row.original.id}`"
+            icon="i-lucide-pencil"
             size="xs"
             color="neutral"
             variant="ghost"

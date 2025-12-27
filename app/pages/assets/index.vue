@@ -1,31 +1,32 @@
 <script setup lang="ts">
 import type { Asset } from '~/types'
 
-const _columns: Record<string, unknown>[] = [
-  { key: 'assetNumber', label: 'Asset #' },
-  { key: 'make', label: 'Make' },
-  { key: 'model', label: 'Model' },
-  { key: 'category', label: 'Category' },
-  { key: 'status', label: 'Status' },
-  { key: 'actions' }
+const columns = [
+  { accessorKey: 'assetNumber', header: 'Asset #' },
+  { accessorKey: 'make', header: 'Make' },
+  { accessorKey: 'model', header: 'Model' },
+  { accessorKey: 'categoryName', header: 'Category' },
+  { accessorKey: 'status', header: 'Status' },
+  { accessorKey: 'actions', header: '' }
 ]
 
 const search = ref('')
+const selectedStatus = ref('')
 const page = ref(1)
 const pageCount = 10
 
-const { data: _assets, pending: _pending } = await useFetch<{ items: Asset[]; total: number }>(
-  '/api/assets',
-  {
-    query: {
-      q: search,
-      page,
-      limit: pageCount
-    }
+const { data: assets, status } = await useFetch<{ items: Asset[]; total: number }>('/api/assets', {
+  query: {
+    q: search,
+    status: selectedStatus,
+    page,
+    limit: pageCount
   }
-)
+})
 
-const _statusOptions = [
+const pending = computed(() => status.value === 'pending')
+
+const statusOptions = [
   { label: 'All', value: '' },
   { label: 'Active', value: 'active' },
   { label: 'Inactive', value: 'inactive' },
@@ -37,10 +38,10 @@ const _statusOptions = [
 <template>
   <div class="p-4">
     <div class="flex justify-between items-center mb-4">
-      <h1 class="text-2xl font-bold">
+      <h1 class="text-2xl font-bold text-highlighted">
         Assets
       </h1>
-      <UButton to="/assets/new" icon="i-heroicons-plus" color="primary">
+      <UButton to="/assets/new" icon="i-lucide-plus" color="primary">
         New Asset
       </UButton>
     </div>
@@ -48,7 +49,7 @@ const _statusOptions = [
     <div class="flex gap-4 mb-4">
       <UInput
         v-model="search"
-        icon="i-heroicons-magnifying-glass"
+        icon="i-lucide-search"
         placeholder="Search assets..."
         class="w-64"
       />
@@ -61,19 +62,19 @@ const _statusOptions = [
     </div>
 
     <UTable
-      :rows="assets?.items || []"
+      :data="assets?.items || []"
       :columns="columns"
       :loading="pending"
     >
-      <template #status-data="{ row }">
-        <UBadge :color="(row as any).status === 'active' ? 'success' : 'neutral'">
-          {{ (row as any).status }}
+      <template #status-cell="{ row }">
+        <UBadge :color="row.original.status === 'active' ? 'success' : 'neutral'">
+          {{ row.original.status }}
         </UBadge>
       </template>
-      <template #actions-data="{ row }">
+      <template #actions-cell="{ row }">
         <UButton
-          :to="`/assets/${(row as any).id}`"
-          icon="i-heroicons-pencil-square"
+          :to="`/assets/${row.original.id}`"
+          icon="i-lucide-pencil"
           size="xs"
           color="neutral"
           variant="ghost"

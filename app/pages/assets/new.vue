@@ -3,7 +3,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { categories: _categories, fetchCategories } = useAssets()
+const { categories, fetchCategories } = useAssets()
 const loading = ref(false)
 const toast = useToast()
 
@@ -22,7 +22,7 @@ onMounted(() => {
   fetchCategories()
 })
 
-async function _onSubmit() {
+async function onSubmit() {
   loading.value = true
   try {
     await $fetch('/api/assets', {

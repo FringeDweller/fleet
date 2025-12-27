@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { useBluetoothObd } from '~/composables/useBluetoothObd'
 
-const { dtcCodes: _dtcCodes, clearDtcCodes, isConnected: _isConnected } = useBluetoothObd()
+const { dtcCodes, clearDtcCodes, isConnected } = useBluetoothObd()
 const isClearing = ref(false)
 const showClearModal = ref(false)
 const workOrderRef = ref('')
 const toast = useToast()
 const { activeSession } = useOperatorSession()
 
-const _handleClear = async () => {
+const handleClear = async () => {
   if (!workOrderRef.value) return
 
   isClearing.value = true

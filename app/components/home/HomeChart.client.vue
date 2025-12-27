@@ -14,7 +14,7 @@ type DataRecord = {
   amount: number
 }
 
-const { width: _width } = useElementSize(cardRef)
+const { width } = useElementSize(cardRef)
 
 const data = ref<DataRecord[]>([])
 
@@ -40,10 +40,10 @@ watch(
   { immediate: true }
 )
 
-const _x = (_: DataRecord, i: number) => i
-const _y = (d: DataRecord) => d.amount
+const x = (_: DataRecord, i: number) => i
+const y = (d: DataRecord) => d.amount
 
-const _total = computed(() => data.value.reduce((acc: number, { amount }) => acc + amount, 0))
+const total = computed(() => data.value.reduce((acc: number, { amount }) => acc + amount, 0))
 
 const formatNumber = new Intl.NumberFormat('en', {
   style: 'currency',
@@ -59,7 +59,7 @@ const formatDate = (date: Date): string => {
   }[props.period]
 }
 
-const _xTicks = (i: number) => {
+const xTicks = (i: number) => {
   if (i === 0 || i === data.value.length - 1 || !data.value[i]) {
     return ''
   }
@@ -67,7 +67,7 @@ const _xTicks = (i: number) => {
   return formatDate(data.value[i].date)
 }
 
-const _template = (d: DataRecord) => `${formatDate(d.date)}: ${formatNumber(d.amount)}`
+const template = (d: DataRecord) => `${formatDate(d.date)}: ${formatNumber(d.amount)}`
 </script>
 
 <template>

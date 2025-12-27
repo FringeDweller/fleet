@@ -43,7 +43,7 @@ export const alertService = {
     // For now, send to all managers in organization or specific users if defined
     // For simplicity, we'll just send a general notification to the organization for now
     // In a real app, you would look up users based on rule.recipients
-    
+
     await notificationService.createNotification({
       organizationId: rule.organizationId,
       title: `Alert: ${rule.name}`,

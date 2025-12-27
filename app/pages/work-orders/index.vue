@@ -1,12 +1,12 @@
 <script setup lang="ts">
-const _columns: Record<string, unknown>[] = [
-  { key: 'woNumber', label: 'WO #' },
-  { key: 'assetNumber', label: 'Asset' },
-  { key: 'description', label: 'Description' },
-  { key: 'status', label: 'Status' },
-  { key: 'priority', label: 'Priority' },
-  { key: 'dueDate', label: 'Due Date' },
-  { key: 'actions' }
+const columns = [
+  { accessorKey: 'woNumber', header: 'WO #' },
+  { accessorKey: 'assetNumber', header: 'Asset' },
+  { accessorKey: 'description', header: 'Description' },
+  { accessorKey: 'status', header: 'Status' },
+  { accessorKey: 'priority', header: 'Priority' },
+  { accessorKey: 'dueDate', header: 'Due Date' },
+  { accessorKey: 'actions', header: '' }
 ]
 
 const search = ref('')
@@ -14,7 +14,7 @@ const selectedStatus = ref('')
 const page = ref(1)
 const pageCount = 10
 
-const { data: _workOrders, pending: _pending } = await useFetch<{
+const { data: workOrders, status: loadStatus } = await useFetch<{
   items: Record<string, unknown>[]
   total: number
 }>('/api/work-orders', {
@@ -26,7 +26,9 @@ const { data: _workOrders, pending: _pending } = await useFetch<{
   }
 })
 
-const _statusOptions = [
+const pending = computed(() => loadStatus.value === 'pending')
+
+const statusOptions = [
   { label: 'All', value: '' },
   { label: 'Open', value: 'open' },
   { label: 'In Progress', value: 'in_progress' },
@@ -35,7 +37,7 @@ const _statusOptions = [
   { label: 'Closed', value: 'closed' }
 ]
 
-const _getStatusColor = (status: string) => {
+const getStatusColor = (status: string) => {
   switch (status) {
     case 'open':
       return 'primary'
@@ -52,7 +54,7 @@ const _getStatusColor = (status: string) => {
   }
 }
 
-const _getPriorityColor = (priority: string) => {
+const getPriorityColor = (priority: string) => {
   switch (priority) {
     case 'high':
       return 'error'
@@ -69,10 +71,10 @@ const _getPriorityColor = (priority: string) => {
 <template>
   <div class="p-4">
     <div class="flex justify-between items-center mb-4">
-      <h1 class="text-2xl font-bold">
+      <h1 class="text-2xl font-bold text-highlighted">
         Work Orders
       </h1>
-      <UButton to="/work-orders/new" icon="i-heroicons-plus" color="primary">
+      <UButton to="/work-orders/new" icon="i-lucide-plus" color="primary">
         New Work Order
       </UButton>
     </div>
@@ -80,7 +82,7 @@ const _getPriorityColor = (priority: string) => {
     <div class="flex gap-4 mb-4">
       <UInput
         v-model="search"
-        icon="i-heroicons-magnifying-glass"
+        icon="i-lucide-search"
         placeholder="Search work orders..."
         class="w-64"
       />
@@ -93,24 +95,24 @@ const _getPriorityColor = (priority: string) => {
     </div>
 
     <UTable
-      :rows="workOrders?.items || []"
-      :columns="columns as any[]"
+      :data="workOrders?.items || []"
+      :columns="columns"
       :loading="pending"
     >
-      <template #status-data="{ row }">
-        <UBadge :color="getStatusColor((row as any).status)">
-          {{ (row as any).status }}
+      <template #status-cell="{ row }">
+        <UBadge :color="getStatusColor(row.original.status as string)" variant="subtle" class="capitalize">
+          {{ row.original.status }}
         </UBadge>
       </template>
-      <template #priority-data="{ row }">
-        <UBadge :color="getPriorityColor((row as any).priority)" variant="subtle" size="xs">
-          {{ (row as any).priority }}
+      <template #priority-cell="{ row }">
+        <UBadge :color="getPriorityColor(row.original.priority as string)" variant="subtle" size="xs" class="capitalize">
+          {{ row.original.priority }}
         </UBadge>
       </template>
-      <template #actions-data="{ row }">
+      <template #actions-cell="{ row }">
         <UButton
-          :to="`/work-orders/${(row as any).id}`"
-          icon="i-heroicons-pencil-square"
+          :to="`/work-orders/${row.original.id}`"
+          icon="i-lucide-pencil"
           size="xs"
           color="neutral"
           variant="ghost"

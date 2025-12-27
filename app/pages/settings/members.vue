@@ -5,7 +5,7 @@ const { data: members, refresh } = await useFetch<any[]>('/api/members', { defau
 
 const q = ref('')
 
-const _filteredMembers = computed(() => {
+const filteredMembers = computed(() => {
   return members.value.filter((member) => {
     return (
       member.name.toLowerCase().includes(q.value.toLowerCase()) ||
@@ -14,11 +14,11 @@ const _filteredMembers = computed(() => {
   })
 })
 
-const _isModalOpen = ref(false)
-const _isSaving = ref(false)
-const _selectedMember = ref<any>(null)
+const isModalOpen = ref(false)
+const isSaving = ref(false)
+const selectedMember = ref<any>(null)
 
-const _defaultState = {
+const defaultState = {
   firstName: '',
   lastName: '',
   email: '',
@@ -26,55 +26,55 @@ const _defaultState = {
   password: 'Password123!' // Default password for new users
 }
 
-const _state = ref({ ..._defaultState })
+const state = ref({ ...defaultState })
 
-function _openAddModal() {
-  _selectedMember.value = null
-  _state.value = { ..._defaultState }
-  _isModalOpen.value = true
+function openAddModal() {
+  selectedMember.value = null
+  state.value = { ...defaultState }
+  isModalOpen.value = true
 }
 
-function _openEditModal(member: any) {
-  _selectedMember.value = member
+function openEditModal(member: any) {
+  selectedMember.value = member
   const [firstName, ...lastNameParts] = member.name.split(' ')
-  _state.value = {
+  state.value = {
     firstName,
     lastName: lastNameParts.join(' '),
     email: member.email,
     role: member.role,
     password: '' // Don't show password on edit
   }
-  _isModalOpen.value = true
+  isModalOpen.value = true
 }
 
-async function _saveMember() {
-  _isSaving.value = true
+async function saveMember() {
+  isSaving.value = true
   try {
-    if (_selectedMember.value) {
-      await $fetch(`/api/members/${_selectedMember.value.id}`, {
+    if (selectedMember.value) {
+      await $fetch(`/api/members/${selectedMember.value.id}`, {
         method: 'PUT',
-        body: _state.value
+        body: state.value
       })
     } else {
       await $fetch('/api/members', {
         method: 'POST',
-        body: _state.value
+        body: state.value
       })
     }
     toast.add({ title: 'Member saved', color: 'success' })
-    _isModalOpen.value = false
+    isModalOpen.value = false
     await refresh()
   } catch (error) {
     console.error(error)
     toast.add({ title: 'Failed to save member', color: 'error' })
   } finally {
-    _isSaving.value = false
+    isSaving.value = false
   }
 }
 
-async function _deleteMember(id: string) {
+async function deleteMember(id: string) {
   if (!confirm('Are you sure you want to remove this member?')) return
-  
+
   try {
     await $fetch(`/api/members/${id}`, {
       method: 'DELETE'
@@ -86,6 +86,12 @@ async function _deleteMember(id: string) {
     toast.add({ title: 'Failed to remove member', color: 'error' })
   }
 }
+
+const columns = [
+  { accessorKey: 'member', header: 'Member' },
+  { accessorKey: 'role', header: 'Role' },
+  { accessorKey: 'actions', header: '' }
+]
 </script>
 
 <template>
@@ -99,7 +105,7 @@ async function _deleteMember(id: string) {
         <UButton
           label="Invite Member"
           icon="i-lucide-plus"
-          @click="_openAddModal"
+          @click="openAddModal"
         />
       </template>
     </UPageCard>
@@ -115,75 +121,71 @@ async function _deleteMember(id: string) {
       </template>
 
       <UTable
-        :rows="_filteredMembers"
-        :columns="[
-          { key: 'member', label: 'Member' },
-          { key: 'role', label: 'Role' },
-          { key: 'actions', label: '' }
-        ]"
+        :data="filteredMembers"
+        :columns="columns"
       >
-        <template #member-data="{ row }">
+        <template #member-cell="{ row }">
           <div class="flex items-center gap-3">
-            <UAvatar v-bind="row.avatar" size="sm" />
+            <UAvatar v-bind="row.original.avatar" size="sm" />
             <div>
-              <div class="font-medium text-highlighted">{{ row.name }}</div>
-              <div class="text-xs text-dimmed">{{ row.email }}</div>
+              <div class="font-medium text-highlighted">{{ row.original.name }}</div>
+              <div class="text-xs text-dimmed">{{ row.original.email }}</div>
             </div>
           </div>
         </template>
 
-        <template #role-data="{ row }">
+        <template #role-cell="{ row }">
           <UBadge variant="subtle" class="capitalize">
-            {{ row.role }}
+            {{ row.original.role }}
           </UBadge>
         </template>
 
-        <template #actions-data="{ row }">
+        <template #actions-cell="{ row }">
           <div class="flex justify-end gap-2">
             <UButton
               icon="i-lucide-pencil"
               variant="ghost"
               color="neutral"
               size="xs"
-              @click="_openEditModal(row)"
+              @click="openEditModal(row.original)"
             />
             <UButton
               icon="i-lucide-trash"
               variant="ghost"
               color="error"
               size="xs"
-              @click="_deleteMember(row.id)"
+              @click="deleteMember(row.original.id)"
             />
           </div>
         </template>
       </UTable>
     </UPageCard>
 
-    <UModal v-model:open="_isModalOpen" title="Member Details">
+    <UModal v-model:open="isModalOpen" title="Member Details">
       <template #body>
-        <UForm :state="_state" class="space-y-4" @submit="_saveMember">
+        <UForm :state="state" class="space-y-4" @submit="saveMember">
           <div class="grid grid-cols-2 gap-4">
             <UFormField label="First Name" required>
-              <UInput v-model="_state.firstName" />
+              <UInput v-model="state.firstName" />
             </UFormField>
             <UFormField label="Last Name" required>
-              <UInput v-model="_state.lastName" />
+              <UInput v-model="state.lastName" />
             </UFormField>
           </div>
 
           <UFormField label="Email" required>
-            <UInput v-model="_state.email" type="email" :disabled="!!_selectedMember" />
+            <UInput v-model="state.email" type="email" :disabled="!!selectedMember" />
           </UFormField>
 
           <UFormField label="Role" required>
             <USelect
-              v-model="_state.role"
+              v-model="state.role"
               :options="['owner', 'manager', 'technician', 'operator']"
             />
           </UFormField>
 
-          <UFormField v-if="!_selectedMember" label="Initial Password" required>
-            <UInput v-model="_state.password" type="password" />
+          <UFormField v-if="!selectedMember" label="Initial Password" required>
+            <UInput v-model="state.password" type="password" />
           </UFormField>
 
           <div class="flex justify-end gap-3 mt-6">
@@ -191,12 +193,12 @@ async function _deleteMember(id: string) {
               label="Cancel"
               variant="ghost"
               color="neutral"
-              @click="_isModalOpen = false"
+              @click="isModalOpen = false"
             />
             <UButton
               type="submit"
               label="Save Member"
-              :loading="_isSaving"
+              :loading="isSaving"
             />
           </div>
         </UForm>

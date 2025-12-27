@@ -37,18 +37,22 @@ export const createHLC = (nodeId: string) => {
   const update = (remoteHlc: string) => {
     const remote = parse(remoteHlc)
     const currentTs = now()
-    lastTs = Math.max(lastTs, remote.ts, currentTs)
+    const newTs = Math.max(lastTs, remote.ts, currentTs)
 
-    if (lastTs === remote.ts && lastTs === currentTs) {
+    if (newTs === lastTs && newTs === remote.ts && newTs === currentTs) {
       count = Math.max(count, remote.count) + 1
-    } else if (lastTs === remote.ts) {
+    } else if (newTs === lastTs && newTs === remote.ts) {
+      count = Math.max(count, remote.count) + 1
+    } else if (newTs === remote.ts) {
       count = remote.count + 1
-    } else if (lastTs === currentTs) {
+    } else if (newTs === lastTs) {
       count = count + 1
     } else {
       count = 0
     }
-    return generate()
+    
+    lastTs = newTs
+    return `${lastTs.toString(16).padStart(12, '0')}:${count.toString(16).padStart(4, '0')}:${nodeId}`
   }
 
   return {

@@ -6,13 +6,15 @@ export const organizations = pgTable('organizations', {
   slug: text('slug').notNull().unique(),
   address: text('address'),
   logoUrl: text('logo_url'),
-  settings: jsonb('settings').notNull().default({
-    units: {
-      distance: 'km',
-      fuel: 'litres'
-    },
-    timezone: 'UTC'
-  }),
+  settings: jsonb('settings')
+    .notNull()
+    .default({
+      units: {
+        distance: 'km',
+        fuel: 'litres'
+      },
+      timezone: 'UTC'
+    }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull()
 })

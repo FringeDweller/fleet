@@ -187,3 +187,44 @@ export interface FuelAnalytics {
   }[]
   anomalies: Record<string, unknown>[]
 }
+
+export interface OperatorSession {
+  id: string
+  operatorId: string
+  assetId: string
+  startTime: string
+  endTime: string | null
+  startMileage: string | null
+  endMileage: string | null
+  startOdometer?: string | null
+  endOdometer?: string | null
+  startHours: string | null
+  endHours: string | null
+  startLocationLat: string | null
+  startLocationLng: string | null
+  endLocationLat: string | null
+  endLocationLng: string | null
+  organizationId: string
+  status: 'active' | 'completed'
+  createdAt: string
+  updatedAt: string
+}
+
+export interface Inspection {
+  id: string
+  assetId: string
+  operatorId: string
+  sessionId?: string | null
+  status: 'passed' | 'failed' | 'pending'
+  notes: string | null
+  data: Record<string, any>
+  checkpoints?: any[]
+  startTime?: string
+  endTime?: string
+  location?: any
+  results?: any[]
+  signatureUrl?: string
+  organizationId: string
+  createdAt: string
+  updatedAt: string
+}

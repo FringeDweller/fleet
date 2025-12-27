@@ -1,6 +1,6 @@
 import { Worker } from 'bullmq'
-import { maintenanceSchedulerProcessor } from './maintenance-scheduler'
 import { documentExpiryCheckerProcessor } from './document-expiry-checker'
+import { maintenanceSchedulerProcessor } from './maintenance-scheduler'
 import { maintenanceQueue } from './queue'
 
 const connection = {

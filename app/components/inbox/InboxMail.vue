@@ -1,13 +1,14 @@
 <script setup lang="ts">
+import { format } from 'date-fns'
 import type { Mail } from '~/types'
 
 defineProps<{
   mail: Mail
 }>()
 
-const _emits = defineEmits(['close'])
+const emits = defineEmits(['close'])
 
-const _dropdownItems = [
+const dropdownItems = [
   [
     {
       label: 'Mark as unread',
@@ -35,7 +36,7 @@ const toast = useToast()
 const reply = ref('')
 const loading = ref(false)
 
-function _onSubmit() {
+function onSubmit() {
   loading.value = true
 
   setTimeout(() => {

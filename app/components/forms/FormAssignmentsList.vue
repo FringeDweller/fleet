@@ -1,48 +1,47 @@
 <script setup lang="ts">
+import { format } from 'date-fns'
+
 const props = defineProps<{
   formId: string
 }>()
 
-const { data: _assignments, refresh } = await useFetch<Record<string, unknown>[]>(
-  '/api/settings/forms/assignments',
-  {
-    query: { formGroupId: props.formGroupId }
-  }
-)
+const { data: assignments, refresh } = await useFetch<any[]>('/api/settings/forms/assignments', {
+  query: { formId: props.formId }
+})
 
 defineExpose({ refresh })
 
-async function _deleteAssignment(id: string) {
-  await $fetch(`/api/settings/forms/assignments/${id}`, { method: 'DELETE' as unknown })
+async function deleteAssignment(id: string) {
+  await $fetch(`/api/settings/forms/assignments/${id}`, { method: 'DELETE' })
   refresh()
 }
 </script>
 
 <template>
   <div class="space-y-4">
-    <div v-if="!_assignments || _assignments.length === 0" class="text-sm text-dimmed text-center py-8">
+    <div v-if="!assignments || assignments.length === 0" class="text-sm text-dimmed text-center py-8">
       No assignments for this form
     </div>
     <div
-      v-for="assignment in _assignments"
-      :key="assignment.id as string"
+      v-for="assignment in assignments"
+      :key="assignment.id"
       class="flex items-center justify-between p-3 border border-elevated rounded-md bg-elevated/20"
     >
       <div>
         <div class="text-sm font-medium text-highlighted">
-          {{ (assignment.targetName as string) }}
+          {{ assignment.targetName }}
         </div>
         <div class="text-xs text-dimmed">
-          Assigned on {{ format(new Date(assignment.createdAt as string), 'PPP') }}
+          Assigned on {{ format(new Date(assignment.createdAt), 'PPP') }}
         </div>
       </div>
 
       <UButton
-        icon="i-heroicons-trash"
+        icon="i-lucide-trash"
         color="error"
         variant="ghost"
         size="xs"
-        @click="_deleteAssignment(assignment.id as string)"
+        @click="deleteAssignment(assignment.id)"
       />
     </div>
   </div>

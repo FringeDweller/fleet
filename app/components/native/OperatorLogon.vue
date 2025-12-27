@@ -1,7 +1,7 @@
 <script setup lang="ts">
-const { logOn, logOff, activeSession, loading: _sessionLoading } = useOperatorSession()
-const { scanTag, isScanning: _nfcScanning } = useNfc()
-const { startScan: scanQr, isScanning: _qrScanning } = useQrScanner()
+const { logOn, logOff, activeSession, loading: sessionLoading } = useOperatorSession()
+const { scanTag, isScanning: nfcScanning } = useNfc()
+const { startScan: scanQr, isScanning: qrScanning } = useQrScanner()
 const { isConnected: obdConnected, liveData: obdData } = useBluetoothObd()
 const { clear } = useUserSession()
 const toast = useToast()
@@ -55,7 +55,7 @@ watch(showLogOffForm, (val) => {
   }
 })
 
-const _onNfcScan = async () => {
+const onNfcScan = async () => {
   try {
     const id = await scanTag()
     if (id) {
@@ -66,7 +66,7 @@ const _onNfcScan = async () => {
   }
 }
 
-const _onQrScan = async () => {
+const onQrScan = async () => {
   try {
     const id = await scanQr()
     if (id) {
@@ -82,7 +82,7 @@ const handleLogOn = async (id: string) => {
   showManualForm.value = true
 }
 
-const _submitLogOn = async () => {
+const submitLogOn = async () => {
   try {
     const previousSessionId =
       handoverContext.value?.assetId === assetId.value ? handoverContext.value.sessionId : undefined
@@ -103,7 +103,7 @@ const _submitLogOn = async () => {
   }
 }
 
-const _submitLogOff = async () => {
+const submitLogOff = async () => {
   try {
     await logOff({
       endOdometer: endOdometer.value,
@@ -116,7 +116,7 @@ const _submitLogOff = async () => {
   }
 }
 
-const _onHandover = async () => {
+const onHandover = async () => {
   if (!endOdometer.value && !endHours.value && !obdConnected.value) {
     toast.add({
       title: 'Readings required',

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 const toast = useToast()
 
-const { data: _rules, refresh } = await useFetch('/api/settings/alerts/rules')
+const { data: rules, refresh } = await useFetch<any[]>('/api/settings/alerts/rules')
 
-const _isModalOpen = ref(false)
-const _isSaving = ref(false)
-const _selectedRule = ref<any>(null)
+const isModalOpen = ref(false)
+const isSaving = ref(false)
+const selectedRule = ref<any>(null)
 
-const _defaultRule = {
+const defaultRule = {
   name: '',
   description: '',
   condition: { field: 'odometer', operator: '>', value: 100000 },
@@ -16,67 +16,72 @@ const _defaultRule = {
   isActive: true
 }
 
-const _state = ref({ ..._defaultRule })
+const state = ref({ ...defaultRule })
 
-const _fields = [
+const fields = [
   { label: 'Odometer', value: 'odometer' },
   { label: 'Engine Hours', value: 'engineHours' },
   { label: 'Fuel Level', value: 'fuelLevel' },
   { label: 'Idle Time', value: 'idleTime' }
 ]
 
-const _operators = [
+const operators = [
   { label: 'Greater than', value: '>' },
   { label: 'Less than', value: '<' },
   { label: 'Equals', value: '=' }
 ]
 
-const _channels = [
+const channels = [
   { label: 'In-App', value: 'inApp' },
   { label: 'Push', value: 'push' },
   { label: 'Email', value: 'email' }
 ]
 
-function _openCreateModal() {
-  _selectedRule.value = null
-  _state.value = { ..._defaultRule, condition: { ..._defaultRule.condition }, recipients: { ..._defaultRule.recipients }, channels: [..._defaultRule.channels] }
-  _isModalOpen.value = true
+function openCreateModal() {
+  selectedRule.value = null
+  state.value = {
+    ...defaultRule,
+    condition: { ...defaultRule.condition },
+    recipients: { ...defaultRule.recipients },
+    channels: [...defaultRule.channels]
+  }
+  isModalOpen.value = true
 }
 
-function _openEditModal(rule: any) {
-  _selectedRule.value = rule
-  _state.value = JSON.parse(JSON.stringify(rule))
-  _isModalOpen.value = true
+function openEditModal(rule: any) {
+  selectedRule.value = rule
+  state.value = JSON.parse(JSON.stringify(rule))
+  isModalOpen.value = true
 }
 
-async function _saveRule() {
-  _isSaving.value = true
+async function saveRule() {
+  isSaving.value = true
   try {
-    if (_selectedRule.value) {
-      await $fetch(`/api/settings/alerts/rules/${_selectedRule.value.id}`, {
+    if (selectedRule.value) {
+      await $fetch(`/api/settings/alerts/rules/${selectedRule.value.id}`, {
         method: 'PUT',
-        body: _state.value
+        body: state.value
       })
     } else {
       await $fetch('/api/settings/alerts/rules', {
         method: 'POST',
-        body: _state.value
+        body: state.value
       })
     }
     toast.add({ title: 'Alert rule saved', color: 'success' })
-    _isModalOpen.value = false
+    isModalOpen.value = false
     await refresh()
   } catch (error) {
     console.error(error)
     toast.add({ title: 'Failed to save alert rule', color: 'error' })
   } finally {
-    _isSaving.value = false
+    isSaving.value = false
   }
 }
 
-async function _deleteRule(id: string) {
+async function deleteRule(id: string) {
   if (!confirm('Are you sure you want to delete this alert rule?')) return
-  
+
   try {
     await $fetch(`/api/settings/alerts/rules/${id}`, {
       method: 'DELETE'
@@ -89,7 +94,7 @@ async function _deleteRule(id: string) {
   }
 }
 
-async function _toggleRuleStatus(rule: any) {
+async function toggleRuleStatus(rule: any) {
   try {
     await $fetch(`/api/settings/alerts/rules/${rule.id}`, {
       method: 'PUT',
@@ -99,6 +104,15 @@ async function _toggleRuleStatus(rule: any) {
   } catch (error) {
     console.error(error)
     toast.add({ title: 'Failed to update rule status', color: 'error' })
+  }
+}
+
+function toggleChannel(value: string) {
+  const index = state.value.channels.indexOf(value)
+  if (index === -1) {
+    state.value.channels.push(value)
+  } else {
+    state.value.channels.splice(index, 1)
   }
 }
 </script>
@@ -114,100 +128,100 @@ async function _toggleRuleStatus(rule: any) {
         <UButton
           label="New Rule"
           icon="i-lucide-plus"
-          @click="_openCreateModal"
+          @click="openCreateModal"
         />
       </template>
     </UPageCard>
 
     <UPageCard variant="subtle" :ui="{ body: 'p-0' }">
       <UTable
-        :rows="_rules || []"
+        :data="rules || []"
         :columns="[
-          { key: 'name', label: 'Name' },
-          { key: 'condition', label: 'Condition' },
-          { key: 'channels', label: 'Channels' },
-          { key: 'status', label: 'Status' },
-          { key: 'actions', label: '' }
+          { accessorKey: 'name', header: 'Name' },
+          { accessorKey: 'condition', header: 'Condition' },
+          { accessorKey: 'channels', header: 'Channels' },
+          { accessorKey: 'status', header: 'Status' },
+          { accessorKey: 'actions', header: '' }
         ]"
       >
-        <template #name-data="{ row }">
-          <div class="font-medium text-highlighted">{{ row.name }}</div>
-          <div class="text-xs text-dimmed">{{ row.description }}</div>
+        <template #name-cell="{ row }">
+          <div class="font-medium text-highlighted">{{ row.original.name }}</div>
+          <div class="text-xs text-dimmed">{{ row.original.description }}</div>
         </template>
 
-        <template #condition-data="{ row }">
+        <template #condition-cell="{ row }">
           <div class="text-sm">
-            {{ row.condition.field }} {{ row.condition.operator }} {{ row.condition.value }}
+            {{ row.original.condition.field }} {{ row.original.condition.operator }} {{ row.original.condition.value }}
           </div>
         </template>
 
-        <template #channels-data="{ row }">
+        <template #channels-cell="{ row }">
           <div class="flex gap-1">
-            <UBadge v-for="channel in row.channels" :key="channel" size="xs" variant="subtle">
+            <UBadge v-for="channel in row.original.channels" :key="channel" size="xs" variant="subtle">
               {{ channel }}
             </UBadge>
           </div>
         </template>
 
-        <template #status-data="{ row }">
+        <template #status-cell="{ row }">
           <USwitch
-            :model-value="row.isActive"
-            @update:model-value="_toggleRuleStatus(row)"
+            :model-value="row.original.isActive"
+            @update:model-value="toggleRuleStatus(row.original)"
           />
         </template>
 
-        <template #actions-data="{ row }">
+        <template #actions-cell="{ row }">
           <div class="flex justify-end gap-2">
             <UButton
               icon="i-lucide-pencil"
               variant="ghost"
               color="neutral"
               size="xs"
-              @click="_openEditModal(row)"
+              @click="openEditModal(row.original)"
             />
             <UButton
               icon="i-lucide-trash"
               variant="ghost"
               color="error"
               size="xs"
-              @click="_deleteRule(row.id)"
+              @click="deleteRule(row.original.id)"
             />
           </div>
         </template>
       </UTable>
     </UPageCard>
 
-    <UModal v-model:open="_isModalOpen" title="Alert Rule">
+    <UModal v-model:open="isModalOpen" title="Alert Rule">
       <template #body>
-        <UForm :state="_state" class="space-y-4" @submit="_saveRule">
+        <UForm :state="state" class="space-y-4" @submit="saveRule">
           <UFormField label="Rule Name" required>
-            <UInput v-model="_state.name" placeholder="e.g. High Mileage Alert" />
+            <UInput v-model="state.name" placeholder="e.g. High Mileage Alert" />
           </UFormField>
 
           <UFormField label="Description">
-            <UTextarea v-model="_state.description" placeholder="Optional description..." />
+            <UTextarea v-model="state.description" placeholder="Optional description..." />
           </UFormField>
 
           <div class="grid grid-cols-3 gap-4">
             <UFormField label="Field">
-              <USelect v-model="_state.condition.field" :options="_fields" />
+              <USelect v-model="state.condition.field" :options="fields" />
             </UFormField>
             <UFormField label="Operator">
-              <USelect v-model="_state.condition.operator" :options="_operators" />
+              <USelect v-model="state.condition.operator" :options="operators" />
             </UFormField>
             <UFormField label="Value">
-              <UInput v-model.number="_state.condition.value" type="number" />
+              <UInput v-model.number="state.condition.value" type="number" />
             </UFormField>
           </div>
 
           <UFormField label="Notification Channels">
             <div class="flex gap-4">
               <UCheckbox
-                v-for="channel in _channels"
+                v-for="channel in channels"
                 :key="channel.value"
-                v-model="_state.channels"
+                :model-value="state.channels.includes(channel.value)"
                 :label="channel.label"
-                :value="channel.value"
+                @update:model-value="() => toggleChannel(channel.value)"
               />
             </div>
           </UFormField>
@@ -217,12 +231,12 @@ async function _toggleRuleStatus(rule: any) {
               label="Cancel"
               variant="ghost"
               color="neutral"
-              @click="_isModalOpen = false"
+              @click="isModalOpen = false"
             />
             <UButton
               type="submit"
               label="Save Rule"
-              :loading="_isSaving"
+              :loading="isSaving"
             />
           </div>
         </UForm>

@@ -3,16 +3,16 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { tasks, loading: _loading, fetchTasks } = useMaintenanceTasks()
+const { tasks, loading, fetchTasks } = useMaintenanceTasks()
 
 const search = ref('')
-const _columns = [
-  { key: 'name', label: 'Task Name' },
-  { key: 'description', label: 'Description' },
-  { key: 'estimatedHours', label: 'Est. Hours' }
+const columns = [
+  { accessorKey: 'name', header: 'Task Name' },
+  { accessorKey: 'description', header: 'Description' },
+  { accessorKey: 'estimatedHours', header: 'Est. Hours' }
 ]
 
-const _filteredTasks = computed(() => {
+const filteredTasks = computed(() => {
   if (!search.value) return tasks.value
   return tasks.value.filter((task) =>
     Object.values(task).some((val) =>
@@ -52,14 +52,14 @@ onMounted(() => {
 
     <template #body>
       <UTable
-        :rows="filteredTasks"
-        :columns="(columns as any)"
+        :data="filteredTasks"
+        :columns="columns"
         :loading="loading"
         class="w-full"
       >
-        <template #name-data="{ row }">
-          <NuxtLink :to="`/maintenance-tasks/${(row as any).id}`" class="text-primary hover:underline font-medium">
-            {{ (row as any).name }}
+        <template #name-cell="{ row }">
+          <NuxtLink :to="`/maintenance-tasks/${row.original.id}`" class="text-primary hover:underline font-medium">
+            {{ row.original.name }}
           </NuxtLink>
         </template>
       </UTable>

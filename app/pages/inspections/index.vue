@@ -1,16 +1,17 @@
 <script setup lang="ts">
-const { data: _inspections, pending: _pending } =
-  await useFetch<Record<string, unknown>[]>('/api/inspections')
+const { data: inspections, status } = await useFetch<Record<string, unknown>[]>('/api/inspections')
 
-const _columns = [
-  { key: 'createdAt', label: 'Date' },
-  { key: 'assetNumber', label: 'Vehicle' },
-  { key: 'operatorName', label: 'Operator' },
-  { key: 'status', label: 'Status' },
-  { key: 'actions', label: '' }
+const pending = computed(() => status.value === 'pending')
+
+const columns = [
+  { accessorKey: 'createdAt', header: 'Date' },
+  { accessorKey: 'assetNumber', header: 'Vehicle' },
+  { accessorKey: 'operatorName', header: 'Operator' },
+  { accessorKey: 'status', header: 'Status' },
+  { accessorKey: 'actions', header: '' }
 ]
 
-const _getStatusColor = (status: string) => {
+const getStatusColor = (status: string) => {
   switch (status) {
     case 'passed':
       return 'success'
@@ -27,31 +28,31 @@ const _getStatusColor = (status: string) => {
 <template>
   <div class="p-4 space-y-6">
     <div class="flex justify-between items-center">
-      <h1 class="text-2xl font-bold">
+      <h1 class="text-2xl font-bold text-highlighted">
         Inspection History
       </h1>
     </div>
 
     <UCard>
       <UTable
-        :rows="inspections || []"
-        :columns="columns as any[]"
+        :data="inspections || []"
+        :columns="columns"
         :loading="pending"
       >
-        <template #createdAt-data="{ row }">
-          {{ new Date((row as any).createdAt).toLocaleString() }}
+        <template #createdAt-cell="{ row }">
+          {{ new Date(row.original.createdAt as string).toLocaleString() }}
         </template>
-        <template #status-data="{ row }">
-          <UBadge :color="getStatusColor((row as any).status)" variant="subtle" class="capitalize">
-            {{ (row as any).status }}
+        <template #status-cell="{ row }">
+          <UBadge :color="getStatusColor(row.original.status as string)" variant="subtle" class="capitalize">
+            {{ row.original.status }}
           </UBadge>
         </template>
-        <template #actions-data="{ row }">
+        <template #actions-cell="{ row }">
           <UButton
             icon="i-lucide-eye"
             variant="ghost"
             color="neutral"
-            :to="`/inspections/${(row as any).id}`"
+            :to="`/inspections/${row.original.id}`"
           />
         </template>
       </UTable>

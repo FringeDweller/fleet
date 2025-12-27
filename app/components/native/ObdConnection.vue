@@ -1,10 +1,10 @@
 <script setup lang="ts">
 const {
-  isAvailable: _isAvailable,
-  isScanning: _isScanning,
-  isConnected: _isConnected,
-  devices: _devices,
-  connectedDevice: _connectedDevice,
+  isAvailable,
+  isScanning,
+  isConnected,
+  devices,
+  connectedDevice,
   scanForDongles,
   connect,
   disconnect
@@ -13,11 +13,11 @@ const {
 const toast = useToast()
 const connecting = ref(false)
 
-const _handleScan = async () => {
+const handleScan = async () => {
   await scanForDongles()
 }
 
-const _handleConnect = async (deviceId: string) => {
+const handleConnect = async (deviceId: string) => {
   connecting.value = true
   try {
     await connect(deviceId)
@@ -29,7 +29,7 @@ const _handleConnect = async (deviceId: string) => {
   }
 }
 
-const _handleDisconnect = async () => {
+const handleDisconnect = async () => {
   await disconnect()
   toast.add({ title: 'Disconnected', color: 'neutral' })
 }

@@ -12,9 +12,9 @@ const range = ref<Range>({
 })
 
 const {
-  data: _report,
-  status: _status,
-  refresh: _refresh
+  data: report,
+  status,
+  refresh
 } = await useAsyncData(
   'utilisation-report',
   () => {
@@ -22,31 +22,35 @@ const {
     if (range.value.start) params.append('start', range.value.start.toISOString())
     if (range.value.end) params.append('end', range.value.end.toISOString())
 
-    return $fetch(`/api/reports/utilisation?${params.toString()}`)
+    return $fetch<any>(`/api/reports/utilisation?${params.toString()}`)
   },
   {
     watch: [range]
   }
 )
 
-const _columns = [
-  { key: 'assetNumber', label: 'Asset' },
-  { key: 'categoryName', label: 'Category' },
-  { key: 'totalKm', label: 'Total Distance (km)' },
-  { key: 'totalHours', label: 'Total Usage (hrs)' },
-  { key: 'avgDailyKm', label: 'Avg Daily Km' },
-  { key: 'utilizationScore', label: 'Utilisation Score' }
+const columns = [
+  { accessorKey: 'assetNumber', header: 'Asset' },
+  { accessorKey: 'categoryName', header: 'Category' },
+  { accessorKey: 'totalKm', header: 'Total Distance (km)' },
+  { accessorKey: 'totalHours', header: 'Total Usage (hrs)' },
+  { accessorKey: 'avgDailyKm', header: 'Avg Daily Km' },
+  { accessorKey: 'utilizationScore', header: 'Utilisation Score' }
 ]
 
-const _getScoreColor = (score: number) => {
+const getScoreColor = (score: number) => {
   if (score < 30) return 'error'
   if (score < 70) return 'warning'
   return 'success'
 }
 
 function _exportReport() {
-  if (!_report.value) return
-  exportToCSV(_report.value.data, _columns, `utilisation-report-${new Date().toISOString().split('T')[0]}`)
+  if (!report.value) return
+  exportToCSV(
+    report.value.data,
+    columns,
+    `utilisation-report-${new Date().toISOString().split('T')[0]}`
+  )
 }
 </script>
 
@@ -63,8 +67,8 @@ function _exportReport() {
             icon="i-lucide-refresh-cw"
             variant="ghost"
             color="neutral"
-            :loading="_status === 'pending'"
-            @click="() => _refresh()"
+            :loading="status === 'pending'"
+            @click="() => refresh()"
           />
           <UButton
             icon="i-lucide-download"
@@ -96,24 +100,24 @@ function _exportReport() {
         </div>
 
         <!-- Data Table -->
-        <UTable :data="report.data" :columns="columns as any[]" class="bg-elevated/50 rounded-lg border border-default">
-          <template #totalKm-cell="{ row }">
-            {{ Math.round(row.original.totalKm) }} km
+        <UTable :data="report.data" :columns="columns" class="bg-elevated/50 rounded-lg border border-default">
+          <template #totalKm-cell="{ row }: { row: any }">
+            {{ Math.round((row.original as any).totalKm) }} km
           </template>
-          <template #totalHours-cell="{ row }">
-            {{ Math.round(row.original.totalHours) }} hrs
+          <template #totalHours-cell="{ row }: { row: any }">
+            {{ Math.round((row.original as any).totalHours) }} hrs
           </template>
-          <template #avgDailyKm-cell="{ row }">
-            {{ row.original.avgDailyKm.toFixed(1) }} km/day
+          <template #avgDailyKm-cell="{ row }: { row: any }">
+            {{ (row.original as any).avgDailyKm.toFixed(1) }} km/day
           </template>
-          <template #utilizationScore-cell="{ row }">
+          <template #utilizationScore-cell="{ row }: { row: any }">
             <div class="flex items-center gap-3">
               <UProgress
-                :value="row.original.utilizationScore"
-                :color="getScoreColor(row.original.utilizationScore)"
+                :value="(row.original as any).utilizationScore"
+                :color="getScoreColor((row.original as any).utilizationScore)"
                 class="w-24"
               />
-              <span class="text-sm font-medium">{{ row.original.utilizationScore }}%</span>
+              <span class="text-sm font-medium">{{ (row.original as any).utilizationScore }}%</span>
             </div>
           </template>
         </UTable>

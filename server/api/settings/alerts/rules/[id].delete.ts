@@ -11,7 +11,8 @@ export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
   if (!id) throw createError({ statusCode: 400, message: 'Missing ID' })
 
-  await db.delete(alertRules)
+  await db
+    .delete(alertRules)
     .where(and(eq(alertRules.id, id), eq(alertRules.organizationId, session.user.organizationId)))
 
   return { success: true }
