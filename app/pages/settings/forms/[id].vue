@@ -258,7 +258,7 @@ async function saveTitle() {
                   <div class="flex items-center gap-2">
                     <span class="font-bold">Version {{ v.version }}</span>
                     <UBadge
-                      :color="v.status === 'published' ? 'success' : v.status === 'draft' ? 'neutral' : 'gray'"
+                      :color="v.status === 'published' ? 'success' : v.status === 'draft' ? 'neutral' : 'neutral'"
                       size="xs"
                       variant="subtle"
                     >

@@ -33,6 +33,8 @@ export interface Stat {
   icon: string
   value: number | string
   variation: number
+  to?: string
+  inverseTrend?: boolean
   formatter?: (value: number) => string
 }
 

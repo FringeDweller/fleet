@@ -57,6 +57,8 @@ export const formService = {
       })
       .returning()
 
+    if (!form) return null
+
     // If formGroupId was not provided, it means it's the first version
     if (!form.formGroupId) {
       await db.update(customForms)

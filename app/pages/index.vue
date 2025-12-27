@@ -65,7 +65,7 @@ const period = ref<Period>('daily')
     </template>
 
     <template #body>
-      <HomeStats :period="period" :range="range" />
+      <DashboardStats :range="range" />
       <HomeChart :period="period" :range="range" />
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
         <HomeSales :period="period" :range="range" class="lg:col-span-1" />
