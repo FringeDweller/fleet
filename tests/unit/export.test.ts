@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { exportToCSV } from '../../app/utils/export'
 
 describe('exportToCSV', () => {
@@ -54,7 +54,7 @@ describe('exportToCSV', () => {
     expect(linkMock.click).toHaveBeenCalled()
     expect(appendChildSpy).toHaveBeenCalled()
     expect(removeChildSpy).toHaveBeenCalled()
-    
+
     expect(blobContent).toContain('ID,Name,Cost')
     expect(blobContent).toContain('"1","Asset 1","100"')
     expect(blobContent).toContain('"2","Asset 2","200"')

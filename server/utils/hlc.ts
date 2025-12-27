@@ -50,7 +50,7 @@ export const createHLC = (nodeId: string) => {
     } else {
       count = 0
     }
-    
+
     lastTs = newTs
     return `${lastTs.toString(16).padStart(12, '0')}:${count.toString(16).padStart(4, '0')}:${nodeId}`
   }
