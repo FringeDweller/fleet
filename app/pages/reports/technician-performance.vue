@@ -20,9 +20,9 @@ interface TechPerformance {
 }
 
 const {
-  data: report,
-  status,
-  refresh
+  data: _report,
+  status: _status,
+  refresh: _refresh
 } = await useAsyncData(
   'tech-performance-report',
   () => {

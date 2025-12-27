@@ -6,7 +6,7 @@ definePageMeta({
 const route = useRoute()
 const router = useRouter()
 const toast = useToast()
-const { getSchedule, updateSchedule, deleteSchedule, loading } = useMaintenanceSchedules()
+const { getSchedule, updateSchedule, deleteSchedule, loading: _loading } = useMaintenanceSchedules()
 
 const schedule = ref<Record<string, unknown> | null>(null)
 const initialLoading = ref(true)

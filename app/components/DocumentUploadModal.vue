@@ -1,9 +1,9 @@
-<script setup lang="ts">
-const emit = defineEmits(['uploaded'])
-const toast = useToast()
+const { data: _categories } = await useFetch<any[]>('/api/documents/categories')
 
 const _fileInput = ref<HTMLInputElement | null>(null)
 const selectedFile = ref<File | null>(null)
+const selectedCategoryId = ref<string | null>(null)
+const expiryDate = ref<string | null>(null)
 const isUploading = ref(false)
 const progress = ref(0)
 
@@ -22,10 +22,14 @@ async function _uploadFile() {
 
   const formData = new FormData()
   formData.append('file', selectedFile.value)
+  if (selectedCategoryId.value) {
+    formData.append('categoryId', selectedCategoryId.value)
+  }
+  if (expiryDate.value) {
+    formData.append('expiryDate', expiryDate.value)
+  }
 
   try {
-    // Note: Standard $fetch doesn't provide progress events easily without extra config
-    // For a simple implementation, we'll just do the request
     await $fetch('/api/documents', {
       method: 'POST',
       body: formData
@@ -55,28 +59,44 @@ function _handleDrop(e: DragEvent) {
     <h3 class="text-lg font-bold">Upload Document</h3>
     
     <div 
-      class="border-2 border-dashed border-default rounded-lg p-12 text-center space-y-4 hover:border-primary-500 transition-colors"
+      class="border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-lg p-8 text-center space-y-4 hover:border-primary-500 transition-colors cursor-pointer"
       @dragover.prevent
-      @drop="handleDrop"
-      @click="fileInput?.click()"
+      @drop="_handleDrop"
+      @click="_fileInput?.click()"
     >
       <input 
-        ref="fileInput" 
+        ref="_fileInput" 
         type="file" 
         class="hidden" 
-        @change="onFileSelect"
+        @change="_onFileSelect"
       />
       
       <div v-if="!selectedFile">
-        <UIcon name="i-lucide-cloud-upload" class="w-12 h-12 mx-auto text-dimmed" />
-        <p class="text-sm">Click or drag file to upload</p>
-        <p class="text-xs text-dimmed">PDF, Images, Office docs (max 50MB)</p>
+        <UIcon name="i-lucide-cloud-upload" class="w-12 h-12 mx-auto text-gray-400" />
+        <p class="text-sm text-gray-600 dark:text-gray-400">Click or drag file to upload</p>
+        <p class="text-xs text-gray-500">PDF, Images, Office docs (max 50MB)</p>
       </div>
       <div v-else class="space-y-2">
         <UIcon name="i-lucide-file" class="w-12 h-12 mx-auto text-primary" />
-        <p class="font-medium">{{ selectedFile.name }}</p>
-        <p class="text-xs text-dimmed">{{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB</p>
+        <p class="font-medium truncate max-w-xs mx-auto">{{ selectedFile.name }}</p>
+        <p class="text-xs text-gray-500">{{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB</p>
       </div>
+    </div>
+
+    <div class="space-y-4">
+      <UFormGroup label="Category">
+        <USelectMenu
+          v-model="selectedCategoryId"
+          :options="_categories || []"
+          value-attribute="id"
+          option-attribute="name"
+          placeholder="Select category"
+        />
+      </UFormGroup>
+
+      <UFormGroup label="Expiry Date (Optional)">
+        <UInput v-model="expiryDate" type="date" />
+      </UFormGroup>
     </div>
 
     <div v-if="isUploading" class="space-y-2">

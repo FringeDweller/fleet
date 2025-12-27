@@ -18,9 +18,9 @@ const route = useRoute()
 const id = route.params.id as string
 const toast = useToast()
 
-const { data: form, refresh } = await useFetch<CustomForm>(`/api/settings/forms/${id}`)
+const { data: _form, refresh } = await useFetch<CustomForm>(`/api/settings/forms/${id}`)
 
-const { data: versions, refresh: refreshVersions } = await useFetch<CustomForm[]>(
+const { data: _versions, refresh: _refreshVersions } = await useFetch<CustomForm[]>(
   `/api/settings/forms/${id}/versions`
 )
 

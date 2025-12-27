@@ -1,28 +1,29 @@
 <script setup lang="ts">
 import type { Asset } from '~/types'
 
-const _columns: any[] = [
+const _columns: Record<string, unknown>[] = [
   { key: 'assetNumber', label: 'Asset #' },
   { key: 'make', label: 'Make' },
   { key: 'model', label: 'Model' },
-  { key: 'year', label: 'Year' },
+  { key: 'category', label: 'Category' },
   { key: 'status', label: 'Status' },
   { key: 'actions' }
 ]
 
 const search = ref('')
-const selectedStatus = ref('')
 const page = ref(1)
 const pageCount = 10
 
-const { data: assets, pending } = await useFetch<{ items: Asset[]; total: number }>('/api/assets', {
-  query: {
-    q: search,
-    status: selectedStatus,
-    page: page,
-    limit: pageCount
+const { data: _assets, pending: _pending } = await useFetch<{ items: Asset[]; total: number }>(
+  '/api/assets',
+  {
+    query: {
+      q: search,
+      page,
+      limit: pageCount
+    }
   }
-})
+)
 
 const _statusOptions = [
   { label: 'All', value: '' },

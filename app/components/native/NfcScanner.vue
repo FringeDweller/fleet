@@ -8,7 +8,12 @@ const emit = defineEmits<{
   (e: 'error', error: unknown): void
 }>()
 
-const { isAvailable, isScanning, scanTag, stopScan } = useNfc()
+const {
+  isAvailable: _isAvailable,
+  isScanning: _isScanning,
+  scanTag,
+  stopScan: _stopScan
+} = useNfc()
 
 const _startScanning = async () => {
   try {

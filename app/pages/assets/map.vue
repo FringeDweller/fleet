@@ -4,42 +4,18 @@ definePageMeta({
 })
 
 const {
-  data: locations,
-  refresh: refreshLocations,
-  pending: loadingLocations
-} = await useFetch<
-  {
-    id: string
-    assetId: string
-    latitude: string
-    longitude: string
-    assetNumber: string
-    assetMake: string
-    assetModel: string
-    assetStatus: string | null
-    createdAt: string
-  }[]
->('/api/assets/locations/latest')
+  data: _locations,
+  refresh: _refreshLocations,
+  pending: _loadingLocations
+} = await useFetch<{ assetId: string; latitude: number; longitude: number; assetName: string }[]>(
+  '/api/assets/locations/latest'
+)
 
-const { data: geofences } =
-  await useFetch<
-    {
-      id: string
-      name: string
-      type: 'circle' | 'polygon'
-      centerLat: string | null
-      centerLng: string | null
-      radius: string | null
-      coordinates: { lat: number; lng: number }[] | null
-      category: string
-    }[]
-  >('/api/geofences')
+const { data: _geofences } = await useFetch<Record<string, unknown>[]>('/api/geofences')
 
 const _refresh = () => {
-  refreshLocations()
+  _refreshLocations()
 }
-
-const _pending = computed(() => loadingLocations.value)
 </script>
 
 <template>
@@ -48,7 +24,7 @@ const _pending = computed(() => loadingLocations.value)
       <UDashboardNavbar title="Fleet Map">
         <template #right>
           <div class="flex items-center gap-2">
-            <span v-if="pending" class="text-xs text-gray-500 flex items-center gap-1">
+            <span v-if="_loadingLocations" class="text-xs text-gray-500 flex items-center gap-1">
               <UIcon name="i-heroicons-arrow-path" class="animate-spin" />
               Updating...
             </span>
@@ -56,7 +32,7 @@ const _pending = computed(() => loadingLocations.value)
               icon="i-heroicons-arrow-path"
               color="neutral"
               variant="ghost"
-              @click="refresh"
+              @click="_refresh"
             />
           </div>
         </template>
@@ -65,7 +41,7 @@ const _pending = computed(() => loadingLocations.value)
 
     <template #body>
       <div class="flex-1 flex flex-col min-h-0 h-full">
-        <DashboardAssetMap :locations="locations || []" :geofences="geofences || []" class="flex-1" />
+        <DashboardAssetMap :locations="_locations || []" :geofences="_geofences || []" class="flex-1" />
       </div>
     </template>
   </UDashboardPanel>

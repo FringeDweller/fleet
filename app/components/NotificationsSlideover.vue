@@ -1,23 +1,23 @@
 <script setup lang="ts">
 import type { Notification } from '~/types'
 
-const { isNotificationsSlideoverOpen } = useDashboard()
+const { isNotificationsSlideoverOpen: _isNotificationsSlideoverOpen } = useDashboard()
 
-const { data: notifications } = await useFetch<Notification[]>('/api/notifications')
+const { data: _notifications } = await useFetch<Notification[]>('/api/notifications')
 </script>
 
 <template>
   <USlideover
-    v-model:open="isNotificationsSlideoverOpen"
+    v-model:open="_isNotificationsSlideoverOpen"
     title="Notifications"
   >
     <template #body>
-      <div v-if="!notifications || notifications.length === 0" class="text-center py-12 text-dimmed">
+      <div v-if="!_notifications || _notifications.length === 0" class="text-center py-12 text-dimmed">
         <UIcon name="i-lucide-bell-off" class="w-12 h-12 mx-auto mb-2 opacity-50" />
         <p>No new notifications</p>
       </div>
       <NuxtLink
-        v-for="notification in notifications"
+        v-for="notification in _notifications"
         :key="notification.id"
         :to="notification.link || '#'"
         class="px-3 py-2.5 rounded-md hover:bg-elevated/50 flex items-center gap-3 relative -mx-3 first:-mt-3 last:-mb-3"

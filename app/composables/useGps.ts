@@ -34,7 +34,7 @@ export const useGps = () => {
     }
   }
 
-  const handleNewLocation = async (position: any) => {
+  const handleNewLocation = async (position: GeolocationPosition) => {
     const coords = position.coords as Record<string, unknown>
     lastLocation.value = coords
 

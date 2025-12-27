@@ -210,7 +210,7 @@ const _groups = computed(() => [
   }
 ])
 
-const { isNative } = useCapacitor()
+const { isNative: _isNative } = useCapacitor()
 const breakpoints = useBreakpoints(breakpointsTailwind)
 const _isMobile = breakpoints.smaller('lg')
 

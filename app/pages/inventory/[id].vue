@@ -7,10 +7,10 @@ const toast = useToast()
 const {
   fetchPart,
   updatePart,
-  categories,
+  categories: _categories,
   fetchCategories,
   recordMovement,
-  locations,
+  locations: _locations,
   fetchLocations
 } = useInventory()
 

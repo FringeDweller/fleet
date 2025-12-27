@@ -5,7 +5,7 @@ export interface SyncOperation {
   hlc: string
   collection: string
   action: 'create' | 'update' | 'delete'
-  data: any
+  data: unknown
   synced: boolean
 }
 
@@ -43,7 +43,7 @@ export const useOfflineSync = () => {
     return db.get(collection, id)
   }
 
-  const putItem = async (collection: string, item: any) => {
+  const putItem = async (collection: string, item: unknown) => {
     const db = await initDB()
     return db.put(collection, item)
   }
@@ -58,7 +58,7 @@ export const useOfflineSync = () => {
   const queueOperation = async (
     collection: string,
     action: 'create' | 'update' | 'delete',
-    data: any
+    data: unknown
   ) => {
     const db = await initDB()
     const id = crypto.randomUUID()
@@ -77,7 +77,9 @@ export const useOfflineSync = () => {
 
     // Optimistically update local store
     if (action === 'delete') {
-      await db.delete(collection, data.id)
+      if (data && typeof data === 'object' && 'id' in data) {
+        await db.delete(collection, (data as { id: string }).id)
+      }
     } else {
       await db.put(collection, data)
     }

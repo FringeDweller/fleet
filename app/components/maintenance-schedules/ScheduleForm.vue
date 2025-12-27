@@ -1,86 +1,36 @@
 <script setup lang="ts">
-import { z } from 'zod'
+import type { FormSubmitEvent } from '@nuxt/ui'
 
 const props = defineProps<{
   initialData?: Record<string, unknown>
-  loading?: boolean
 }>()
 
 const emit = defineEmits(['submit'])
 
-const { assets, categories, fetchAssets, fetchCategories } = useAssets()
-const { tasks, fetchTasks } = useMaintenanceTasks()
+const { assets: _assets, categories: _categories, fetchAssets, fetchCategories } = useAssets()
+const { tasks: _tasks, fetchTasks } = useMaintenanceTasks()
 
 onMounted(async () => {
   await Promise.all([fetchAssets(), fetchCategories(), fetchTasks()])
 })
 
-interface ScheduleState {
-  name: string
-  taskId: string
-  targetType: 'asset' | 'category'
-  assetId: string
-  categoryId: string
-  type: 'time' | 'usage' | 'combined'
-  timeInterval: number
-  timeUnit: 'days' | 'weeks' | 'months' | 'years'
-  usageIntervalKm: number
-  usageIntervalHours: number
-  leadTimeDays: number
-  isActive: boolean
-}
-
-const _state = reactive<ScheduleState>({
-  name: (props.initialData?.name as string) || '',
-  taskId: (props.initialData?.taskId as string) || '',
-  targetType: (props.initialData?.categoryId ? 'category' : 'asset') as 'asset' | 'category',
-  assetId: (props.initialData?.assetId as string) || '',
-  categoryId: (props.initialData?.categoryId as string) || '',
-  type: ((props.initialData?.type as string) || 'time') as 'time' | 'usage' | 'combined',
-  timeInterval: (props.initialData?.timeInterval as number) || 0,
-  timeUnit: ((props.initialData?.timeUnit as string) || 'months') as
-    | 'days'
-    | 'weeks'
-    | 'months'
-    | 'years',
-  usageIntervalKm: props.initialData?.usageIntervalKm
-    ? Number(props.initialData?.usageIntervalKm)
-    : 0,
-  usageIntervalHours: props.initialData?.usageIntervalHours
-    ? Number(props.initialData?.usageIntervalHours)
-    : 0,
-  leadTimeDays: (props.initialData?.leadTimeDays as number) || 7,
-  isActive: (props.initialData?.isActive as boolean) ?? true
+const _state = ref({
+  name: props.initialData?.name || '',
+  description: props.initialData?.description || '',
+  targetType: props.initialData?.targetType || 'asset',
+  assetId: props.initialData?.assetId || null,
+  categoryId: props.initialData?.categoryId || null,
+  taskId: props.initialData?.taskId || '',
+  intervalType: props.initialData?.intervalType || 'meter',
+  meterInterval: props.initialData?.meterInterval || null,
+  timeIntervalValue: props.initialData?.timeIntervalValue || null,
+  timeIntervalUnit: props.initialData?.timeIntervalValue || 'days',
+  organizationId: props.initialData?.organizationId || ''
 })
 
-const _schema = z
-  .object({
-    name: z.string().min(3, 'Name is required'),
-    taskId: z.string().min(1, 'Task is required'),
-    targetType: z.enum(['asset', 'category']),
-    assetId: z.string().optional(),
-    categoryId: z.string().optional(),
-    type: z.enum(['time', 'usage', 'combined']),
-    timeInterval: z.number().optional(),
-    timeUnit: z.enum(['days', 'weeks', 'months', 'years']).optional(),
-    usageIntervalKm: z.number().optional(),
-    usageIntervalHours: z.number().optional(),
-    leadTimeDays: z.number().min(1)
-  })
-  .refine(
-    (data) => {
-      if (data.targetType === 'asset' && !data.assetId) return false
-      if (data.targetType === 'category' && !data.categoryId) return false
-      return true
-    },
-    {
-      message: 'Target is required',
-      path: ['assetId']
-    }
-  )
-
-async function _onSubmit(event: any) {
+async function _onSubmit(event: FormSubmitEvent<Record<string, unknown>>) {
   const data = { ...event.data }
+
   // Clean up based on targetType
   if (data.targetType === 'asset') data.categoryId = null
   else data.assetId = null
@@ -92,12 +42,7 @@ async function _onSubmit(event: any) {
 </script>
 
 <template>
-  <UForm
-    :schema="schema"
-    :state="state"
-    class="space-y-4"
-    @submit="onSubmit"
-  >
+  <UForm :state="_state" class="space-y-4" @submit="_onSubmit">
     <UFormGroup label="Schedule Name" name="name" required>
       <UInput v-model="state.name" />
     </UFormGroup>

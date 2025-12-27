@@ -1,18 +1,47 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { and, eq } from 'drizzle-orm'
-import { documents } from '../database/schema'
+import { documentCategories, documents } from '../database/schema'
 import { db } from '../utils/db'
 
 export const documentService = {
-  async listDocuments(organizationId: string) {
-    return await db.select().from(documents).where(eq(documents.organizationId, organizationId))
+  async listDocuments(organizationId: string, categoryId?: string) {
+    const filters = [eq(documents.organizationId, organizationId)]
+    if (categoryId) {
+      filters.push(eq(documents.categoryId, categoryId))
+    }
+    return await db
+      .select()
+      .from(documents)
+      .where(and(...filters))
+  },
+
+  async listCategories(organizationId: string) {
+    return await db
+      .select()
+      .from(documentCategories)
+      .where(eq(documentCategories.organizationId, organizationId))
+  },
+
+  async createCategory(
+    organizationId: string,
+    data: { name: string; slug: string; parentId?: string }
+  ) {
+    const [category] = await db
+      .insert(documentCategories)
+      .values({
+        ...data,
+        organizationId
+      })
+      .returning()
+    return category
   },
 
   async uploadDocument(
     organizationId: string,
     userId: string,
-    file: { name: string; type: string; size: number; buffer: Buffer }
+    file: { name: string; type: string; size: number; buffer: Buffer },
+    metadata?: { categoryId?: string; expiryDate?: Date }
   ) {
     const uploadDir = path.join(process.cwd(), 'public/uploads', organizationId)
     await fs.mkdir(uploadDir, { recursive: true })
@@ -31,10 +60,28 @@ export const documentService = {
         size: file.size,
         url,
         organizationId,
-        createdBy: userId
+        createdBy: userId,
+        categoryId: metadata?.categoryId,
+        expiryDate: metadata?.expiryDate
       })
       .returning()
 
+    return doc
+  },
+
+  async updateDocument(
+    id: string,
+    organizationId: string,
+    data: { categoryId?: string; expiryDate?: Date; name?: string }
+  ) {
+    const [doc] = await db
+      .update(documents)
+      .set({
+        ...data,
+        updatedAt: new Date()
+      })
+      .where(and(eq(documents.id, id), eq(documents.organizationId, organizationId)))
+      .returning()
     return doc
   },
 

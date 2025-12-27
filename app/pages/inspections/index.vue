@@ -1,5 +1,6 @@
 <script setup lang="ts">
-const { data: inspections, pending } = await useFetch<Record<string, unknown>[]>('/api/inspections')
+const { data: _inspections, pending: _pending } =
+  await useFetch<Record<string, unknown>[]>('/api/inspections')
 
 const _columns = [
   { key: 'createdAt', label: 'Date' },

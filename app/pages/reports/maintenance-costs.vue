@@ -27,8 +27,8 @@ interface MaintenanceCostAsset {
 
 const {
   data: report,
-  status,
-  refresh
+  status: _status,
+  refresh: _refresh
 } = await useAsyncData(
   'maintenance-costs-report',
   () => {

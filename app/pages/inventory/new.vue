@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { categories, fetchCategories, createPart } = useInventory()
+const { categories: _categories, fetchCategories, createPart } = useInventory()
 const toast = useToast()
 const router = useRouter()
 

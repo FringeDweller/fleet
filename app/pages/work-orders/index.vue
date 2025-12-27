@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const _columns: any[] = [
+const _columns: Record<string, unknown>[] = [
   { key: 'woNumber', label: 'WO #' },
   { key: 'assetNumber', label: 'Asset' },
   { key: 'description', label: 'Description' },
@@ -14,7 +14,7 @@ const selectedStatus = ref('')
 const page = ref(1)
 const pageCount = 10
 
-const { data: workOrders, pending } = await useFetch<{
+const { data: _workOrders, pending: _pending } = await useFetch<{
   items: Record<string, unknown>[]
   total: number
 }>('/api/work-orders', {

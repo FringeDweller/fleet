@@ -160,108 +160,115 @@ export const workOrderService = {
       laborCost?: string
     } = {}
   ) {
-    return await db.transaction(async (tx: PgTransaction<any, any, any>) => {
-      // 1. Get work order and parts
-      const [wo] = await tx
-        .select()
-        .from(workOrders)
-        .where(and(eq(workOrders.id, id), eq(workOrders.organizationId, organizationId)))
-        .limit(1)
-
-      if (!wo) throw new Error('Work Order not found')
-      if (wo.status === 'completed') return wo
-
-      const woParts = await tx
-        .select()
-        .from(workOrderParts)
-        .where(eq(workOrderParts.workOrderId, id))
-
-      // 2. Record stock movements for each part
-      for (const p of woParts) {
-        // ... (existing stock movement code)
-        await tx.insert(stockMovements).values({
-          partId: p.partId,
-          locationId,
-          type: 'out',
-          quantity: p.quantity,
-          reason: `Work Order ${wo.woNumber}`,
-          referenceType: 'work_order',
-          referenceId: id,
-          userId,
-          organizationId
-        })
-
-        // Update location inventory
-        const [existing] = await tx
+    return await db.transaction(
+      async (tx: PgTransaction<Record<string, unknown>, unknown, unknown>) => {
+        // 1. Get work order and parts
+        const [wo] = await tx
           .select()
-          .from(partInventory)
-          .where(and(eq(partInventory.partId, p.partId), eq(partInventory.locationId, locationId)))
+          .from(workOrders)
+          .where(and(eq(workOrders.id, id), eq(workOrders.organizationId, organizationId)))
           .limit(1)
 
-        if (existing) {
-          const newQty = Number(existing.quantity || 0) - Number(p.quantity)
-          await tx
-            .update(partInventory)
-            .set({ quantity: newQty.toString(), updatedAt: new Date() })
-            .where(eq(partInventory.id, existing.id))
-        } else {
-          await tx.insert(partInventory).values({
+        if (!wo) throw new Error('Work Order not found')
+        if (wo.status === 'completed') return wo
+
+        const woParts = await tx
+          .select()
+          .from(workOrderParts)
+          .where(eq(workOrderParts.workOrderId, id))
+
+        // 2. Record stock movements for each part
+        for (const p of woParts) {
+          // ... (existing stock movement code)
+          await tx.insert(stockMovements).values({
             partId: p.partId,
             locationId,
-            quantity: (-Number(p.quantity)).toString(),
+            type: 'out',
+            quantity: p.quantity,
+            reason: `Work Order ${wo.woNumber}`,
+            referenceType: 'work_order',
+            referenceId: id,
+            userId,
             organizationId
           })
+
+          // Update location inventory
+          const [existing] = await tx
+            .select()
+            .from(partInventory)
+            .where(
+              and(eq(partInventory.partId, p.partId), eq(partInventory.locationId, locationId))
+            )
+            .limit(1)
+
+          if (existing) {
+            const newQty = Number(existing.quantity || 0) - Number(p.quantity)
+            await tx
+              .update(partInventory)
+              .set({ quantity: newQty.toString(), updatedAt: new Date() })
+              .where(eq(partInventory.id, existing.id))
+          } else {
+            await tx.insert(partInventory).values({
+              partId: p.partId,
+              locationId,
+              quantity: (-Number(p.quantity)).toString(),
+              organizationId
+            })
+          }
+
+          // Update total quantity on hand
+          const levels = await tx
+            .select({
+              total: sql<string>`sum(${partInventory.quantity})`
+            })
+            .from(partInventory)
+            .where(eq(partInventory.partId, p.partId))
+
+          const total = levels[0]?.total || '0'
+          await tx
+            .update(parts)
+            .set({ quantityOnHand: total, updatedAt: new Date() })
+            .where(eq(parts.id, p.partId))
         }
 
-        // Update total quantity on hand
-        const levels = await tx
-          .select({
-            total: sql<string>`sum(${partInventory.quantity})`
-          })
-          .from(partInventory)
-          .where(eq(partInventory.partId, p.partId))
-
-        const total = levels[0]?.total || '0'
-        await tx
-          .update(parts)
-          .set({ quantityOnHand: total, updatedAt: new Date() })
-          .where(eq(parts.id, p.partId))
-      }
-
-      // 3. Update work order status and final readings
-      const [updatedWo] = await tx
-        .update(workOrders)
-        .set({
-          status: 'completed',
-          checklist: data.checklist || wo.checklist,
-          completionMileage: data.completionMileage,
-          completionHours: data.completionHours,
-          laborCost: data.laborCost,
-          updatedAt: new Date()
-        })
-        .where(eq(workOrders.id, id))
-        .returning()
-
-      // Also update costs after labor is added
-      await this._updateWorkOrderCosts(tx, id)
-
-      // 4. Update asset with completion readings
-      if (data.completionMileage || data.completionHours) {
-        await tx
-          .update(assets)
+        // 3. Update work order status and final readings
+        const [updatedWo] = await tx
+          .update(workOrders)
           .set({
-            currentMileage: data.completionMileage,
-            currentHours: data.completionHours,
+            status: 'completed',
+            checklist: data.checklist || wo.checklist,
+            completionMileage: data.completionMileage,
+            completionHours: data.completionHours,
+            laborCost: data.laborCost,
             updatedAt: new Date()
           })
-          .where(eq(assets.id, wo.assetId))
-      }
+          .where(eq(workOrders.id, id))
+          .returning()
 
-      return updatedWo
-    })
+        // Also update costs after labor is added
+        await this._updateWorkOrderCosts(tx, id)
+
+        // 4. Update asset with completion readings
+        if (data.completionMileage || data.completionHours) {
+          await tx
+            .update(assets)
+            .set({
+              currentMileage: data.completionMileage,
+              currentHours: data.completionHours,
+              updatedAt: new Date()
+            })
+            .where(eq(assets.id, wo.assetId))
+        }
+
+        return updatedWo
+      }
+    )
   },
 
-  async _updateWorkOrderCosts(tx: PgTransaction<any, any, any>, workOrderId: string) {
+  async _updateWorkOrderCosts(
+    tx: PgTransaction<Record<string, unknown>, unknown, unknown>,
+    workOrderId: string
+  ) {
     const partsCosts = await tx
       .select({
         total: sql<string>`sum(${workOrderParts.quantity} * ${workOrderParts.unitCost})`

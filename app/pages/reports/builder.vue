@@ -19,14 +19,14 @@ const _dataSources = [
   { label: 'Inventory', value: 'inventory' }
 ]
 
-const results = ref<Record<string, any>[]>([])
+const results = ref<Record<string, unknown>[]>([])
 const isExecuting = ref(false)
 const isSaving = ref(false)
 
 async function _executeReport() {
   isExecuting.value = true
   try {
-    results.value = await $fetch<any[]>('/api/reports/custom/execute', {
+    results.value = await $fetch<Record<string, unknown>[]>('/api/reports/custom/execute', {
       method: 'POST',
       body: definition.value
     })

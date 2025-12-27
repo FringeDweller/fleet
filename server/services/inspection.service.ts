@@ -63,7 +63,7 @@ export const inspectionService = {
   },
 
   async createDefectFromInspection(
-    tx: PgTransaction<any, any, any>,
+    tx: PgTransaction<Record<string, unknown>, unknown, unknown>,
     inspection: typeof inspections.$inferSelect,
     item: { label: string; comment?: string },
     organizationId: string

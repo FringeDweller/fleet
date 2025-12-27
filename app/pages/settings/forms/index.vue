@@ -7,7 +7,7 @@ interface Form {
   organizationId: string
 }
 
-const { data: forms, refresh } = await useFetch<Form[]>('/api/settings/forms')
+const { data: _forms, refresh } = await useFetch<Form[]>('/api/settings/forms')
 
 const _columns: Record<string, unknown>[] = [
   { key: 'title', label: 'Title' },

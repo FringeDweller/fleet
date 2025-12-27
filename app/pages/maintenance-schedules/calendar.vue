@@ -3,8 +3,8 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { schedules, fetchSchedules } = useMaintenanceSchedules()
-const { workOrders, fetchWorkOrders } = useWorkOrders()
+const { schedules: _schedules, fetchSchedules } = useMaintenanceSchedules()
+const { workOrders: _workOrders, fetchWorkOrders } = useWorkOrders()
 const loading = ref(true)
 
 onMounted(async () => {

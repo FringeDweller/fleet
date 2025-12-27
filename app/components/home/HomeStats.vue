@@ -50,7 +50,7 @@ const baseStats = [
   }
 ]
 
-const { data: stats } = await useAsyncData<Stat[]>(
+const { data: _stats } = await useAsyncData<Stat[]>(
   'stats',
   async () => {
     return baseStats.map((stat) => {
@@ -75,7 +75,7 @@ const { data: stats } = await useAsyncData<Stat[]>(
 <template>
   <UPageGrid class="lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-px">
     <UPageCard
-      v-for="(stat, index) in stats"
+      v-for="(stat, index) in _stats"
       :key="index"
       :icon="stat.icon"
       :title="stat.title"

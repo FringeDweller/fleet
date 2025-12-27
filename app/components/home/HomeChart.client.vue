@@ -14,7 +14,7 @@ type DataRecord = {
   amount: number
 }
 
-const { width } = useElementSize(cardRef)
+const { width: _width } = useElementSize(cardRef)
 
 const data = ref<DataRecord[]>([])
 

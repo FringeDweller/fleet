@@ -3,7 +3,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { schedules, loading, fetchSchedules } = useMaintenanceSchedules()
+const { schedules, loading: _loading, fetchSchedules } = useMaintenanceSchedules()
 
 const search = ref('')
 const _columns = [

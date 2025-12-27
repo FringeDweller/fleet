@@ -1,5 +1,7 @@
+import type { Inspection } from '~/types'
+
 export const usePreStartInspection = () => {
-  const currentInspection = ref<any>(null)
+  const currentInspection = ref<Inspection | null>(null)
   const loading = ref(false)
 
   const { queueOperation, putItem } = useOfflineSync()
@@ -12,10 +14,10 @@ export const usePreStartInspection = () => {
     assetId: string,
     location?: { latitude: number; longitude: number }
   ) => {
-    const inspection = {
+    const inspection: Inspection = {
       id: crypto.randomUUID(),
       assetId,
-      operatorId: user.value?.id,
+      operatorId: user.value?.id as string,
       sessionId: activeSession.value?.assetId === assetId ? activeSession.value.id : null,
       startTime: new Date().toISOString(),
       location,
@@ -41,7 +43,7 @@ export const usePreStartInspection = () => {
 
   const submitInspection = async (
     status: 'passed' | 'failed',
-    results: any[],
+    results: unknown[],
     signatureUrl?: string
   ) => {
     if (!currentInspection.value) return

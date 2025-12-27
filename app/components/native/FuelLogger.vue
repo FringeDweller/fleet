@@ -1,8 +1,8 @@
 <script setup lang="ts">
-const { recordTransaction, loading } = useFuel()
+const { recordTransaction, loading: _loading } = useFuel()
 const { activeSession } = useOperatorSession()
-const { scanTag, isScanning: nfcScanning } = useNfc()
-const { startScan: scanQr, isScanning: qrScanning } = useQrScanner()
+const { scanTag, isScanning: _nfcScanning } = useNfc()
+const { startScan: scanQr, isScanning: _qrScanning } = useQrScanner()
 const { takePhoto } = useNativeCamera()
 const toast = useToast()
 

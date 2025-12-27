@@ -12,7 +12,7 @@ const { data: analytics, status: analyticsStatus } = await useFetch<FuelAnalytic
   }
 )
 
-const { data: history, status: historyStatus } = await useFetch<FuelTransaction[]>(
+const { data: _history, status: _historyStatus } = await useFetch<FuelTransaction[]>(
   '/api/fuel/history',
   {
     query: { assetId: props.assetId }
@@ -133,24 +133,16 @@ const _columns = [
         </div>
       </template>
 
-      <UTable
-        :rows="history || []"
-        :columns="columns as any[]"
-        :loading="!!loadingHistory"
-      >
-        <template #transactionDate-data="{ row }">
-          {{ new Date((row as any).transactionDate).toLocaleDateString() }}
-        </template>
-        <template #quantity-data="{ row }">
-          {{ (row as any).quantity }} L
-        </template>
-        <template #totalCost-data="{ row }">
-          ${{ (row as any).totalCost }}
-        </template>
-        <template #odometer-data="{ row }">
-          {{ (row as any).odometer ? `${(row as any).odometer} km` : '-' }}
-        </template>
-      </UTable>
+    <template #body>
+      <div v-if="_historyStatus === 'pending'" class="flex justify-center py-8">
+        <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-dimmed" />
+      </div>
+      <div v-else-if="!_history || _history.length === 0" class="text-center py-8 text-dimmed">
+        No fuel transactions found
+      </div>
+      <div v-else class="space-y-4">
+        <div v-for="tx in _history" :key="tx.id" class="flex justify-between items-center text-sm border-b border-elevated pb-2">
+
     </UCard>
   </div>
 </template>

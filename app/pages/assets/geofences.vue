@@ -19,7 +19,7 @@ interface Geofence {
   createdAt: string
 }
 
-const { data: geofences, refresh } = await useFetch<Geofence[]>('/api/geofences')
+const { data: _geofences, refresh } = await useFetch<Geofence[]>('/api/geofences')
 
 const isModalOpen = ref(false)
 const isLogsModalOpen = ref(false)

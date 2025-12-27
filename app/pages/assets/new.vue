@@ -3,7 +3,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { categories, fetchCategories } = useAssets()
+const { categories: _categories, fetchCategories } = useAssets()
 const loading = ref(false)
 const toast = useToast()
 

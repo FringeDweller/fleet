@@ -1,29 +1,16 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
 import { sub } from 'date-fns'
-import type { DashboardConfig, Period, Range, WidgetConfig } from '~/types'
+import type { Period, Range } from '~/types'
 
 definePageMeta({
   middleware: 'auth'
 })
 
-const { isNotificationsSlideoverOpen } = useDashboard()
+const { isNotificationsSlideoverOpen: _isNotificationsSlideoverOpen } = useDashboard()
 const toast = useToast()
 
-const { data: config, refresh: refreshConfig } =
-  await useFetch<DashboardConfig>('/api/dashboard/config')
-const layout = ref<WidgetConfig[]>([])
-
-watchEffect(() => {
-  if (config.value?.layout) {
-    layout.value = JSON.parse(JSON.stringify(config.value.layout))
-  }
-})
-
-const isEditMode = ref(false)
-const isSaving = ref(false)
-
-const _widgetComponents: Record<string, any> = {
+const _widgetComponents: Record<string, unknown> = {
   DashboardStats: resolveComponent('DashboardStats'),
   HomeChart: resolveComponent('HomeChart'),
   HomeSales: resolveComponent('HomeSales'),

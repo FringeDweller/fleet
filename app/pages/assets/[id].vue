@@ -2,8 +2,8 @@
 const route = useRoute()
 const assetId = route.params.id as string
 
-const { data: asset, pending } = await useFetch(`/api/assets/${assetId}`)
-const { data: compatibleParts, pending: loadingParts } = await useFetch(
+const { data: _asset, pending: _pending } = await useFetch(`/api/assets/${assetId}`)
+const { data: _compatibleParts, pending: _loadingParts } = await useFetch(
   `/api/inventory/compatibility/asset/${assetId}`
 )
 

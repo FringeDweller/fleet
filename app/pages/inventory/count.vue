@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Part } from '~/types'
 
-const { categories, fetchCategories, recordMovement } = useInventory()
+const { categories: _categories, fetchCategories, recordMovement } = useInventory()
 const toast = useToast()
 const router = useRouter()
 

@@ -3,48 +3,47 @@ const props = defineProps<{
   formId: string
 }>()
 
-const { data: assignments, refresh } = await useFetch<Record<string, unknown>[]>(
+const { data: _assignments, refresh } = await useFetch<Record<string, unknown>[]>(
   '/api/settings/forms/assignments',
   {
-    query: { formId: props.formId }
+    query: { formGroupId: props.formGroupId }
   }
 )
 
 defineExpose({ refresh })
 
 async function _deleteAssignment(id: string) {
-  await $fetch(`/api/settings/forms/assignments/${id}`, { method: 'DELETE' as any })
+  await $fetch(`/api/settings/forms/assignments/${id}`, { method: 'DELETE' as unknown })
   refresh()
 }
 </script>
 
 <template>
   <div class="space-y-4">
-    <div v-if="assignments && assignments.length > 0" class="border rounded-lg divide-y bg-white dark:bg-gray-900">
-      <div v-for="a in assignments" :key="a.id as string" class="p-4 flex justify-between items-center">
-        <div>
-          <div class="font-medium capitalize">
-            {{ (a.targetModule as string).replace('_', ' ') }}
-          </div>
-          <div v-if="a.conditions && Object.keys(a.conditions as object).length > 0" class="text-xs text-dimmed mt-1">
-            Conditions: {{ JSON.stringify(a.conditions) }}
-          </div>
-          <div v-else class="text-xs text-dimmed mt-1">
-            Always active for this module
-          </div>
-        </div>
-        <UButton
-          icon="i-lucide-trash-2"
-          color="error"
-          variant="ghost"
-          size="xs"
-          @click="deleteAssignment(a.id as string)"
-        />
-      </div>
+    <div v-if="!_assignments || _assignments.length === 0" class="text-sm text-dimmed text-center py-8">
+      No assignments for this form
     </div>
+    <div
+      v-for="assignment in _assignments"
+      :key="assignment.id as string"
+      class="flex items-center justify-between p-3 border border-elevated rounded-md bg-elevated/20"
+    >
+      <div>
+        <div class="text-sm font-medium text-highlighted">
+          {{ (assignment.targetName as string) }}
+        </div>
+        <div class="text-xs text-dimmed">
+          Assigned on {{ format(new Date(assignment.createdAt as string), 'PPP') }}
+        </div>
+      </div>
 
-    <div v-else class="text-center py-12 border-2 border-dashed rounded-lg text-dimmed">
-      No assignments yet. This form won't appear anywhere.
+      <UButton
+        icon="i-heroicons-trash"
+        color="error"
+        variant="ghost"
+        size="xs"
+        @click="_deleteAssignment(assignment.id as string)"
+      />
     </div>
   </div>
 </template>

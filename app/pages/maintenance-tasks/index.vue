@@ -3,7 +3,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { tasks, loading, fetchTasks } = useMaintenanceTasks()
+const { tasks, loading: _loading, fetchTasks } = useMaintenanceTasks()
 
 const search = ref('')
 const _columns = [

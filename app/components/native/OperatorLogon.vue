@@ -1,7 +1,7 @@
 <script setup lang="ts">
-const { logOn, logOff, activeSession, loading: sessionLoading } = useOperatorSession()
-const { scanTag, isScanning: nfcScanning } = useNfc()
-const { startScan: scanQr, isScanning: qrScanning } = useQrScanner()
+const { logOn, logOff, activeSession, loading: _sessionLoading } = useOperatorSession()
+const { scanTag, isScanning: _nfcScanning } = useNfc()
+const { startScan: scanQr, isScanning: _qrScanning } = useQrScanner()
 const { isConnected: obdConnected, liveData: obdData } = useBluetoothObd()
 const { clear } = useUserSession()
 const toast = useToast()

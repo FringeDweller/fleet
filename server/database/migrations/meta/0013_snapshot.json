@@ -1,6 +1,6 @@
 {
-  "id": "e650bdfa-485d-4437-ae68-d98acfbafc3a",
-  "prevId": "688f3c99-4758-4a55-964a-787e4cf931cb",
+  "id": "5475e098-3234-434f-a668-b0f54198d2ea",
+  "prevId": "e650bdfa-485d-4437-ae68-d98acfbafc3a",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -831,6 +831,83 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.document_categories": {
+      "name": "document_categories",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "document_categories_parent_id_document_categories_id_fk": {
+          "name": "document_categories_parent_id_document_categories_id_fk",
+          "tableFrom": "document_categories",
+          "tableTo": "document_categories",
+          "columnsFrom": ["parent_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "document_categories_organization_id_organizations_id_fk": {
+          "name": "document_categories_organization_id_organizations_id_fk",
+          "tableFrom": "document_categories",
+          "tableTo": "organizations",
+          "columnsFrom": ["organization_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.documents": {
       "name": "documents",
       "schema": "",
@@ -866,6 +943,18 @@
           "primaryKey": false,
           "notNull": true
         },
+        "category_id": {
+          "name": "category_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "expiry_date": {
+          "name": "expiry_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
         "organization_id": {
           "name": "organization_id",
           "type": "uuid",
@@ -895,6 +984,15 @@
       },
       "indexes": {},
       "foreignKeys": {
+        "documents_category_id_document_categories_id_fk": {
+          "name": "documents_category_id_document_categories_id_fk",
+          "tableFrom": "documents",
+          "tableTo": "document_categories",
+          "columnsFrom": ["category_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
         "documents_organization_id_organizations_id_fk": {
           "name": "documents_organization_id_organizations_id_fk",
           "tableFrom": "documents",

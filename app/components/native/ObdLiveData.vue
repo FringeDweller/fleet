@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useBluetoothObd } from '~/composables/useBluetoothObd'
 
-const { liveData, isConnected } = useBluetoothObd()
+const { liveData: _liveData, isConnected: _isConnected } = useBluetoothObd()
 </script>
 
 <template>

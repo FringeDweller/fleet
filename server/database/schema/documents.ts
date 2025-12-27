@@ -1,4 +1,5 @@
 import { integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { documentCategories } from './document-categories'
 import { organizations } from './organizations'
 import { users } from './users'
 
@@ -8,6 +9,9 @@ export const documents = pgTable('documents', {
   mimeType: text('mime_type').notNull(),
   size: integer('size').notNull(), // in bytes
   url: text('url').notNull(), // Path or object storage URL
+
+  categoryId: uuid('category_id').references(() => documentCategories.id),
+  expiryDate: timestamp('expiry_date'),
 
   organizationId: uuid('organization_id')
     .notNull()

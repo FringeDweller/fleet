@@ -42,7 +42,7 @@ interface CustomReport {
   description: string | null
 }
 
-const { data: savedReports } = await useFetch<CustomReport[]>('/api/reports/custom')
+const { data: _savedReports } = await useFetch<CustomReport[]>('/api/reports/custom')
 </script>
 
 <template>

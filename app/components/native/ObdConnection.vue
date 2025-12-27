@@ -1,10 +1,10 @@
 <script setup lang="ts">
 const {
-  isAvailable,
-  isScanning,
-  isConnected,
-  devices,
-  connectedDevice,
+  isAvailable: _isAvailable,
+  isScanning: _isScanning,
+  isConnected: _isConnected,
+  devices: _devices,
+  connectedDevice: _connectedDevice,
   scanForDongles,
   connect,
   disconnect

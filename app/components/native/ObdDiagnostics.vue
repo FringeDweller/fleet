@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useBluetoothObd } from '~/composables/useBluetoothObd'
 
-const { dtcCodes, clearDtcCodes, isConnected } = useBluetoothObd()
+const { dtcCodes: _dtcCodes, clearDtcCodes, isConnected: _isConnected } = useBluetoothObd()
 const isClearing = ref(false)
 const showClearModal = ref(false)
 const workOrderRef = ref('')

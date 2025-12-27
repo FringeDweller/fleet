@@ -1,13 +1,13 @@
 <script setup lang="ts">
 const {
-  currentInspection,
+  currentInspection: _currentInspection,
   startInspection,
   recordCheckpoint,
   submitInspection,
-  loading: inspectionLoading
+  loading: _inspectionLoading
 } = usePreStartInspection()
-const { scanTag, isScanning: nfcScanning } = useNfc()
-const { startScan: scanQr, isScanning: qrScanning } = useQrScanner()
+const { scanTag, isScanning: _nfcScanning } = useNfc()
+const { startScan: scanQr, isScanning: _qrScanning } = useQrScanner()
 const { getCurrentPosition, loading: locationLoading } = useGeolocation()
 const { takePhoto } = useNativeCamera()
 const toast = useToast()

@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { TableColumn } from '@nuxt/ui'
-import type { Row } from '@tanstack/vue-table'
+import type { Row, TableColumn } from '@nuxt/ui'
 import type { User } from '~/types'
 
 const UAvatar = resolveComponent('UAvatar')
@@ -21,7 +20,7 @@ const _columnFilters = ref([
 const _columnVisibility = ref()
 const _rowSelection = ref({ 1: true })
 
-const { data, status } = await useFetch<User[]>('/api/customers', {
+const { data: _data, status: _status } = await useFetch<User[]>('/api/customers', {
   lazy: true
 })
 

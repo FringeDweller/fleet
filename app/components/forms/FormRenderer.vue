@@ -8,10 +8,10 @@ const props = defineProps<{
   targetId?: string
 }>()
 
-const emit = defineEmits<(e: 'submitted', data?: Record<string, any>) => void>()
+const emit = defineEmits<(e: 'submitted', data?: Record<string, unknown>) => void>()
 const toast = useToast()
 const isSubmitting = ref(false)
-const formData = ref<Record<string, any>>({})
+const formData = ref<Record<string, unknown>>({})
 
 // Initialize form data
 watch(

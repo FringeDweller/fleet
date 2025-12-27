@@ -15,7 +15,7 @@ const showLowStockOnly = ref(false)
 const page = ref(1)
 const pageCount = 10
 
-const { data: inventory, pending } = await useFetch<{
+const { data: _inventory, pending: _pending } = await useFetch<{
   items: Record<string, unknown>[]
   total: number
 }>('/api/inventory/parts', {

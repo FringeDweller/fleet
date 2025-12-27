@@ -3,7 +3,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { createSchedule, loading } = useMaintenanceSchedules()
+const { createSchedule, loading: _loading } = useMaintenanceSchedules()
 const router = useRouter()
 const toast = useToast()
 

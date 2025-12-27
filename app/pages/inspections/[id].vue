@@ -2,7 +2,7 @@
 const route = useRoute()
 const id = route.params.id as string
 
-const { data: inspection, pending } = await useFetch<any>(`/api/inspections/${id}`)
+const { data: _inspection, pending: _pending } = await useFetch<unknown>(`/api/inspections/${id}`)
 
 const _getStatusColor = (status: string) => {
   switch (status) {

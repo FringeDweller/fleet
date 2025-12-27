@@ -12,9 +12,9 @@ const range = ref<Range>({
 })
 
 const {
-  data: report,
-  status,
-  refresh
+  data: _report,
+  status: _status,
+  refresh: _refresh
 } = await useAsyncData(
   'utilisation-report',
   () => {

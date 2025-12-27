@@ -6,5 +6,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 403, message: 'Unauthorized' })
   }
 
-  return await documentService.listDocuments(session.user.organizationId)
+  const { categoryId } = getQuery(event) as { categoryId?: string }
+
+  return await documentService.listDocuments(session.user.organizationId, categoryId)
 })

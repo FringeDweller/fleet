@@ -1,14 +1,12 @@
-<script setup lang="ts">
-const { data: fuelAnomalies, pending } =
+const { data: _fuelAnomalies, pending: _pending } =
   await useFetch<
     {
       id: string
-      assetId: string
-      assetNumber: string
-      message: string
-      createdAt: string
+      assetName: string
+      date: string
       consumption: number
-      percentageAboveAvg: number
+      average: number
+      deviation: number
     }[]
   >('/api/fuel/anomalies')
 </script>
@@ -17,41 +15,34 @@ const { data: fuelAnomalies, pending } =
   <UCard>
     <template #header>
       <div class="flex items-center justify-between">
-        <h3 class="text-lg font-semibold">
-          Fuel Consumption Anomalies
-        </h3>
-        <UBadge v-if="fuelAnomalies?.length" color="error" variant="subtle">
-          {{ fuelAnomalies.length }} urgent
-        </UBadge>
+        <h3 class="text-base font-semibold text-highlighted">Fuel Anomalies</h3>
+        <UIcon name="i-heroicons-exclamation-triangle" class="w-5 h-5 text-warning" />
       </div>
     </template>
 
-    <div v-if="pending" class="flex justify-center p-4">
-      <UIcon name="i-heroicons-arrow-path" class="animate-spin" />
+    <div v-if="_pending" class="space-y-3">
+      <USkeleton class="h-12 w-full" />
+      <USkeleton class="h-12 w-full" />
     </div>
-    <div v-else-if="fuelAnomalies?.length === 0" class="text-center p-4 text-gray-500">
-      No recent fuel anomalies detected.
+
+    <div v-else-if="!_fuelAnomalies || _fuelAnomalies.length === 0" class="text-center py-6 text-dimmed">
+      No fuel anomalies detected
     </div>
+
     <div v-else class="space-y-4">
-      <div v-for="anomaly in fuelAnomalies" :key="anomaly.id" class="flex items-center gap-3 p-3 rounded-lg bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20">
-        <div class="p-2 bg-red-100 dark:bg-red-900/20 rounded-full">
-          <UIcon name="i-heroicons-exclamation-triangle" class="w-5 h-5 text-red-600 dark:text-red-400" />
+      <div
+        v-for="anomaly in _fuelAnomalies"
+        :key="anomaly.id"
+        class="flex items-center justify-between p-3 border border-elevated rounded-md"
+      >
+        <div>
+          <div class="text-sm font-medium text-highlighted">{{ anomaly.assetName }}</div>
+          <div class="text-xs text-dimmed">{{ format(new Date(anomaly.date), 'PPP') }}</div>
         </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-sm font-medium text-red-900 dark:text-red-100 truncate">
-            {{ anomaly.assetNumber }}
-          </p>
-          <p class="text-xs text-red-700 dark:text-red-300">
-            {{ anomaly.consumption.toFixed(1) }} L/100km ({{ anomaly.percentageAboveAvg.toFixed(0) }}% above avg)
-          </p>
+        <div class="text-right">
+          <div class="text-sm font-bold text-error">+{{ anomaly.deviation }}%</div>
+          <div class="text-xs text-dimmed">{{ anomaly.consumption }}L vs {{ anomaly.average }}L avg</div>
         </div>
-        <UButton
-          :to="`/assets/${anomaly.assetId}?tab=fuel`"
-          size="xs"
-          color="error"
-          variant="ghost"
-          icon="i-heroicons-arrow-right"
-        />
       </div>
     </div>
   </UCard>

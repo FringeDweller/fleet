@@ -1,5 +1,7 @@
+import type { OperatorSession } from '~/types'
+
 export const useOperatorSession = () => {
-  const activeSession = ref<any>(null)
+  const activeSession = ref<OperatorSession | null>(null)
   const loading = ref(false)
 
   const { queueOperation, getItem, putItem } = useOfflineSync()
@@ -13,7 +15,7 @@ export const useOperatorSession = () => {
     loading.value = true
     try {
       if (online.value) {
-        activeSession.value = await $fetch('/api/operators/sessions/active')
+        activeSession.value = await $fetch<OperatorSession>('/api/operators/sessions/active')
         if (activeSession.value) {
           await putItem('operator-sessions', activeSession.value)
           startTracking() // Start tracking if session found
@@ -21,7 +23,7 @@ export const useOperatorSession = () => {
       } else {
         // Find active session in IndexedDB
         const sessions = await getItem('operator-sessions', 'active')
-        activeSession.value = sessions
+        activeSession.value = sessions as OperatorSession | null
         if (activeSession.value) startTracking()
       }
     } catch (error) {
@@ -38,7 +40,7 @@ export const useOperatorSession = () => {
     loading.value = true
     try {
       if (online.value) {
-        const session = await $fetch('/api/operators/sessions', {
+        const session = await $fetch<OperatorSession>('/api/operators/sessions', {
           method: 'POST',
           body: { assetId, ...data }
         })
@@ -47,12 +49,16 @@ export const useOperatorSession = () => {
         startTracking()
         return session
       } else {
-        const session = {
+        const session: OperatorSession = {
           id: crypto.randomUUID(),
           assetId,
-          operatorId: user.value?.id,
+          operatorId: user.value?.id as string,
           startTime: new Date().toISOString(),
-          ...data
+          endTime: null,
+          startOdometer: data.startOdometer || null,
+          startHours: data.startHours || null,
+          endOdometer: null,
+          endHours: null
         }
         await queueOperation('operator-sessions', 'create', session)
         activeSession.value = session

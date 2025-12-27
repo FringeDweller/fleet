@@ -5,13 +5,13 @@ const toast = useToast()
 
 const {
   data: wo,
-  pending,
-  refresh: refreshWo
+  pending: _pending,
+  refresh: _refreshWo
 } = await useFetch<Record<string, unknown>>(`/api/work-orders/${id}`)
-const { data: woParts, refresh: refreshParts } = await useFetch<Record<string, unknown>[]>(
+const { data: _woParts, refresh: _refreshParts } = await useFetch<Record<string, unknown>[]>(
   `/api/work-orders/${id}/parts`
 )
-const { parts: allParts, fetchParts, locations, fetchLocations } = useInventory()
+const { parts: _allParts, fetchParts, locations: _locations, fetchLocations } = useInventory()
 
 const checklist = ref<Record<string, unknown>[]>([])
 
