@@ -21,6 +21,12 @@ const reports = [
     description: 'Track work order completion rates and efficiency per technician.',
     icon: 'i-lucide-user-check',
     to: '/reports/technician-performance'
+  },
+  {
+    title: 'Compliance Report',
+    description: 'Monitor inspection rates, maintenance adherence, and certifications.',
+    icon: 'i-lucide-shield-alert',
+    to: '/reports/compliance'
   }
 ]
 </script>

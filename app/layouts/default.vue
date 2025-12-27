@@ -102,6 +102,12 @@ const links = [[{
     onSelect: () => {
       open.value = false
     }
+  }, {
+    label: 'Compliance',
+    to: '/reports/compliance',
+    onSelect: () => {
+      open.value = false
+    }
   }]
 }, {
   label: 'Settings',

@@ -1,6 +1,6 @@
 import { eq, and, gte, lte, sql } from 'drizzle-orm'
 import { db } from '../utils/db'
-import { operatorSessions, assets, assetCategories, workOrders, users } from '../database/schema'
+import { operatorSessions, assets, assetCategories, workOrders, users, inspections, maintenanceSchedules, certifications } from '../database/schema'
 
 export interface AssetUtilisation {
   assetId: string
@@ -145,5 +145,53 @@ export const reportService = {
       avgCompletionTimeHrs: Number(r.avgCompletionTimeHrs || 0),
       totalLaborCost: Number(r.totalLaborCost || 0)
     })).sort((a, b) => b.completedOrders - a.completedOrders)
+  },
+
+  async getComplianceReport(organizationId: string, range: { start: Date, end: Date }) {
+    const [
+      inspectionStats,
+      maintenanceCompliance,
+      expiringCerts
+    ] = await Promise.all([
+      // Inspection Completion
+      db.select({
+        total: sql<number>`count(*)`,
+        passed: sql<number>`count(*) FILTER (WHERE status = 'passed')`,
+        failed: sql<number>`count(*) FILTER (WHERE status = 'failed')`
+      }).from(inspections).where(and(
+        eq(inspections.organizationId, organizationId),
+        gte(inspections.createdAt, range.start),
+        lte(inspections.createdAt, range.end)
+      )),
+
+      // Maintenance Compliance (Schedules nextDueAt in range)
+      db.select({
+        total: sql<number>`count(*)`,
+        overdue: sql<number>`count(*) FILTER (WHERE next_due_at < now())`
+      }).from(maintenanceSchedules).where(and(
+        eq(maintenanceSchedules.organizationId, organizationId),
+        gte(maintenanceSchedules.nextDueAt, range.start),
+        lte(maintenanceSchedules.nextDueAt, range.end)
+      )),
+
+      // Expiring Certifications (next 30 days)
+      db.select({
+        id: certifications.id,
+        userName: sql<string>`${users.firstName} || ' ' || ${users.lastName}`,
+        type: certifications.type,
+        expiryDate: certifications.expiryDate
+      }).from(certifications)
+        .innerJoin(users, eq(certifications.userId, users.id))
+        .where(and(
+          eq(certifications.organizationId, organizationId),
+          lte(certifications.expiryDate, sql`current_date + interval '30 days'`)
+        ))
+    ])
+
+    return {
+      inspections: inspectionStats[0] || { total: 0, passed: 0, failed: 0 },
+      maintenance: maintenanceCompliance[0] || { total: 0, overdue: 0 },
+      expiringCertifications: expiringCerts
+    }
   }
 }
