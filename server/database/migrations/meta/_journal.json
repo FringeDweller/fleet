@@ -85,6 +85,13 @@
       "when": 1766800239865,
       "tag": "0011_chunky_night_nurse",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1766801950177,
+      "tag": "0012_flawless_meteorite",
+      "breakpoints": true
     }
   ]
 }

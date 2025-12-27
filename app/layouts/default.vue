@@ -108,6 +108,12 @@ const links = [[{
     onSelect: () => {
       open.value = false
     }
+  }, {
+    label: 'Custom Builder',
+    to: '/reports/builder',
+    onSelect: () => {
+      open.value = false
+    }
   }]
 }, {
   label: 'Settings',
