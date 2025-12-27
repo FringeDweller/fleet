@@ -15,7 +15,7 @@ const _items = [
   { label: 'Inspections', slot: 'inspections', disabled: true },
   { label: 'Fuel', slot: 'fuel' },
   { label: 'Forms', slot: 'forms' },
-  { label: 'Documents', slot: 'documents', disabled: true },
+  { label: 'Documents', slot: 'documents' },
   { label: 'Location', slot: 'location', disabled: true },
   { label: 'Operators', slot: 'operators', disabled: true }
 ]
@@ -132,6 +132,12 @@ const _items = [
           <div class="mt-4 max-w-2xl">
             <FormsContextForms module="assets" :context="{ id: assetId, categoryId: (asset as any).categoryId }" />
           </div>
+        </template>
+
+        <template #documents>
+          <UCard class="mt-4">
+            <EntityDocuments entity-type="asset" :entity-id="assetId" />
+          </UCard>
         </template>
 
         <template #work-orders>

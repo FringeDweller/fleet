@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { and, eq } from 'drizzle-orm'
-import { documentCategories, documents } from '../database/schema'
+import { documentCategories, documentLinks, documents } from '../database/schema'
 import { db } from '../utils/db'
 
 export const documentService = {
@@ -14,6 +14,65 @@ export const documentService = {
       .select()
       .from(documents)
       .where(and(...filters))
+  },
+
+  async listEntityDocuments(organizationId: string, entityType: string, entityId: string) {
+    return await db
+      .select({
+        id: documents.id,
+        name: documents.name,
+        mimeType: documents.mimeType,
+        size: documents.size,
+        url: documents.url,
+        categoryId: documents.categoryId,
+        expiryDate: documents.expiryDate,
+        createdAt: documents.createdAt
+      })
+      .from(documents)
+      .innerJoin(documentLinks, eq(documents.id, documentLinks.documentId))
+      .where(
+        and(
+          eq(documentLinks.organizationId, organizationId),
+          eq(documentLinks.entityType, entityType),
+          eq(documentLinks.entityId, entityId)
+        )
+      )
+  },
+
+  async linkDocument(
+    organizationId: string,
+    documentId: string,
+    entityType: string,
+    entityId: string
+  ) {
+    const [link] = await db
+      .insert(documentLinks)
+      .values({
+        documentId,
+        entityType,
+        entityId,
+        organizationId
+      })
+      .returning()
+    return link
+  },
+
+  async unlinkDocument(
+    organizationId: string,
+    documentId: string,
+    entityType: string,
+    entityId: string
+  ) {
+    await db
+      .delete(documentLinks)
+      .where(
+        and(
+          eq(documentLinks.documentId, documentId),
+          eq(documentLinks.entityType, entityType),
+          eq(documentLinks.entityId, entityId),
+          eq(documentLinks.organizationId, organizationId)
+        )
+      )
   },
 
   async listCategories(organizationId: string) {
