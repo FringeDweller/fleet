@@ -9,6 +9,12 @@ const reports = [
     description: 'Track usage hours and distance per asset with fleet comparisons.',
     icon: 'i-lucide-truck',
     to: '/reports/utilisation'
+  },
+  {
+    title: 'Maintenance Costs',
+    description: 'Detailed breakdown of labor and parts costs per asset.',
+    icon: 'i-lucide-dollar-sign',
+    to: '/reports/maintenance-costs'
   }
 ]
 </script>

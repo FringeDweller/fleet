@@ -90,6 +90,12 @@ const links = [[{
     onSelect: () => {
       open.value = false
     }
+  }, {
+    label: 'Maintenance Costs',
+    to: '/reports/maintenance-costs',
+    onSelect: () => {
+      open.value = false
+    }
   }]
 }, {
   label: 'Settings',
