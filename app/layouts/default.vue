@@ -79,6 +79,19 @@ const links = [[{
     open.value = false
   }
 }, {
+  label: 'Reports',
+  icon: 'i-lucide-file-text',
+  to: '/reports',
+  defaultOpen: false,
+  type: 'trigger',
+  children: [{
+    label: 'Asset Utilisation',
+    to: '/reports/utilisation',
+    onSelect: () => {
+      open.value = false
+    }
+  }]
+}, {
   label: 'Settings',
   to: '/settings',
   icon: 'i-lucide-settings',
