@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { syncing, getQueue, sync } = useOfflineSync()
-const online = useOnline()
+const _online = useOnline()
 
 const queueCount = ref(0)
 

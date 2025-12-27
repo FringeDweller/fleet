@@ -29,7 +29,7 @@ const {
   }
 )
 
-const columns = [
+const _columns = [
   { key: 'assetNumber', label: 'Asset' },
   { key: 'categoryName', label: 'Category' },
   { key: 'totalKm', label: 'Total Distance (km)' },
@@ -38,7 +38,7 @@ const columns = [
   { key: 'utilizationScore', label: 'Utilisation Score' }
 ]
 
-const getScoreColor = (score: number) => {
+const _getScoreColor = (score: number) => {
   if (score < 30) return 'error'
   if (score < 70) return 'warning'
   return 'success'

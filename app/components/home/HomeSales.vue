@@ -45,7 +45,7 @@ const { data } = await useAsyncData(
   }
 )
 
-const columns: TableColumn<Sale>[] = [
+const _columns: TableColumn<Sale>[] = [
   {
     accessorKey: 'id',
     header: 'ID',

@@ -30,7 +30,7 @@ interface ScheduleState {
   isActive: boolean
 }
 
-const state = reactive<ScheduleState>({
+const _state = reactive<ScheduleState>({
   name: (props.initialData?.name as string) || '',
   taskId: (props.initialData?.taskId as string) || '',
   targetType: (props.initialData?.categoryId ? 'category' : 'asset') as 'asset' | 'category',
@@ -53,7 +53,7 @@ const state = reactive<ScheduleState>({
   isActive: (props.initialData?.isActive as boolean) ?? true
 })
 
-const schema = z
+const _schema = z
   .object({
     name: z.string().min(3, 'Name is required'),
     taskId: z.string().min(1, 'Task is required'),

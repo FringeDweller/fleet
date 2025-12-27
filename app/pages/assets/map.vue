@@ -35,11 +35,11 @@ const { data: geofences } =
     }[]
   >('/api/geofences')
 
-const refresh = () => {
+const _refresh = () => {
   refreshLocations()
 }
 
-const pending = computed(() => loadingLocations.value)
+const _pending = computed(() => loadingLocations.value)
 </script>
 
 <template>

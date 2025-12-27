@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui'
 import type { Row } from '@tanstack/table-core'
-import { getPaginationRowModel } from '@tanstack/table-core'
-import { upperFirst } from 'scule'
 import type { User } from '~/types'
 
 const UAvatar = resolveComponent('UAvatar')
@@ -14,14 +12,14 @@ const UCheckbox = resolveComponent('UCheckbox')
 const toast = useToast()
 const table = useTemplateRef('table')
 
-const columnFilters = ref([
+const _columnFilters = ref([
   {
     id: 'email',
     value: ''
   }
 ])
-const columnVisibility = ref()
-const rowSelection = ref({ 1: true })
+const _columnVisibility = ref()
+const _rowSelection = ref({ 1: true })
 
 const { data, status } = await useFetch<User[]>('/api/customers', {
   lazy: true
@@ -72,7 +70,7 @@ function getRowItems(row: Row<User>) {
   ]
 }
 
-const columns: TableColumn<User>[] = [
+const _columns: TableColumn<User>[] = [
   {
     id: 'select',
     header: ({ table }) =>
@@ -194,7 +192,7 @@ watch(
   }
 )
 
-const email = computed({
+const _email = computed({
   get: (): string => {
     return (table.value?.tableApi?.getColumn('email')?.getFilterValue() as string) || ''
   },
@@ -203,7 +201,7 @@ const email = computed({
   }
 })
 
-const pagination = ref({
+const _pagination = ref({
   pageIndex: 0,
   pageSize: 10
 })

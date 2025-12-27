@@ -10,7 +10,7 @@ const emit = defineEmits<{
 
 const { isAvailable, isScanning, startScan, stopScan } = useQrScanner()
 
-const startScanningProcess = async () => {
+const _startScanningProcess = async () => {
   try {
     const code = await startScan()
     if (code) {

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import ScheduleForm from '~/components/maintenance-schedules/ScheduleForm.vue'
-
 definePageMeta({
   middleware: 'auth'
 })
@@ -9,7 +7,7 @@ const { createSchedule, loading } = useMaintenanceSchedules()
 const router = useRouter()
 const toast = useToast()
 
-async function onSubmit(data: Record<string, unknown>) {
+async function _onSubmit(data: Record<string, unknown>) {
   try {
     await createSchedule(data)
     toast.add({ title: 'Schedule created', color: 'success' })

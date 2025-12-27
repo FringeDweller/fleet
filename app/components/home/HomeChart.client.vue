@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { VisArea, VisAxis, VisCrosshair, VisLine, VisTooltip, VisXYContainer } from '@unovis/vue'
 import { eachDayOfInterval, eachMonthOfInterval, eachWeekOfInterval, format } from 'date-fns'
 import type { Period, Range } from '~/types'
 
@@ -41,10 +40,10 @@ watch(
   { immediate: true }
 )
 
-const x = (_: DataRecord, i: number) => i
-const y = (d: DataRecord) => d.amount
+const _x = (_: DataRecord, i: number) => i
+const _y = (d: DataRecord) => d.amount
 
-const total = computed(() => data.value.reduce((acc: number, { amount }) => acc + amount, 0))
+const _total = computed(() => data.value.reduce((acc: number, { amount }) => acc + amount, 0))
 
 const formatNumber = new Intl.NumberFormat('en', {
   style: 'currency',
@@ -60,7 +59,7 @@ const formatDate = (date: Date): string => {
   }[props.period]
 }
 
-const xTicks = (i: number) => {
+const _xTicks = (i: number) => {
   if (i === 0 || i === data.value.length - 1 || !data.value[i]) {
     return ''
   }
@@ -68,7 +67,7 @@ const xTicks = (i: number) => {
   return formatDate(data.value[i].date)
 }
 
-const template = (d: DataRecord) => `${formatDate(d.date)}: ${formatNumber(d.amount)}`
+const _template = (d: DataRecord) => `${formatDate(d.date)}: ${formatNumber(d.amount)}`
 </script>
 
 <template>

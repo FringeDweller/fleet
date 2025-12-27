@@ -10,13 +10,13 @@ const open = ref(false)
 
 type Schema = z.output<typeof schema>
 
-const state = reactive<Partial<Schema>>({
+const _state = reactive<Partial<Schema>>({
   name: undefined,
   email: undefined
 })
 
 const toast = useToast()
-async function onSubmit(event: FormSubmitEvent<Schema>) {
+async function _onSubmit(event: FormSubmitEvent<Schema>) {
   toast.add({
     title: 'Success',
     description: `New customer ${event.data.name} added`,

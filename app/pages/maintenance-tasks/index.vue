@@ -6,13 +6,13 @@ definePageMeta({
 const { tasks, loading, fetchTasks } = useMaintenanceTasks()
 
 const search = ref('')
-const columns = [
+const _columns = [
   { key: 'name', label: 'Task Name' },
   { key: 'description', label: 'Description' },
   { key: 'estimatedHours', label: 'Est. Hours' }
 ]
 
-const filteredTasks = computed(() => {
+const _filteredTasks = computed(() => {
   if (!search.value) return tasks.value
   return tasks.value.filter((task) =>
     Object.values(task).some((val) =>

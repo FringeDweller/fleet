@@ -4,9 +4,7 @@ import {
   eachDayOfInterval,
   endOfMonth,
   endOfWeek,
-  format,
   isSameDay,
-  isSameMonth,
   startOfMonth,
   startOfWeek,
   subMonths
@@ -19,7 +17,7 @@ const props = defineProps<{
 
 const currentDate = ref(new Date())
 
-const days = computed(() => {
+const _days = computed(() => {
   const start = startOfWeek(startOfMonth(currentDate.value))
   const end = endOfWeek(endOfMonth(currentDate.value))
   return eachDayOfInterval({ start, end })
@@ -54,15 +52,15 @@ const events = computed(() => {
   return list
 })
 
-function getEventsForDay(date: Date) {
+function _getEventsForDay(date: Date) {
   return events.value.filter((e) => isSameDay(e.date as Date, date))
 }
 
-function nextMonth() {
+function _nextMonth() {
   currentDate.value = addMonths(currentDate.value, 1)
 }
 
-function prevMonth() {
+function _prevMonth() {
   currentDate.value = subMonths(currentDate.value, 1)
 }
 </script>

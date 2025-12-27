@@ -18,7 +18,7 @@ const state = reactive({
 
 const loading = ref(false)
 
-async function onSubmit() {
+async function _onSubmit() {
   loading.value = true
   try {
     await createPart(state)

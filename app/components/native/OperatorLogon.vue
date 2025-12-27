@@ -55,7 +55,7 @@ watch(showLogOffForm, (val) => {
   }
 })
 
-const onNfcScan = async () => {
+const _onNfcScan = async () => {
   try {
     const id = await scanTag()
     if (id) {
@@ -66,7 +66,7 @@ const onNfcScan = async () => {
   }
 }
 
-const onQrScan = async () => {
+const _onQrScan = async () => {
   try {
     const id = await scanQr()
     if (id) {
@@ -82,7 +82,7 @@ const handleLogOn = async (id: string) => {
   showManualForm.value = true
 }
 
-const submitLogOn = async () => {
+const _submitLogOn = async () => {
   try {
     const previousSessionId =
       handoverContext.value?.assetId === assetId.value ? handoverContext.value.sessionId : undefined
@@ -103,7 +103,7 @@ const submitLogOn = async () => {
   }
 }
 
-const submitLogOff = async () => {
+const _submitLogOff = async () => {
   try {
     await logOff({
       endOdometer: endOdometer.value,
@@ -116,7 +116,7 @@ const submitLogOff = async () => {
   }
 }
 
-const onHandover = async () => {
+const _onHandover = async () => {
   if (!endOdometer.value && !endHours.value && !obdConnected.value) {
     toast.add({
       title: 'Readings required',

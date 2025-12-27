@@ -37,14 +37,14 @@ const {
   }
 )
 
-const columns = [
+const _columns = [
   { key: 'technicianName', label: 'Technician' },
   { key: 'completedOrders', label: 'Orders Completed' },
   { key: 'avgCompletionTimeHrs', label: 'Avg Time (hrs)' },
   { key: 'totalLaborCost', label: 'Total Labor Cost' }
 ]
 
-function formatCurrency(value: number) {
+function _formatCurrency(value: number) {
   return new Intl.NumberFormat('en-AU', {
     style: 'currency',
     currency: 'AUD'

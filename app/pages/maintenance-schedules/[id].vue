@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import ScheduleForm from '~/components/maintenance-schedules/ScheduleForm.vue'
-
 definePageMeta({
   middleware: 'auth'
 })
@@ -25,7 +23,7 @@ onMounted(async () => {
   }
 })
 
-async function onSubmit(data: Record<string, unknown>) {
+async function _onSubmit(data: Record<string, unknown>) {
   try {
     await updateSchedule(route.params.id as string, data)
     toast.add({ title: 'Schedule updated', color: 'success' })
@@ -40,7 +38,7 @@ async function onSubmit(data: Record<string, unknown>) {
   }
 }
 
-async function onDelete() {
+async function _onDelete() {
   if (!confirm('Are you sure you want to delete this schedule?')) return
   try {
     await deleteSchedule(route.params.id as string)

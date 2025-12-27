@@ -84,7 +84,7 @@ const updateMarkers = () => {
     const lat = parseFloat(loc.latitude)
     const lng = parseFloat(loc.longitude)
 
-    if (isNaN(lat) || isNaN(lng)) return
+    if (Number.isNaN(lat) || Number.isNaN(lng)) return
 
     const marker = L.marker([lat, lng]).bindPopup(`
         <div class="p-2 min-w-[150px]">

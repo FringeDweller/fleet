@@ -27,7 +27,7 @@ const { data: workOrders, pending } = await useFetch<{
   }
 })
 
-const statusOptions = [
+const _statusOptions = [
   { label: 'All', value: '' },
   { label: 'Open', value: 'open' },
   { label: 'In Progress', value: 'in_progress' },
@@ -36,7 +36,7 @@ const statusOptions = [
   { label: 'Closed', value: 'closed' }
 ]
 
-const getStatusColor = (status: string) => {
+const _getStatusColor = (status: string) => {
   switch (status) {
     case 'open':
       return 'primary'
@@ -53,7 +53,7 @@ const getStatusColor = (status: string) => {
   }
 }
 
-const getPriorityColor = (priority: string) => {
+const _getPriorityColor = (priority: string) => {
   switch (priority) {
     case 'high':
       return 'error'

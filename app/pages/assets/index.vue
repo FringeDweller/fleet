@@ -25,7 +25,7 @@ const { data: assets, pending } = await useFetch<{ items: Asset[]; total: number
   }
 })
 
-const statusOptions = [
+const _statusOptions = [
   { label: 'All', value: '' },
   { label: 'Active', value: 'active' },
   { label: 'Inactive', value: 'inactive' },

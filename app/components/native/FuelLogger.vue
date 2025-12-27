@@ -14,14 +14,14 @@ const fuelType = ref('diesel')
 const stationName = ref('')
 const receiptImage = ref('')
 
-const fuelTypes = [
+const _fuelTypes = [
   { label: 'Diesel', value: 'diesel' },
   { label: 'Unleaded', value: 'unleaded' },
   { label: 'AdBlue', value: 'adblue' },
   { label: 'LPG', value: 'lpg' }
 ]
 
-const onScan = async (method: 'nfc' | 'qr') => {
+const _onScan = async (method: 'nfc' | 'qr') => {
   try {
     const id = method === 'nfc' ? await scanTag() : await scanQr()
     if (id) {
@@ -33,7 +33,7 @@ const onScan = async (method: 'nfc' | 'qr') => {
   }
 }
 
-const onCaptureReceipt = async () => {
+const _onCaptureReceipt = async () => {
   try {
     const photo = await takePhoto()
     if (photo) {
@@ -44,7 +44,7 @@ const onCaptureReceipt = async () => {
   }
 }
 
-const submit = async () => {
+const _submit = async () => {
   if (!assetId.value || !quantity.value || !totalCost.value) {
     toast.add({
       title: 'Missing Information',

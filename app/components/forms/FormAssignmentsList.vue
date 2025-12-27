@@ -13,7 +13,7 @@ const { data: assignments, refresh } = await useFetch<Record<string, unknown>[]>
 // biome-ignore lint:  vue/no-expose-after-await
 defineExpose({ refresh })
 
-async function deleteAssignment(id: string) {
+async function _deleteAssignment(id: string) {
   // biome-ignore lint:  @typescript-eslint/no-explicit-any
   await $fetch(`/api/settings/forms/assignments/${id}`, { method: 'DELETE' as any })
   refresh()

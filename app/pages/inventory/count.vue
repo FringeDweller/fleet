@@ -11,7 +11,7 @@ const loading = ref(false)
 
 await fetchCategories()
 
-async function onCategoryChange() {
+async function _onCategoryChange() {
   if (!selectedCategoryId.value) {
     partsToCount.value = []
     return
@@ -30,7 +30,7 @@ async function onCategoryChange() {
 
 const adjusting = ref(false)
 
-async function onAdjust() {
+async function _onAdjust() {
   adjusting.value = true
   try {
     for (const part of partsToCount.value) {

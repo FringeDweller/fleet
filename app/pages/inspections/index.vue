@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { data: inspections, pending } = await useFetch<Record<string, unknown>[]>('/api/inspections')
 
-const columns = [
+const _columns = [
   { key: 'createdAt', label: 'Date' },
   { key: 'assetNumber', label: 'Vehicle' },
   { key: 'operatorName', label: 'Operator' },
@@ -9,7 +9,7 @@ const columns = [
   { key: 'actions', label: '' }
 ]
 
-const getStatusColor = (status: string) => {
+const _getStatusColor = (status: string) => {
   switch (status) {
     case 'passed':
       return 'success'

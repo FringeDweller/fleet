@@ -60,7 +60,7 @@ export const syncService = {
       existing = record as Record<string, unknown>
     }
 
-    if (existing && existing.hlc && compareHLC(op.hlc, existing.hlc as string) <= 0) {
+    if (existing?.hlc && compareHLC(op.hlc, existing.hlc as string) <= 0) {
       // Conflict: remote HLC is older or same as local. Ignore change.
       return { status: 'ignored', reason: 'conflict' }
     }

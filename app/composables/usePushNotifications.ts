@@ -20,7 +20,7 @@ export const usePushNotifications = () => {
 
     PushNotifications.addListener('registration', (t) => {
       token.value = t.value
-      console.log('Push registration success, token: ' + t.value)
+      console.log(`Push registration success, token: ${t.value}`)
     })
 
     PushNotifications.addListener('registrationError', (err) => {

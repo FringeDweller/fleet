@@ -45,7 +45,7 @@ export const useBluetoothObd = () => {
     try {
       // Scan for 5 seconds
       await BleClient.requestLEScan({}, (result) => {
-        if (result.device && result.device.name) {
+        if (result.device?.name) {
           // Filter for common OBD dongle names or allow all
           if (!devices.value.some((d) => d.deviceId === result.device.deviceId)) {
             devices.value.push(result.device)

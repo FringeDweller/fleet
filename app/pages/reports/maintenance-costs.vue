@@ -45,7 +45,7 @@ const {
   }
 )
 
-const columns = [
+const _columns = [
   { key: 'assetNumber', label: 'Asset' },
 
   { key: 'categoryName', label: 'Category' },
@@ -57,7 +57,7 @@ const columns = [
   { key: 'totalCost', label: 'Total Cost' }
 ]
 
-function formatCurrency(value: number) {
+function _formatCurrency(value: number) {
   return new Intl.NumberFormat('en-AU', {
     style: 'currency',
 
@@ -65,7 +65,7 @@ function formatCurrency(value: number) {
   }).format(value)
 }
 
-const totals = computed(() => {
+const _totals = computed(() => {
   if (!report.value) return { labor: 0, parts: 0, total: 0 }
 
   return report.value.reduce(

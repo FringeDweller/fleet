@@ -7,7 +7,7 @@ const state = reactive<{ [key: string]: boolean }>({
   important_updates: true
 })
 
-const sections = [
+const _sections = [
   {
     title: 'Notification channels',
     description: 'Where can we notify you?',
@@ -47,7 +47,7 @@ const sections = [
   }
 ]
 
-async function onChange() {
+async function _onChange() {
   // Do something with data
   console.log(state)
 }

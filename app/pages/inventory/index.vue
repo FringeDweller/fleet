@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const columns = [
+const _columns = [
   { key: 'sku', label: 'SKU' },
   { key: 'name', label: 'Name' },
   { key: 'categoryName', label: 'Category' },
@@ -30,7 +30,7 @@ const { data: inventory, pending } = await useFetch<{
 
 const { data: categories } = await useFetch<Record<string, unknown>[]>('/api/inventory/categories')
 
-const categoryOptions = computed(() => {
+const _categoryOptions = computed(() => {
   const options = [{ label: 'All Categories', value: '' }]
   if (categories.value) {
     options.push(
@@ -40,7 +40,7 @@ const categoryOptions = computed(() => {
   return options
 })
 
-const formatCurrency = (value: string) => {
+const _formatCurrency = (value: string) => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
     Number(value)
   )

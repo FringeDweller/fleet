@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import MaintenanceCalendar from '~/components/maintenance-schedules/MaintenanceCalendar.vue'
-
 definePageMeta({
   middleware: 'auth'
 })

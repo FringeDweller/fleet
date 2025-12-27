@@ -22,11 +22,11 @@ const checklist = ref<
     comment?: string
   }[]
 >([])
-const loading = computed(() => inspectionLoading.value || locationLoading.value)
+const _loading = computed(() => inspectionLoading.value || locationLoading.value)
 
 const signatureCaptured = ref(false)
 
-const onStartScan = async (method: 'nfc' | 'qr') => {
+const _onStartScan = async (method: 'nfc' | 'qr') => {
   try {
     const id = method === 'nfc' ? await scanTag() : await scanQr()
     if (id) {
@@ -50,7 +50,7 @@ const onStartScan = async (method: 'nfc' | 'qr') => {
   }
 }
 
-const onCheckpointScan = async (method: 'nfc' | 'qr') => {
+const _onCheckpointScan = async (method: 'nfc' | 'qr') => {
   try {
     const id = method === 'nfc' ? await scanTag() : await scanQr()
     if (id) {
@@ -67,7 +67,7 @@ const onCheckpointScan = async (method: 'nfc' | 'qr') => {
   }
 }
 
-const handleFail = async (item: { status: string | null; photo?: string }) => {
+const _handleFail = async (item: { status: string | null; photo?: string }) => {
   item.status = 'failed'
   // REQ-902-AC-03: Failed items require photo
   if (!item.photo) {
@@ -82,11 +82,11 @@ const handleFail = async (item: { status: string | null; photo?: string }) => {
   }
 }
 
-const finishCheckpoints = () => {
+const _finishCheckpoints = () => {
   step.value = 3
 }
 
-const finishChecklist = () => {
+const _finishChecklist = () => {
   const failedWithoutComment = checklist.value.some((i) => i.status === 'failed' && !i.comment)
   if (failedWithoutComment) {
     toast.add({
@@ -99,7 +99,7 @@ const finishChecklist = () => {
   step.value = 4
 }
 
-const submit = async () => {
+const _submit = async () => {
   if (!signatureCaptured.value) {
     toast.add({ title: 'Signature required', color: 'warning' })
     return

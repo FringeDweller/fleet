@@ -24,7 +24,7 @@ const { data: versions, refresh: refreshVersions } = await useFetch<CustomForm[]
   `/api/settings/forms/${id}/versions`
 )
 
-const items = [
+const _items = [
   { label: 'Builder', icon: 'i-lucide-layout-template', slot: 'builder' },
   { label: 'Assignments', icon: 'i-lucide-link', slot: 'assignments' },
   { label: 'Versions', icon: 'i-lucide-history', slot: 'versions' },
@@ -34,7 +34,7 @@ const items = [
 const formFields = ref<FormField[]>([])
 const isSaving = ref(false)
 const isPublishing = ref(false)
-const showPreview = ref(false)
+const _showPreview = ref(false)
 const showAssignModal = ref(false)
 const assignmentsList = ref()
 
@@ -51,7 +51,7 @@ watchEffect(() => {
   }
 })
 
-async function saveForm() {
+async function _saveForm() {
   isSaving.value = true
   try {
     const res = await $fetch<CustomForm>(`/api/settings/forms/${id}`, {
@@ -78,7 +78,7 @@ async function saveForm() {
   }
 }
 
-async function publishForm() {
+async function _publishForm() {
   isPublishing.value = true
   try {
     await $fetch(`/api/settings/forms/${id}/publish`, { method: 'POST' })
@@ -93,7 +93,7 @@ async function publishForm() {
   }
 }
 
-async function rollback(versionId: string) {
+async function _rollback(versionId: string) {
   try {
     await $fetch(`/api/settings/forms/${versionId}/rollback`, { method: 'POST' })
     toast.add({ title: 'Rolled back to this version', color: 'success' })
@@ -109,7 +109,7 @@ async function rollback(versionId: string) {
   }
 }
 
-async function saveAssignment() {
+async function _saveAssignment() {
   try {
     await $fetch('/api/settings/forms/assignments', {
       method: 'POST',
@@ -131,12 +131,12 @@ async function saveAssignment() {
 const editTitle = ref(false)
 const titleInput = ref('')
 
-function startTitleEdit() {
+function _startTitleEdit() {
   titleInput.value = (form.value?.title as string) || ''
   editTitle.value = true
 }
 
-async function saveTitle() {
+async function _saveTitle() {
   if (form.value && titleInput.value !== form.value.title) {
     form.value.title = titleInput.value
     await $fetch(`/api/settings/forms/${id}`, {

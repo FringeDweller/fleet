@@ -19,7 +19,7 @@ const { data: history, pending: loadingHistory } = await useFetch<FuelTransactio
   }
 )
 
-const stats = computed(() => {
+const _stats = computed(() => {
   if (!analytics.value) return []
 
   return [
@@ -46,7 +46,7 @@ const stats = computed(() => {
   ]
 })
 
-const columns = [
+const _columns = [
   { key: 'transactionDate', label: 'Date' },
   { key: 'quantity', label: 'Quantity' },
   { key: 'totalCost', label: 'Cost' },

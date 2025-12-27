@@ -43,8 +43,7 @@ export default defineEventHandler(async (event) => {
 
     if (wo) {
       // Append to description
-      const newDesc =
-        (wo.description || '') + `\n\n[${new Date().toISOString()}] DTC Codes cleared via OBD.`
+      const newDesc = `${wo.description || ''}\n\n[${new Date().toISOString()}] DTC Codes cleared via OBD.`
 
       await db
         .update(workOrders)

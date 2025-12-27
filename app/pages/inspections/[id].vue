@@ -5,7 +5,7 @@ const id = route.params.id as string
 // biome-ignore lint:  @typescript-eslint/no-explicit-any
 const { data: inspection, pending } = await useFetch<any>(`/api/inspections/${id}`)
 
-const getStatusColor = (status: string) => {
+const _getStatusColor = (status: string) => {
   switch (status) {
     case 'passed':
       return 'success'

@@ -13,11 +13,11 @@ const {
 const toast = useToast()
 const connecting = ref(false)
 
-const handleScan = async () => {
+const _handleScan = async () => {
   await scanForDongles()
 }
 
-const handleConnect = async (deviceId: string) => {
+const _handleConnect = async (deviceId: string) => {
   connecting.value = true
   try {
     await connect(deviceId)
@@ -29,7 +29,7 @@ const handleConnect = async (deviceId: string) => {
   }
 }
 
-const handleDisconnect = async () => {
+const _handleDisconnect = async () => {
   await disconnect()
   toast.add({ title: 'Disconnected', color: 'neutral' })
 }

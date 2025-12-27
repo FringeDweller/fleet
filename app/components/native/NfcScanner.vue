@@ -10,7 +10,7 @@ const emit = defineEmits<{
 
 const { isAvailable, isScanning, scanTag, stopScan } = useNfc()
 
-const startScanning = async () => {
+const _startScanning = async () => {
   try {
     const tagId = await scanTag()
     if (tagId) {

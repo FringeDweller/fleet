@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
 import { sub } from 'date-fns'
-import { VueDraggable } from 'vue-draggable-plus'
 import type { DashboardConfig, Period, Range, WidgetConfig } from '~/types'
 
 definePageMeta({
@@ -33,7 +32,7 @@ const widgetComponents: Record<string, any> = {
   HomeFuelAnomalyWidget: resolveComponent('HomeFuelAnomalyWidget')
 }
 
-async function saveLayout() {
+async function _saveLayout() {
   isSaving.value = true
   try {
     await $fetch('/api/dashboard/config', {
@@ -51,7 +50,7 @@ async function saveLayout() {
   }
 }
 
-function removeWidget(id: string) {
+function _removeWidget(id: string) {
   layout.value = layout.value.filter((w) => w.id !== id)
 }
 
@@ -63,7 +62,7 @@ const availableWidgets = [
   { id: 'fuel', type: 'HomeFuelAnomalyWidget', label: 'Fuel Anomalies', icon: 'i-lucide-fuel' }
 ]
 
-function addWidget(widget: (typeof availableWidgets)[0]) {
+function _addWidget(widget: (typeof availableWidgets)[0]) {
   const id = `${widget.id}_${Date.now()}`
   layout.value.push({
     id,
@@ -74,7 +73,7 @@ function addWidget(widget: (typeof availableWidgets)[0]) {
   })
 }
 
-const items = [
+const _items = [
   [
     {
       label: 'New mail',
@@ -89,11 +88,11 @@ const items = [
   ]
 ] satisfies DropdownMenuItem[][]
 
-const range = shallowRef<Range>({
+const _range = shallowRef<Range>({
   start: sub(new Date(), { days: 14 }),
   end: new Date()
 })
-const period = ref<Period>('daily')
+const _period = ref<Period>('daily')
 </script>
 
 <template>

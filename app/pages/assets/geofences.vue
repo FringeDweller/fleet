@@ -26,7 +26,7 @@ const isLogsModalOpen = ref(false)
 const selectedGeofence = ref<Partial<Geofence>>({})
 const logs = ref<Record<string, unknown>[]>([])
 
-const openCreateModal = () => {
+const _openCreateModal = () => {
   selectedGeofence.value = {
     name: '',
     description: '',
@@ -43,12 +43,12 @@ const openCreateModal = () => {
   isModalOpen.value = true
 }
 
-const openEditModal = (geofence: Geofence) => {
+const _openEditModal = (geofence: Geofence) => {
   selectedGeofence.value = { ...geofence }
   isModalOpen.value = true
 }
 
-const openLogsModal = async (geofence: Geofence) => {
+const _openLogsModal = async (geofence: Geofence) => {
   selectedGeofence.value = geofence
   logs.value = await $fetch<Record<string, unknown>[]>(
     `/api/geofences/logs?geofenceId=${geofence.id}`
@@ -56,7 +56,7 @@ const openLogsModal = async (geofence: Geofence) => {
   isLogsModalOpen.value = true
 }
 
-const saveGeofence = async () => {
+const _saveGeofence = async () => {
   if (selectedGeofence.value.id) {
     await $fetch(`/api/geofences/${selectedGeofence.value.id}`, {
       method: 'PUT',
@@ -72,7 +72,7 @@ const saveGeofence = async () => {
   refresh()
 }
 
-const columns = [
+const _columns = [
   { key: 'name', label: 'Name' },
   { key: 'category', label: 'Category' },
   { key: 'type', label: 'Type' },

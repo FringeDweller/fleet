@@ -2,7 +2,7 @@ import { Capacitor } from '@capacitor/core'
 import { CapacitorNfc } from '@capgo/capacitor-nfc'
 
 const toHexString = (byteArray: number[]) => {
-  return Array.from(byteArray, (byte) => ('0' + (byte & 0xff).toString(16)).slice(-2)).join('')
+  return Array.from(byteArray, (byte) => `0${(byte & 0xff).toString(16)}`.slice(-2)).join('')
 }
 
 export const useNfc = () => {
@@ -29,7 +29,7 @@ export const useNfc = () => {
         // listener.remove() // We'll need a way to remove this or use once
         // For simplicity in this fix, we assume the API handles it or we'll fix better
         let id = ''
-        if (event.tag && event.tag.id) {
+        if (event.tag?.id) {
           id = toHexString(event.tag.id)
         }
         resolve(id || JSON.stringify(event.tag))

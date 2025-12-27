@@ -30,7 +30,7 @@ const movementState = reactive({
 
 const recordingMovement = ref(false)
 
-async function onRecordMovement() {
+async function _onRecordMovement() {
   recordingMovement.value = true
   try {
     await recordMovement({
@@ -87,7 +87,7 @@ const editState = reactive({
 
 const updating = ref(false)
 
-async function onUpdate() {
+async function _onUpdate() {
   updating.value = true
   try {
     await updatePart(partId, editState)
@@ -107,7 +107,7 @@ async function onUpdate() {
   }
 }
 
-const historyColumns = [
+const _historyColumns = [
   { key: 'createdAt', label: 'Date' },
   { key: 'type', label: 'Type' },
   { key: 'quantity', label: 'Quantity' },
@@ -116,13 +116,13 @@ const historyColumns = [
   { key: 'reason', label: 'Reason' }
 ]
 
-const formatCurrency = (value: string) => {
+const _formatCurrency = (value: string) => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
     Number(value)
   )
 }
 
-const formatDate = (date: string) => {
+const _formatDate = (date: string) => {
   return new Date(date).toLocaleString()
 }
 </script>

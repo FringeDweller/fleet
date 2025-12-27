@@ -20,7 +20,7 @@ const { data: stats, status } = await useAsyncData<Stat[]>(
   }
 )
 
-const loading = computed(() => status.value === 'pending')
+const _loading = computed(() => status.value === 'pending')
 </script>
 
 <template>

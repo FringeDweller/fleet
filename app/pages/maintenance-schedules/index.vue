@@ -6,7 +6,7 @@ definePageMeta({
 const { schedules, loading, fetchSchedules } = useMaintenanceSchedules()
 
 const search = ref('')
-const columns = [
+const _columns = [
   { key: 'name', label: 'Name' },
   { key: 'type', label: 'Type' },
   { key: 'targetName', label: 'Target' },
@@ -15,7 +15,7 @@ const columns = [
   { key: 'nextDueAt', label: 'Next Due' }
 ]
 
-const filteredSchedules = computed(() => {
+const _filteredSchedules = computed(() => {
   if (!search.value) return schedules.value
   return schedules.value.filter(
     (s) =>

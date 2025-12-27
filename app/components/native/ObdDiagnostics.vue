@@ -8,7 +8,7 @@ const workOrderRef = ref('')
 const toast = useToast()
 const { activeSession } = useOperatorSession()
 
-const handleClear = async () => {
+const _handleClear = async () => {
   if (!workOrderRef.value) return
 
   isClearing.value = true

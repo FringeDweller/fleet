@@ -3,7 +3,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const reports = [
+const _reports = [
   {
     title: 'Asset Utilisation',
     description: 'Track usage hours and distance per asset with fleet comparisons.',

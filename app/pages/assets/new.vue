@@ -22,7 +22,7 @@ onMounted(() => {
   fetchCategories()
 })
 
-async function onSubmit() {
+async function _onSubmit() {
   loading.value = true
   try {
     await $fetch('/api/assets', {

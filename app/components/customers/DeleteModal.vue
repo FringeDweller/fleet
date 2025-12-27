@@ -10,7 +10,7 @@ withDefaults(
 
 const open = ref(false)
 
-async function onSubmit() {
+async function _onSubmit() {
   await new Promise((resolve) => setTimeout(resolve, 1000))
   open.value = false
 }

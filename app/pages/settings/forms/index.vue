@@ -9,7 +9,7 @@ interface Form {
 
 const { data: forms, refresh } = await useFetch<Form[]>('/api/settings/forms')
 
-const columns: Record<string, unknown>[] = [
+const _columns: Record<string, unknown>[] = [
   { key: 'title', label: 'Title' },
   { key: 'version', label: 'Version' },
   { key: 'status', label: 'Status' },
@@ -20,7 +20,7 @@ const columns: Record<string, unknown>[] = [
 const isOpen = ref(false)
 const newFormTitle = ref('')
 
-async function createForm() {
+async function _createForm() {
   if (!newFormTitle.value) return
   await $fetch('/api/settings/forms', {
     method: 'POST',

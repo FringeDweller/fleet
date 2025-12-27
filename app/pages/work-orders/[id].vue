@@ -33,7 +33,7 @@ const selectedLocationId = ref('')
 
 await Promise.all([fetchParts(), fetchLocations()])
 
-async function onAddPart() {
+async function _onAddPart() {
   try {
     await $fetch(`/api/work-orders/${id}/parts`, {
       method: 'POST',
@@ -52,7 +52,7 @@ async function onAddPart() {
   }
 }
 
-async function onRemovePart(woPartId: string) {
+async function _onRemovePart(woPartId: string) {
   try {
     await $fetch(`/api/work-orders/parts/${woPartId}`, {
       method: 'DELETE'
@@ -72,7 +72,7 @@ const completionMileage = ref('')
 const completionHours = ref('')
 const laborCost = ref('0')
 
-async function onComplete() {
+async function _onComplete() {
   if (!selectedLocationId.value) {
     toast.add({ title: 'Please select a location', color: 'error' })
     return
@@ -100,14 +100,14 @@ async function onComplete() {
   }
 }
 
-const updateChecklistStatus = (index: number, status: string) => {
+const _updateChecklistStatus = (index: number, status: string) => {
   if (wo.value?.status === 'completed') return
   if (checklist.value[index]) {
     checklist.value[index].status = status
   }
 }
 
-const items = [
+const _items = [
   { label: 'Details', slot: 'details' },
   { label: 'Checklist', slot: 'checklist' },
   { label: 'Parts', slot: 'parts' },
@@ -117,7 +117,7 @@ const items = [
   { label: 'History', slot: 'history', disabled: true }
 ]
 
-const getStatusColor = (status: string) => {
+const _getStatusColor = (status: string) => {
   switch (status) {
     case 'open':
       return 'primary'

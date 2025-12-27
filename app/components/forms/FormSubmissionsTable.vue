@@ -29,7 +29,7 @@ const columns = computed(() => {
   cols.push({ key: 'actions', label: '' })
   return cols
 })
-function exportToCsv() {
+function _exportToCsv() {
   if (!submissions.value) return
 
   const headers = columns.value.map((c) => c.label).join(',')
@@ -50,7 +50,7 @@ function exportToCsv() {
     })
     .join('\n')
 
-  const csvContent = 'data:text/csv;charset=utf-8,' + headers + '\n' + rows
+  const csvContent = `data:text/csv;charset=utf-8,${headers}\n${rows}`
   const encodedUri = encodeURI(csvContent)
   const link = document.createElement('a')
   link.setAttribute('href', encodedUri)
@@ -62,7 +62,7 @@ function exportToCsv() {
 const selectedSubmission = ref<Record<string, unknown> | null>(null)
 const showModal = ref(false)
 
-function viewDetail(sub: Record<string, unknown>) {
+function _viewDetail(sub: Record<string, unknown>) {
   selectedSubmission.value = sub
   showModal.value = true
 }

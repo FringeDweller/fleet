@@ -76,7 +76,7 @@ export const fuelService = {
             orderBy: [desc(fuelTransactions.transactionDate)]
           })
 
-          if (prevTransaction && prevTransaction.odometer) {
+          if (prevTransaction?.odometer) {
             const distance = Number(data.odometer) - Number(prevTransaction.odometer)
             if (distance > 0) {
               const consumption = (Number(data.quantity) / distance) * 100

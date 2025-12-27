@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { FormField } from '../../../types/form-builder'
-
 const props = defineProps<{
   module: string
   context: Record<string, unknown>
@@ -25,13 +23,13 @@ const selectedForm = ref<Record<string, unknown> | null>(null)
 
 const showFormModal = ref(false)
 
-function openForm(form: Record<string, unknown>) {
+function _openForm(form: Record<string, unknown>) {
   selectedForm.value = form
 
   showFormModal.value = true
 }
 
-function onSubmitted() {
+function _onSubmitted() {
   showFormModal.value = false
 
   selectedForm.value = null
@@ -43,7 +41,7 @@ const selectedSubmission = ref<Record<string, unknown> | null>(null)
 
 const showSubmissionModal = ref(false)
 
-function viewSubmission(sub: Record<string, unknown>) {
+function _viewSubmission(sub: Record<string, unknown>) {
   selectedSubmission.value = sub
 
   showSubmissionModal.value = true

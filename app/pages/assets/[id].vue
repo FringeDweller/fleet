@@ -7,7 +7,7 @@ const { data: compatibleParts, pending: loadingParts } = await useFetch(
   `/api/inventory/compatibility/asset/${assetId}`
 )
 
-const items = [
+const _items = [
   { label: 'Overview', slot: 'overview' },
   { label: 'Work Orders', slot: 'work-orders', disabled: true },
   { label: 'Maintenance', slot: 'maintenance', disabled: true },

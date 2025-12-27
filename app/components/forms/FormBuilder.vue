@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { VueDraggable } from 'vue-draggable-plus'
 import type { FormField } from '../../../types/form-builder'
 
 const props = defineProps<{
@@ -14,9 +13,9 @@ const fields = computed({
 })
 
 const selectedFieldId = ref<string | null>(null)
-const selectedField = computed(() => fields.value.find((f) => f.id === selectedFieldId.value))
+const _selectedField = computed(() => fields.value.find((f) => f.id === selectedFieldId.value))
 
-const toolset = [
+const _toolset = [
   { type: 'text', label: 'Text Input', icon: 'i-lucide-type' },
   { type: 'textarea', label: 'Text Area', icon: 'i-lucide-align-justify' },
   { type: 'number', label: 'Number', icon: 'i-lucide-hash' },
@@ -29,7 +28,7 @@ const toolset = [
   { type: 'signature', label: 'Signature', icon: 'i-lucide-pen-tool' }
 ]
 
-function onClone(element: Record<string, unknown>) {
+function _onClone(element: Record<string, unknown>) {
   return {
     id: crypto.randomUUID(),
     type: element.type,
@@ -41,25 +40,25 @@ function onClone(element: Record<string, unknown>) {
   }
 }
 
-function removeField(id: string) {
+function _removeField(id: string) {
   fields.value = fields.value.filter((f) => f.id !== id)
   if (selectedFieldId.value === id) {
     selectedFieldId.value = null
   }
 }
 
-function addOption(field: FormField) {
+function _addOption(field: FormField) {
   if (!field.options) field.options = []
   field.options.push({ label: `Option ${field.options.length + 1}`, value: `opt_${Date.now()}` })
 }
 
-function removeOption(field: FormField, index: number) {
+function _removeOption(field: FormField, index: number) {
   if (field.options) {
     field.options.splice(index, 1)
   }
 }
 
-function enableLogic(field: FormField) {
+function _enableLogic(field: FormField) {
   field.logic = {
     action: 'show',
     match: 'all',
@@ -67,19 +66,19 @@ function enableLogic(field: FormField) {
   }
 }
 
-function addCondition(field: FormField) {
+function _addCondition(field: FormField) {
   if (field.logic) {
     field.logic.conditions.push({ field: '', operator: 'eq', value: '' })
   }
 }
 
-function removeCondition(field: FormField, index: number) {
+function _removeCondition(field: FormField, index: number) {
   if (field.logic) {
     field.logic.conditions.splice(index, 1)
   }
 }
 
-function otherFields(currentField: FormField) {
+function _otherFields(currentField: FormField) {
   return fields.value
     .filter((f) => f.id !== currentField.id && f.type !== 'section')
     .map((f) => ({ label: f.label, value: f.key }))

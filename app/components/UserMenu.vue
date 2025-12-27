@@ -46,7 +46,7 @@ async function onLogout() {
   await navigateTo('/login')
 }
 
-const items = computed<DropdownMenuItem[][]>(() => [
+const _items = computed<DropdownMenuItem[][]>(() => [
   [
     {
       type: 'label',

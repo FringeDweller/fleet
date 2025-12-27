@@ -5,7 +5,7 @@ const { data: members } = await useFetch<Member[]>('/api/members', { default: ()
 
 const q = ref('')
 
-const filteredMembers = computed(() => {
+const _filteredMembers = computed(() => {
   return members.value.filter((member) => {
     return (
       member.name.search(new RegExp(q.value, 'i')) !== -1 ||

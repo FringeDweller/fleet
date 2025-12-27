@@ -6,7 +6,7 @@ defineProps<{
   members: Member[]
 }>()
 
-const items = [
+const _items = [
   {
     label: 'Edit member',
     onSelect: () => console.log('Edit member')

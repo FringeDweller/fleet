@@ -40,18 +40,18 @@ const {
   }
 )
 
-const certColumns = [
+const _certColumns = [
   { key: 'userName', label: 'User' },
   { key: 'type', label: 'Certification' },
   { key: 'expiryDate', label: 'Expiry Date' }
 ]
 
-const inspectionCompliance = computed(() => {
+const _inspectionCompliance = computed(() => {
   if (!report.value || report.value.inspections.total === 0) return 0
   return Math.round((report.value.inspections.passed / report.value.inspections.total) * 100)
 })
 
-const maintenanceCompliance = computed(() => {
+const _maintenanceCompliance = computed(() => {
   if (!report.value || report.value.maintenance.total === 0) return 100
   return Math.round(
     ((report.value.maintenance.total - report.value.maintenance.overdue) /

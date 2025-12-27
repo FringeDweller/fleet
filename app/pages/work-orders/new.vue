@@ -8,21 +8,21 @@ const state = reactive({
   dueDate: undefined
 })
 
-const priorityOptions = [
+const _priorityOptions = [
   { label: 'Low', value: 'low' },
   { label: 'Medium', value: 'medium' },
   { label: 'High', value: 'high' },
   { label: 'Urgent', value: 'urgent' }
 ]
 
-const assetOptions = computed(() => {
+const _assetOptions = computed(() => {
   return (assets.value?.items || []).map((a: Record<string, unknown>) => ({
     label: `${a.assetNumber} - ${a.make} ${a.model}`,
     value: a.id
   }))
 })
 
-const onSubmit = async () => {
+const _onSubmit = async () => {
   // TODO: Implement create API
   console.log('Create WO', state)
 }

@@ -189,7 +189,7 @@ const links = [
   ]
 ] satisfies NavigationMenuItem[][]
 
-const groups = computed(() => [
+const _groups = computed(() => [
   {
     id: 'links',
     label: 'Go to',
@@ -212,9 +212,9 @@ const groups = computed(() => [
 
 const { isNative } = useCapacitor()
 const breakpoints = useBreakpoints(breakpointsTailwind)
-const isMobile = breakpoints.smaller('lg')
+const _isMobile = breakpoints.smaller('lg')
 
-const mobileLinks = computed(() => [
+const _mobileLinks = computed(() => [
   {
     label: 'Home',
     icon: 'i-lucide-house',

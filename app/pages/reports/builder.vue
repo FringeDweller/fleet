@@ -12,7 +12,7 @@ const definition = ref({
   filters: []
 })
 
-const dataSources = [
+const _dataSources = [
   { label: 'Assets', value: 'assets' },
   { label: 'Work Orders', value: 'workOrders' },
   { label: 'Inspections', value: 'inspections' },
@@ -24,7 +24,7 @@ const results = ref<Record<string, any>[]>([])
 const isExecuting = ref(false)
 const isSaving = ref(false)
 
-async function executeReport() {
+async function _executeReport() {
   isExecuting.value = true
   try {
     // biome-ignore lint:  @typescript-eslint/no-explicit-any
@@ -40,7 +40,7 @@ async function executeReport() {
   }
 }
 
-async function saveReport() {
+async function _saveReport() {
   if (!definition.value.name) {
     toast.add({ title: 'Report name is required', color: 'error' })
     return
@@ -64,7 +64,7 @@ async function saveReport() {
   }
 }
 
-const columns = computed(() => {
+const _columns = computed(() => {
   if (results.value.length === 0 || !results.value[0]) return []
 
   return Object.keys(results.value[0]).map((key) => ({
