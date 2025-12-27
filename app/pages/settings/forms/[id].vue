@@ -1,14 +1,26 @@
 <script setup lang="ts">
 import type { FormField } from '../../../../types/form-builder'
 
+interface CustomForm {
+  id: string
+  formGroupId: string | null
+  version: number
+  title: string
+  description: string | null
+  schema: FormField[]
+  status: 'draft' | 'published' | 'archived'
+  organizationId: string
+  createdAt: string
+  updatedAt: string
+}
+
 const route = useRoute()
 const id = route.params.id as string
 const toast = useToast()
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const { data: form, refresh } = await useFetch<any>(`/api/settings/forms/${id}`)
+const { data: form, refresh } = await useFetch<CustomForm>(`/api/settings/forms/${id}`)
 
-const { data: versions, refresh: refreshVersions } = await useFetch<any[]>(`/api/settings/forms/${id}/versions`)
+const { data: versions, refresh: refreshVersions } = await useFetch<CustomForm[]>(`/api/settings/forms/${id}/versions`)
 
 const items = [
   { label: 'Builder', icon: 'i-lucide-layout-template', slot: 'builder' },
@@ -40,14 +52,14 @@ watchEffect(() => {
 async function saveForm() {
   isSaving.value = true
   try {
-    const res = await $fetch<any>(`/api/settings/forms/${id}`, {
+    const res = await $fetch<CustomForm>(`/api/settings/forms/${id}`, {
       method: 'PUT',
       body: {
         schema: formFields.value,
         title: form.value?.title
       }
     })
-    
+
     if (res.id !== id) {
       // New version was created (because we saved changes to a published form)
       toast.add({ title: 'New draft version created', color: 'success' })

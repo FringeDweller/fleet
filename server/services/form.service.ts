@@ -96,9 +96,8 @@ export const formService = {
         const maxVersionResult = await db.select({ maxV: sql<number>`max(${customForms.version})` })
           .from(customForms)
           .where(eq(customForms.formGroupId, existing.formGroupId || existing.id))
-        
-        const newVersion = (maxVersionResult[0]?.maxV || existing.version) + 1
 
+        const newVersion = (maxVersionResult[0]?.maxV || existing.version) + 1
         return await this.createForm({
           ...existing,
           ...data,
