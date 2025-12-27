@@ -5,7 +5,6 @@ export interface SyncOperation {
   hlc: string
   collection: string
   action: 'create' | 'update' | 'delete'
-  // biome-ignore lint:  @typescript-eslint/no-explicit-any
   data: any
   synced: boolean
 }
@@ -44,7 +43,6 @@ export const useOfflineSync = () => {
     return db.get(collection, id)
   }
 
-  // biome-ignore lint:  @typescript-eslint/no-explicit-any
   const putItem = async (collection: string, item: any) => {
     const db = await initDB()
     return db.put(collection, item)
@@ -57,7 +55,6 @@ export const useOfflineSync = () => {
 
   const { generate: generateHLC } = useHLC()
 
-  // biome-ignore lint:  @typescript-eslint/no-explicit-any
   const queueOperation = async (
     collection: string,
     action: 'create' | 'update' | 'delete',

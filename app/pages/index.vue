@@ -23,8 +23,7 @@ watchEffect(() => {
 const isEditMode = ref(false)
 const isSaving = ref(false)
 
-// biome-ignore lint:  @typescript-eslint/no-explicit-any
-const widgetComponents: Record<string, any> = {
+const _widgetComponents: Record<string, any> = {
   DashboardStats: resolveComponent('DashboardStats'),
   HomeChart: resolveComponent('HomeChart'),
   HomeSales: resolveComponent('HomeSales'),

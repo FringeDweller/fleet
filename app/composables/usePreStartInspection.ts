@@ -1,5 +1,4 @@
 export const usePreStartInspection = () => {
-  // biome-ignore lint:  @typescript-eslint/no-explicit-any
   const currentInspection = ref<any>(null)
   const loading = ref(false)
 
@@ -40,7 +39,6 @@ export const usePreStartInspection = () => {
     })
   }
 
-  // biome-ignore lint:  @typescript-eslint/no-explicit-any
   const submitInspection = async (
     status: 'passed' | 'failed',
     results: any[],

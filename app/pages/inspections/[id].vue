@@ -2,7 +2,6 @@
 const route = useRoute()
 const id = route.params.id as string
 
-// biome-ignore lint:  @typescript-eslint/no-explicit-any
 const { data: inspection, pending } = await useFetch<any>(`/api/inspections/${id}`)
 
 const _getStatusColor = (status: string) => {

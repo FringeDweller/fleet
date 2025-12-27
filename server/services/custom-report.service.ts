@@ -1,14 +1,13 @@
-import { and, eq } from 'drizzle-orm'
+import { and, eq, type Table } from 'drizzle-orm'
 import { assets, customReports, inspections, parts, users, workOrders } from '../database/schema'
 import { db } from '../utils/db'
 
-// biome-ignore lint:  @typescript-eslint/no-explicit-any
-const TABLE_MAP: Record<string, any> = {
-  assets,
-  workOrders,
-  inspections,
-  inventory: parts,
-  users
+const TABLE_MAP: Record<string, Table> = {
+  assets: assets as unknown as Table,
+  workOrders: workOrders as unknown as Table,
+  inspections: inspections as unknown as Table,
+  inventory: parts as unknown as Table,
+  users: users as unknown as Table
 }
 
 export const customReportService = {

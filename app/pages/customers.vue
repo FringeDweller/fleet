@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui'
-import type { Row } from '@tanstack/table-core'
+import type { Row } from '@tanstack/vue-table'
 import type { User } from '~/types'
 
 const UAvatar = resolveComponent('UAvatar')

@@ -160,7 +160,6 @@ export const workOrderService = {
       laborCost?: string
     } = {}
   ) {
-    // biome-ignore lint:  @typescript-eslint/no-explicit-any
     return await db.transaction(async (tx: PgTransaction<any, any, any>) => {
       // 1. Get work order and parts
       const [wo] = await tx
@@ -262,7 +261,6 @@ export const workOrderService = {
     })
   },
 
-  // biome-ignore lint:  @typescript-eslint/no-explicit-any
   async _updateWorkOrderCosts(tx: PgTransaction<any, any, any>, workOrderId: string) {
     const partsCosts = await tx
       .select({

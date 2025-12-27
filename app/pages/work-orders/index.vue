@@ -1,6 +1,5 @@
 <script setup lang="ts">
-// biome-ignore lint:  @typescript-eslint/no-explicit-any
-const columns: any[] = [
+const _columns: any[] = [
   { key: 'woNumber', label: 'WO #' },
   { key: 'assetNumber', label: 'Asset' },
   { key: 'description', label: 'Description' },

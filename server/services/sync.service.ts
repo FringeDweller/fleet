@@ -34,8 +34,7 @@ export const syncService = {
   },
 
   async processOperation(op: SyncOperation, organizationId: string) {
-    // biome-ignore lint:  @typescript-eslint/no-explicit-any
-    const tableMap: Record<string, Table<any>> = {
+    const tableMap: Record<string, Table<Record<string, unknown>>> = {
       assets,
       'work-orders': workOrders,
       inventory: parts,
@@ -43,8 +42,7 @@ export const syncService = {
       'asset-locations': assetLocations
     }
 
-    // biome-ignore lint:  @typescript-eslint/no-explicit-any
-    const table = tableMap[op.collection] as any
+    const table = tableMap[op.collection] as Table<Record<string, unknown>>
     if (!table) throw new Error(`Unknown collection: ${op.collection}`)
 
     const recordId = (op.data.id as string) || (op.collection === 'asset-locations' ? op.id : null)

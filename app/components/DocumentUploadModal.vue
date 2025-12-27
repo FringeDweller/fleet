@@ -9,7 +9,7 @@ const progress = ref(0)
 
 function _onFileSelect(e: Event) {
   const target = e.target as HTMLInputElement
-  if (_fileInput.value && target.files && target.files.length > 0) {
+  if (target.files && target.files.length > 0) {
     selectedFile.value = target.files[0] || null
   }
 }
@@ -58,10 +58,10 @@ function _handleDrop(e: DragEvent) {
       class="border-2 border-dashed border-default rounded-lg p-12 text-center space-y-4 hover:border-primary-500 transition-colors"
       @dragover.prevent
       @drop="handleDrop"
-      @click="_fileInput?.click()"
+      @click="fileInput?.click()"
     >
       <input 
-        ref="_fileInput" 
+        ref="fileInput" 
         type="file" 
         class="hidden" 
         @change="onFileSelect"

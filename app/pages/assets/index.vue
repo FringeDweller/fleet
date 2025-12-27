@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import type { Asset } from '~/types'
 
-// biome-ignore lint:  @typescript-eslint/no-explicit-any
-const columns: any[] = [
+const _columns: any[] = [
   { key: 'assetNumber', label: 'Asset #' },
   { key: 'make', label: 'Make' },
   { key: 'model', label: 'Model' },

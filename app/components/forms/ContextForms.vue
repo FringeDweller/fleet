@@ -4,14 +4,14 @@ const props = defineProps<{
   context: Record<string, unknown>
 }>()
 
-const { data: forms } = await useFetch<Record<string, unknown>[]>('/api/forms/context', {
+const { data: _forms } = await useFetch<Record<string, unknown>[]>('/api/forms/context', {
   query: {
     module: props.module,
     context: JSON.stringify(props.context)
   }
 })
 
-const { data: submissions, refresh: refreshSubmissions } = await useFetch<
+const { data: _submissions, refresh: refreshSubmissions } = await useFetch<
   Record<string, unknown>[]
 >('/api/forms/submissions', {
   query: {
@@ -51,7 +51,7 @@ function _viewSubmission(sub: Record<string, unknown>) {
 <template>
   <div class="space-y-8">
     <!-- Available Forms -->
-    <div v-if="forms && forms.length > 0" class="space-y-4">
+    <div v-if="forms && _forms.length > 0" class="space-y-4">
       <h3 class="text-sm font-bold uppercase tracking-wider text-dimmed px-1">
         Available Forms
       </h3>
@@ -82,7 +82,7 @@ function _viewSubmission(sub: Record<string, unknown>) {
     </div>
 
     <!-- Previous Submissions -->
-    <div v-if="submissions && submissions.length > 0" class="space-y-4">
+    <div v-if="submissions && _submissions.length > 0" class="space-y-4">
       <h3 class="text-sm font-bold uppercase tracking-wider text-dimmed px-1">
         Previous Submissions
       </h3>
@@ -117,7 +117,7 @@ function _viewSubmission(sub: Record<string, unknown>) {
       </div>
     </div>
 
-    <div v-if="(!forms || forms.length === 0) && (!submissions || submissions.length === 0)" class="text-center py-12 text-dimmed italic border-2 border-dashed rounded-lg">
+    <div v-if="(!_forms || _forms.length === 0) && (!_submissions || _submissions.length === 0)" class="text-center py-12 text-dimmed italic border-2 border-dashed rounded-lg">
       No custom forms or submissions for this {{ module.replace('_', ' ') }}.
     </div>
 

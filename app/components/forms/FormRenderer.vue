@@ -8,13 +8,9 @@ const props = defineProps<{
   targetId?: string
 }>()
 
-const emit = defineEmits<{
-  // biome-ignore lint:  @typescript-eslint/no-explicit-any
-  (e: 'submitted', data?: Record<string, any>): void
-}>()
+const emit = defineEmits<(e: 'submitted', data?: Record<string, any>) => void>()
 const toast = useToast()
 const isSubmitting = ref(false)
-// biome-ignore lint:  @typescript-eslint/no-explicit-any
 const formData = ref<Record<string, any>>({})
 
 // Initialize form data

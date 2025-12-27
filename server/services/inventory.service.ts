@@ -214,7 +214,6 @@ export const inventoryService = {
   },
 
   async _updateLocationInventory(
-    // biome-ignore lint:  @typescript-eslint/no-explicit-any
     tx: PgTransaction<any, any, any>,
     partId: string,
     locationId: string,
@@ -244,7 +243,6 @@ export const inventoryService = {
   },
 
   async _setLocationInventory(
-    // biome-ignore lint:  @typescript-eslint/no-explicit-any
     tx: PgTransaction<any, any, any>,
     partId: string,
     locationId: string,
@@ -272,11 +270,7 @@ export const inventoryService = {
     }
   },
 
-  async _updateTotalQuantity(
-    // biome-ignore lint:  @typescript-eslint/no-explicit-any
-    tx: PgTransaction<any, any, any>,
-    partId: string
-  ) {
+  async _updateTotalQuantity(tx: PgTransaction<any, any, any>, partId: string) {
     const levels = await tx
       .select({
         total: sql<string>`sum(${partInventory.quantity})`

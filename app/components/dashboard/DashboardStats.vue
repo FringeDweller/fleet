@@ -5,7 +5,7 @@ const props = defineProps<{
   range: Range
 }>()
 
-const { data: stats, status } = await useAsyncData<Stat[]>(
+const { data: _stats, status } = await useAsyncData<Stat[]>(
   'dashboard-stats',
   () => {
     const params = new URLSearchParams()
@@ -25,7 +25,7 @@ const _loading = computed(() => status.value === 'pending')
 
 <template>
   <UPageGrid class="lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-px">
-    <template v-if="loading && (!stats || stats.length === 0)">
+    <template v-if="loading && (!_stats || _stats.length === 0)">
       <UPageCard
         v-for="i in 4"
         :key="i"
@@ -43,7 +43,7 @@ const _loading = computed(() => status.value === 'pending')
 
     <template v-else>
       <UPageCard
-        v-for="(stat, index) in stats"
+        v-for="(stat, index) in _stats"
         :key="index"
         :icon="stat.icon"
         :title="stat.title"

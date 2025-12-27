@@ -1,5 +1,4 @@
 export const useOperatorSession = () => {
-  // biome-ignore lint:  @typescript-eslint/no-explicit-any
   const activeSession = ref<any>(null)
   const loading = ref(false)
 

@@ -43,14 +43,12 @@ export const dashboardConfigService = {
   },
 
   async saveConfig(userId: string, organizationId: string, layout: WidgetConfig[]) {
-    // biome-ignore lint:  @typescript-eslint/no-explicit-any
-    const existing = (await this.getConfig(userId, organizationId)) as any
+    const existing = (await this.getConfig(userId, organizationId)) as { id?: string }
 
     if (existing.id) {
       const [updated] = await db
         .update(dashboardConfigs)
-        // biome-ignore lint:  @typescript-eslint/no-explicit-any
-        .set({ layout: layout as any, updatedAt: new Date() })
+        .set({ layout: layout as unknown as Record<string, unknown>[], updatedAt: new Date() })
         .where(eq(dashboardConfigs.id, existing.id))
         .returning()
       return updated
@@ -60,8 +58,7 @@ export const dashboardConfigService = {
         .values({
           userId,
           organizationId,
-          // biome-ignore lint:  @typescript-eslint/no-explicit-any
-          layout: layout as any
+          layout: layout as unknown as Record<string, unknown>[]
         })
         .returning()
       return inserted

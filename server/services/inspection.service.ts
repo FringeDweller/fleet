@@ -63,7 +63,6 @@ export const inspectionService = {
   },
 
   async createDefectFromInspection(
-    // biome-ignore lint:  @typescript-eslint/no-explicit-any
     tx: PgTransaction<any, any, any>,
     inspection: typeof inspections.$inferSelect,
     item: { label: string; comment?: string },

@@ -12,6 +12,10 @@ const { data: notifications } = await useFetch<Notification[]>('/api/notificatio
     title="Notifications"
   >
     <template #body>
+      <div v-if="!notifications || notifications.length === 0" class="text-center py-12 text-dimmed">
+        <UIcon name="i-lucide-bell-off" class="w-12 h-12 mx-auto mb-2 opacity-50" />
+        <p>No new notifications</p>
+      </div>
       <NuxtLink
         v-for="notification in notifications"
         :key="notification.id"

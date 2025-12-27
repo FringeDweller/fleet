@@ -19,7 +19,6 @@ const _dataSources = [
   { label: 'Inventory', value: 'inventory' }
 ]
 
-// biome-ignore lint:  @typescript-eslint/no-explicit-any
 const results = ref<Record<string, any>[]>([])
 const isExecuting = ref(false)
 const isSaving = ref(false)
@@ -27,7 +26,6 @@ const isSaving = ref(false)
 async function _executeReport() {
   isExecuting.value = true
   try {
-    // biome-ignore lint:  @typescript-eslint/no-explicit-any
     results.value = await $fetch<any[]>('/api/reports/custom/execute', {
       method: 'POST',
       body: definition.value

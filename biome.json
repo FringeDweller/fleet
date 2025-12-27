@@ -32,7 +32,7 @@
         "noNonNullAssertion": "off"
       },
       "suspicious": {
-        "noExplicitAny": "off"
+        "noExplicitAny": "warn"
       },
       "correctness": {
         "noUnusedVariables": "warn"

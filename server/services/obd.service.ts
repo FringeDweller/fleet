@@ -51,7 +51,6 @@ export const obdService = {
   },
 
   async autoCreateWorkOrder(
-    // biome-ignore lint:  @typescript-eslint/no-explicit-any
     tx: PgTransaction<any, any, any>,
     assetId: string,
     dtcCode: string,

@@ -79,8 +79,7 @@ const _schema = z
     }
   )
 
-// biome-ignore lint:  @typescript-eslint/no-explicit-any
-async function onSubmit(event: any) {
+async function _onSubmit(event: any) {
   const data = { ...event.data }
   // Clean up based on targetType
   if (data.targetType === 'asset') data.categoryId = null

@@ -34,7 +34,6 @@ export const useGps = () => {
     }
   }
 
-  // biome-ignore lint:  @typescript-eslint/no-explicit-any
   const handleNewLocation = async (position: any) => {
     const coords = position.coords as Record<string, unknown>
     lastLocation.value = coords
