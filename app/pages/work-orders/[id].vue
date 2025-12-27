@@ -3,11 +3,11 @@ const route = useRoute()
 const id = route.params.id as string
 const toast = useToast()
 
-const { data: wo, pending, refresh: refreshWo } = await useFetch<any>(`/api/work-orders/${id}`)
-const { data: woParts, refresh: refreshParts } = await useFetch<any[]>(`/api/work-orders/${id}/parts`)
+const { data: wo, pending, refresh: refreshWo } = await useFetch<Record<string, unknown>>(`/api/work-orders/${id}`)
+const { data: woParts, refresh: refreshParts } = await useFetch<Record<string, unknown>[]>(`/api/work-orders/${id}/parts`)
 const { parts: allParts, fetchParts, locations, fetchLocations } = useInventory()
 
-const checklist = ref<any[]>([])
+const checklist = ref<Record<string, unknown>[]>([])
 
 watch(wo, (newWo) => {
   if (newWo?.checklist) {
@@ -37,8 +37,8 @@ async function onAddPart() {
     selectedPartId.value = ''
     partQuantity.value = 1
     await Promise.all([refreshWo(), refreshParts()])
-  } catch (error: any) {
-    toast.add({ title: 'Error adding part', description: error.message, color: 'error' })
+  } catch (error: unknown) {
+    toast.add({ title: 'Error adding part', description: (error as Error).message, color: 'error' })
   }
 }
 
@@ -49,8 +49,8 @@ async function onRemovePart(woPartId: string) {
     })
     toast.add({ title: 'Part removed', color: 'success' })
     await Promise.all([refreshWo(), refreshParts()])
-  } catch (error: any) {
-    toast.add({ title: 'Error removing part', description: error.message, color: 'error' })
+  } catch (error: unknown) {
+    toast.add({ title: 'Error removing part', description: (error as Error).message, color: 'error' })
   }
 }
 
@@ -77,14 +77,16 @@ async function onComplete() {
     toast.add({ title: 'Work Order completed', color: 'success' })
     isCompleteModalOpen.value = false
     await refreshWo()
-  } catch (error: any) {
-    toast.add({ title: 'Error completing work order', description: error.message, color: 'error' })
+  } catch (error: unknown) {
+    toast.add({ title: 'Error completing work order', description: (error as Error).message, color: 'error' })
   }
 }
 
 const updateChecklistStatus = (index: number, status: string) => {
   if (wo.value?.status === 'completed') return
-  checklist.value[index].status = status
+  if (checklist.value[index]) {
+    checklist.value[index].status = status
+  }
 }
 
 const items = [
@@ -125,7 +127,7 @@ const getStatusColor = (status: string) => {
           </p>
         </div>
         <div class="flex gap-2">
-          <UBadge :color="getStatusColor(wo.status)" size="lg">
+          <UBadge :color="getStatusColor(wo.status as string)" size="lg">
             {{ wo.status }}
           </UBadge>
           <UButton
@@ -172,7 +174,7 @@ const getStatusColor = (status: string) => {
               <div class="space-y-4">
                 <div>
                   <label class="block text-sm font-medium text-gray-500">Created</label>
-                  <p>{{ new Date(wo.createdAt).toLocaleDateString() }}</p>
+                  <p>{{ new Date(wo.createdAt as string).toLocaleDateString() }}</p>
                 </div>
               </div>
             </div>
@@ -222,7 +224,7 @@ const getStatusColor = (status: string) => {
 
         <template #forms>
           <div class="mt-4 max-w-2xl">
-            <FormsContextForms module="work_orders" :context="{ id, assetId: wo.assetId }" />
+            <FormsContextForms module="work_orders" :context="{ id, assetId: wo.assetId as string }" />
           </div>
         </template>
 
@@ -265,7 +267,7 @@ const getStatusColor = (status: string) => {
                   size="xs"
                   color="error"
                   variant="ghost"
-                  @click="onRemovePart((row as any).id)"
+                  @click="onRemovePart((row as any).id as string)"
                 />
               </template>
             </UTable>

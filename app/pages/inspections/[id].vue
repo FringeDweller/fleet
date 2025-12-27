@@ -2,6 +2,7 @@
 const route = useRoute()
 const id = route.params.id as string
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const { data: inspection, pending } = await useFetch<any>(`/api/inspections/${id}`)
 
 const getStatusColor = (status: string) => {
@@ -30,7 +31,7 @@ const getStatusColor = (status: string) => {
         <h1 class="text-2xl font-bold">
           Inspection Details
         </h1>
-        <UBadge :color="getStatusColor(inspection.status)" size="lg" class="ml-auto capitalize">
+        <UBadge :color="getStatusColor(inspection.status as string)" size="lg" class="ml-auto capitalize">
           {{ inspection.status }}
         </UBadge>
       </div>
@@ -47,7 +48,7 @@ const getStatusColor = (status: string) => {
               <dt class="text-dimmed">
                 Date:
               </dt>
-              <dd>{{ new Date(inspection.createdAt).toLocaleString() }}</dd>
+              <dd>{{ new Date(inspection.createdAt as string).toLocaleString() }}</dd>
             </div>
             <div class="flex justify-between">
               <dt class="text-dimmed">
@@ -71,10 +72,10 @@ const getStatusColor = (status: string) => {
             </h3>
           </template>
           <p class="text-sm">
-            Checkpoints Scanned: {{ inspection.checkpoints?.length || 0 }}
+            Checkpoints Scanned: {{ (inspection.checkpoints as any[])?.length || 0 }}
           </p>
           <ul class="mt-2 space-y-1">
-            <li v-for="(cp, i) in inspection.checkpoints" :key="i" class="text-xs text-dimmed flex justify-between">
+            <li v-for="(cp, i) in (inspection.checkpoints as any[])" :key="i" class="text-xs text-dimmed flex justify-between">
               <span>Checkpoint {{ cp.id }}</span>
               <span>{{ new Date(cp.timestamp).toLocaleTimeString() }}</span>
             </li>
@@ -89,11 +90,11 @@ const getStatusColor = (status: string) => {
           </h3>
         </template>
         <div class="space-y-4">
-          <div v-for="item in inspection.results" :key="item.id" class="border-b border-default pb-4">
+          <div v-for="item in (inspection.results as any[])" :key="item.id" class="border-b border-default pb-4">
             <div class="flex items-center justify-between mb-2">
               <span class="font-medium">{{ item.label }}</span>
               <UBadge
-                :color="getStatusColor(item.status)"
+                :color="getStatusColor(item.status as string)"
                 variant="soft"
                 size="sm"
                 class="capitalize"
@@ -106,7 +107,7 @@ const getStatusColor = (status: string) => {
                 <span class="font-bold">Comment:</span> {{ item.comment }}
               </p>
               <div v-if="item.photo" class="w-full max-w-sm rounded-lg overflow-hidden border border-red-200">
-                <img :src="item.photo" class="w-full h-auto">
+                <img :src="item.photo as string" class="w-full h-auto">
               </div>
             </div>
           </div>
@@ -133,7 +134,7 @@ const getStatusColor = (status: string) => {
         <h3 class="text-lg font-bold">
           Additional Forms
         </h3>
-        <FormsContextForms module="inspections" :context="{ id, assetId: inspection.assetId, status: inspection.status }" />
+        <FormsContextForms module="inspections" :context="{ id, assetId: inspection.assetId as string, status: inspection.status as string }" />
       </div>
     </div>
   </div>

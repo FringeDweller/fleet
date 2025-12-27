@@ -1,15 +1,15 @@
 export const useWorkOrders = () => {
-  const workOrders = ref<any[]>([])
+  const workOrders = ref<Record<string, unknown>[]>([])
   const loading = ref(false)
 
   const { getCollection, putItem, getItem, queueOperation } = useOfflineSync()
   const online = useOnline()
 
-  const fetchWorkOrders = async (params: any = {}) => {
+  const fetchWorkOrders = async (params: Record<string, unknown> = {}) => {
     loading.value = true
     try {
       if (online.value) {
-        const data: any = await $fetch('/api/work-orders', { params })
+        const data = await $fetch<{ items: Record<string, unknown>[] }>('/api/work-orders', { params })
         workOrders.value = data.items
         for (const wo of data.items) {
           await putItem('work-orders', wo)
@@ -48,7 +48,7 @@ export const useWorkOrders = () => {
   }
 
   const completeWorkOrder = async (id: string, data: {
-    checklist?: any[]
+    checklist?: Record<string, unknown>[]
     completionMileage?: string
     completionHours?: string
     laborCost?: string

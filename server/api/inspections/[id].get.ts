@@ -1,5 +1,5 @@
 import { db } from '../../utils/db'
-import { inspections, assets, users } from '../../database/schema'
+import { inspections } from '../../database/schema'
 import { eq, and } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {

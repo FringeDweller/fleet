@@ -1,7 +1,7 @@
-import { BleClient, type BleDevice, type ScanResult } from '@capacitor-community/bluetooth-le'
+import { BleClient, type BleDevice } from '@capacitor-community/bluetooth-le'
 
 // Standard OBD-II UUIDs (often generic serial port service for ELM327)
-const OBD_SERVICE_UUID = '000018f0-0000-1000-8000-00805f9b34fb' // Example, often varies by dongle
+// const OBD_SERVICE_UUID = '000018f0-0000-1000-8000-00805f9b34fb' // Example, often varies by dongle
 // Many ELM327 dongles use 0xFFF0 or SPP UUIDs. We'll need to scan and filter.
 
 export const useBluetoothObd = () => {
@@ -10,7 +10,7 @@ export const useBluetoothObd = () => {
   const isConnected = ref(false)
   const connectedDevice = ref<BleDevice | null>(null)
   const devices = ref<BleDevice[]>([])
-  const { isNative, isAndroid } = useCapacitor()
+  const { isNative } = useCapacitor()
 
   const lastDeviceId = useCookie('last-obd-device')
 
@@ -80,7 +80,7 @@ export const useBluetoothObd = () => {
 
       // Here we would discover services and characteristics to find the RW characteristic
       // For now, we just establish connection
-    } catch (e) {
+    } catch (e: unknown) {
       console.error('Connection failed', e)
       throw e
     }
@@ -97,7 +97,7 @@ export const useBluetoothObd = () => {
 
   const liveData = ref<{ rpm: number, speed: number, temp: number, fuel: number, odometer: number }>({ rpm: 0, speed: 0, temp: 0, fuel: 0, odometer: 125000.5 })
   const dtcCodes = ref<string[]>([])
-  const pollingInterval = ref<any>(null)
+  const pollingInterval = ref<ReturnType<typeof setInterval> | null>(null)
   const { activeSession } = useOperatorSession()
 
   // Sync DTCs to backend when they change

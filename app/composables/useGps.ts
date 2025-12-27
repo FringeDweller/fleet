@@ -2,7 +2,7 @@ import { Geolocation } from '@capacitor/geolocation'
 
 export const useGps = () => {
   const watchId = ref<string | null>(null)
-  const lastLocation = ref<any>(null)
+  const lastLocation = ref<Record<string, unknown> | null>(null)
   const { queueOperation } = useOfflineSync()
   const { activeSession } = useOperatorSession()
 
@@ -31,20 +31,22 @@ export const useGps = () => {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleNewLocation = async (position: any) => {
-    lastLocation.value = position.coords
+    const coords = position.coords as Record<string, unknown>
+    lastLocation.value = coords
 
     // Only track if there's an active session
     if (!activeSession.value) return
 
     const data = {
-      assetId: activeSession.value.assetId,
-      sessionId: activeSession.value.id,
-      latitude: position.coords.latitude.toString(),
-      longitude: position.coords.longitude.toString(),
-      speed: position.coords.speed?.toString(),
-      heading: position.coords.heading?.toString(),
-      altitude: position.coords.altitude?.toString()
+      assetId: activeSession.value.assetId as string,
+      sessionId: activeSession.value.id as string,
+      latitude: String(coords.latitude),
+      longitude: String(coords.longitude),
+      speed: coords.speed ? String(coords.speed) : undefined,
+      heading: coords.heading ? String(coords.heading) : undefined,
+      altitude: coords.altitude ? String(coords.altitude) : undefined
     }
 
     // Queue for sync (high frequency, maybe throttle?)

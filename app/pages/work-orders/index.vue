@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const columns: any[] = [
   { key: 'woNumber', label: 'WO #' },
   { key: 'assetNumber', label: 'Asset' },
@@ -14,7 +15,7 @@ const selectedStatus = ref('')
 const page = ref(1)
 const pageCount = 10
 
-const { data: workOrders, pending } = await useFetch('/api/work-orders', {
+const { data: workOrders, pending } = await useFetch<{ items: Record<string, unknown>[], total: number }>('/api/work-orders', {
   query: {
     q: search,
     status: selectedStatus,
@@ -81,7 +82,7 @@ const getPriorityColor = (priority: string) => {
 
     <UTable
       :rows="workOrders?.items || []"
-      :columns="columns"
+      :columns="columns as any[]"
       :loading="pending"
     >
       <template #status-data="{ row }">

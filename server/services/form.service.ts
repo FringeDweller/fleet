@@ -72,7 +72,7 @@ export const formService = {
       ))
   },
 
-  async getFormsForContext(organizationId: string, module: string, context: Record<string, any> = {}) {
+  async getFormsForContext(organizationId: string, module: string, context: Record<string, unknown> = {}) {
     const assignments = await db.select()
       .from(formAssignments)
       .where(and(
@@ -82,7 +82,7 @@ export const formService = {
 
     const validFormIds = assignments
       .filter((a) => {
-        const conds = a.conditions as Record<string, any>
+        const conds = a.conditions as Record<string, unknown>
         if (!conds || Object.keys(conds).length === 0) return true
         return Object.entries(conds).every(([k, v]) => context[k] === v)
       })

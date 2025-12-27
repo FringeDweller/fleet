@@ -1,11 +1,11 @@
 <script setup lang="ts">
-const props = defineProps<{
+defineProps<{
   label?: string
 }>()
 
 const emit = defineEmits<{
   (e: 'scan', code: string): void
-  (e: 'error', error: any): void
+  (e: 'error', error: unknown): void
 }>()
 
 const { isAvailable, isScanning, startScan, stopScan } = useQrScanner()

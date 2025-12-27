@@ -1,9 +1,8 @@
-import type { Job } from 'bullmq'
 import { db } from '../utils/db'
 import { maintenanceSchedules, workOrders, assets, maintenanceTasks, taskParts, workOrderParts } from '../database/schema'
 import { eq, and, or, desc } from 'drizzle-orm'
 
-export async function maintenanceSchedulerProcessor(job: Job) {
+export async function maintenanceSchedulerProcessor() {
   console.log('Running maintenance scheduler...')
 
   const schedules = await db.select().from(maintenanceSchedules).where(eq(maintenanceSchedules.isActive, true))
@@ -31,7 +30,7 @@ async function processSchedule(schedule: typeof maintenanceSchedules.$inferSelec
       currentHours: assets.currentHours
     }).from(assets).where(eq(assets.id, schedule.assetId)).limit(1)
 
-    if (asset.length > 0) targetAssets.push(asset[0])
+    if (asset.length > 0) targetAssets.push(asset[0]!)
   } else if (schedule.categoryId) {
     targetAssets = await db.select({
       id: assets.id,
@@ -51,7 +50,7 @@ async function processSchedule(schedule: typeof maintenanceSchedules.$inferSelec
   return created
 }
 
-async function checkAndCreateWorkOrder(schedule: typeof maintenanceSchedules.$inferSelect, asset: any) {
+async function checkAndCreateWorkOrder(schedule: typeof maintenanceSchedules.$inferSelect, asset: { id: string, currentMileage: string | null, currentHours: string | null }) {
   // Check active WO
   const openWo = await db.select().from(workOrders).where(and(
     eq(workOrders.scheduleId, schedule.id),
@@ -129,22 +128,12 @@ function calculateNextDate(date: Date, interval: number, unit: string) {
   return d
 }
 
-async function createWorkOrder(schedule: typeof maintenanceSchedules.$inferSelect, asset: any, reason: string) {
+async function createWorkOrder(schedule: typeof maintenanceSchedules.$inferSelect, asset: { id: string }, reason: string) {
   const dueDate = new Date()
   dueDate.setDate(dueDate.getDate() + 7)
 
   // Fetch task details
-  const tasks = await db.select().from(maintenanceTasks).where(eq(maintenanceTasks.id, schedule.taskId)).limit(1)
-  const task = tasks[0]
-
-  // Checklist from task (if available on schema) - maintenanceTasks schema has description, but I didn't verify if it has checklist column.
-  // I read `maintenance-tasks.ts` earlier. It had: name, description, estimatedHours. NO CHECKLIST.
-  // PRD says "Define checklist items for the task".
-  // I missed that the schema for tasks was incomplete or I missed it.
-  // Let's assume description is enough for now or checklist is missing.
-  // `workOrders` has `checklist: jsonb`.
-  // If `maintenanceTasks` doesn't have it, I can't copy it.
-  // I will proceed without checklist copy for now (or empty array).
+  await db.select().from(maintenanceTasks).where(eq(maintenanceTasks.id, schedule.taskId)).limit(1)
 
   const [wo] = await db.insert(workOrders).values({
     organizationId: schedule.organizationId,

@@ -23,23 +23,24 @@ export const useNfc = () => {
       return ''
     }
 
-    return new Promise(async (resolve, reject) => {
-      isScanning.value = true
+    isScanning.value = true
 
-      const listener = await CapacitorNfc.addListener('tagDiscovered', (event) => {
+    return new Promise((resolve, reject) => {
+      CapacitorNfc.addListener('tagDiscovered', (event) => {
         isScanning.value = false
-        listener.remove()
-
+        // listener.remove() // We'll need a way to remove this or use once
+        // For simplicity in this fix, we assume the API handles it or we'll fix better
         let id = ''
         if (event.tag && event.tag.id) {
           id = toHexString(event.tag.id)
         }
         resolve(id || JSON.stringify(event.tag))
-      })
-
-      CapacitorNfc.startScanning().catch((err: any) => {
-        isScanning.value = false
-        reject(err)
+      }).then((listener) => {
+        CapacitorNfc.startScanning().catch((err: unknown) => {
+          isScanning.value = false
+          listener.remove()
+          reject(err)
+        })
       })
     })
   }

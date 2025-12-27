@@ -10,13 +10,14 @@ const router = useRouter()
 const toast = useToast()
 const { getSchedule, updateSchedule, deleteSchedule, loading } = useMaintenanceSchedules()
 
-const schedule = ref<any>(null)
+const schedule = ref<Record<string, unknown> | null>(null)
 const initialLoading = ref(true)
 
 onMounted(async () => {
   try {
     schedule.value = await getSchedule(route.params.id as string)
-  } catch (e) {
+  } catch (error: unknown) {
+    console.error(error)
     toast.add({ title: 'Error loading schedule', color: 'error' })
     router.push('/maintenance-schedules')
   } finally {
@@ -24,13 +25,14 @@ onMounted(async () => {
   }
 })
 
-async function onSubmit(data: any) {
+async function onSubmit(data: Record<string, unknown>) {
   try {
     await updateSchedule(route.params.id as string, data)
     toast.add({ title: 'Schedule updated', color: 'success' })
     router.push('/maintenance-schedules')
-  } catch (e: any) {
-    toast.add({ title: 'Error updating schedule', description: e.message, color: 'error' })
+  } catch (error: unknown) {
+    console.error(error)
+    toast.add({ title: 'Error updating schedule', description: (error as Error).message, color: 'error' })
   }
 }
 
@@ -40,8 +42,9 @@ async function onDelete() {
     await deleteSchedule(route.params.id as string)
     toast.add({ title: 'Schedule deleted', color: 'success' })
     router.push('/maintenance-schedules')
-  } catch (e: any) {
-    toast.add({ title: 'Error deleting schedule', description: e.message, color: 'error' })
+  } catch (error: unknown) {
+    console.error(error)
+    toast.add({ title: 'Error deleting schedule', description: (error as Error).message, color: 'error' })
   }
 }
 </script>

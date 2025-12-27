@@ -6,7 +6,7 @@ definePageMeta({
 const { schedules, loading, fetchSchedules } = useMaintenanceSchedules()
 
 const search = ref('')
-const columns: any[] = [
+const columns = [
   { key: 'name', label: 'Name' },
   { key: 'type', label: 'Type' },
   { key: 'targetName', label: 'Target' },
@@ -18,9 +18,9 @@ const columns: any[] = [
 const filteredSchedules = computed(() => {
   if (!search.value) return schedules.value
   return schedules.value.filter(s =>
-    s.name.toLowerCase().includes(search.value.toLowerCase())
-    || s.taskName?.toLowerCase().includes(search.value.toLowerCase())
-    || s.targetName?.toLowerCase().includes(search.value.toLowerCase())
+    (s.name as string).toLowerCase().includes(search.value.toLowerCase())
+    || (s.taskName as string)?.toLowerCase().includes(search.value.toLowerCase())
+    || (s.targetName as string)?.toLowerCase().includes(search.value.toLowerCase())
   )
 })
 
@@ -64,7 +64,7 @@ onMounted(() => {
     <template #body>
       <UTable
         :rows="filteredSchedules"
-        :columns="columns"
+        :columns="columns as any[]"
         :loading="loading"
         class="w-full"
       >

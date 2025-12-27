@@ -6,7 +6,7 @@ const { startScan: scanQr, isScanning: qrScanning } = useQrScanner()
 const { takePhoto } = useNativeCamera()
 const toast = useToast()
 
-const assetId = ref(activeSession.value?.assetId || '')
+const assetId = ref((activeSession.value?.assetId as string) || '')
 const quantity = ref('')
 const totalCost = ref('')
 const odometer = ref('')
@@ -28,8 +28,8 @@ const onScan = async (method: 'nfc' | 'qr') => {
       assetId.value = id
       toast.add({ title: 'Vehicle Identified', description: `Asset ID: ${id}`, color: 'success' })
     }
-  } catch (error: any) {
-    toast.add({ title: 'Scan Failed', description: error.message, color: 'error' })
+  } catch (error: unknown) {
+    toast.add({ title: 'Scan Failed', description: (error as Error).message, color: 'error' })
   }
 }
 
@@ -69,8 +69,8 @@ const submit = async () => {
     totalCost.value = ''
     odometer.value = ''
     receiptImage.value = ''
-  } catch (error: any) {
-    toast.add({ title: 'Failed to record fuel', description: error.message, color: 'error' })
+  } catch (error: unknown) {
+    toast.add({ title: 'Failed to record fuel', description: (error as Error).message, color: 'error' })
   }
 }
 </script>

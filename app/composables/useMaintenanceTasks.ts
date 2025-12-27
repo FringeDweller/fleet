@@ -1,6 +1,6 @@
 export const useMaintenanceTasks = () => {
-  const tasks = ref<any[]>([])
-  const groups = ref<any[]>([])
+  const tasks = ref<Record<string, unknown>[]>([])
+  const groups = ref<Record<string, unknown>[]>([])
   const loading = ref(false)
 
   const { getCollection, putItem } = useOfflineSync()
@@ -10,7 +10,7 @@ export const useMaintenanceTasks = () => {
     loading.value = true
     try {
       if (online.value) {
-        const data = await $fetch<any[]>('/api/maintenance-tasks')
+        const data = await $fetch<Record<string, unknown>[]>('/api/maintenance-tasks')
         tasks.value = data
         // Cache to IndexedDB
         for (const task of data) {
@@ -28,7 +28,7 @@ export const useMaintenanceTasks = () => {
   }
 
   const fetchGroups = async () => {
-    groups.value = await $fetch('/api/maintenance-tasks/groups')
+    groups.value = await $fetch<Record<string, unknown>[]>('/api/maintenance-tasks/groups')
   }
 
   return {

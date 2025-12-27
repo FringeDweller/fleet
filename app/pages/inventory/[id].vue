@@ -35,10 +35,10 @@ async function onRecordMovement() {
     })
     isMovementModalOpen.value = false
     await loadPart()
-  } catch (error: any) {
+  } catch (error: unknown) {
     toast.add({
       title: 'Error recording movement',
-      description: error.message,
+      description: (error as Error).message,
       color: 'error'
     })
   } finally {
@@ -52,10 +52,10 @@ async function loadPart() {
   loading.value = true
   try {
     part.value = await fetchPart(partId)
-  } catch (error: any) {
+  } catch (error: unknown) {
     toast.add({
       title: 'Error loading part',
-      description: error.message,
+      description: (error as Error).message,
       color: 'error'
     })
     router.push('/inventory')
@@ -88,10 +88,10 @@ async function onUpdate() {
       color: 'success'
     })
     await loadPart()
-  } catch (error: any) {
+  } catch (error: unknown) {
     toast.add({
       title: 'Error updating part',
-      description: error.message,
+      description: (error as Error).message,
       color: 'error'
     })
   } finally {
@@ -99,7 +99,7 @@ async function onUpdate() {
   }
 }
 
-const historyColumns: any[] = [
+const historyColumns = [
   { key: 'createdAt', label: 'Date' },
   { key: 'type', label: 'Type' },
   { key: 'quantity', label: 'Quantity' },
@@ -282,14 +282,14 @@ const formatDate = (date: string) => {
               </UCard>
             </div>
 
-            <UCard v-if="(part as any).inventoryLevels?.length">
+            <UCard v-if="part?.inventoryLevels?.length">
               <template #header>
                 <h3 class="text-sm font-semibold">
                   Stock by Location
                 </h3>
               </template>
               <div class="divide-y divide-default">
-                <div v-for="level in (part as any).inventoryLevels" :key="level.locationId" class="flex justify-between py-2 first:pt-0 last:pb-0">
+                <div v-for="level in part?.inventoryLevels" :key="level.locationId" class="flex justify-between py-2 first:pt-0 last:pb-0">
                   <span class="text-sm">{{ level.locationName }}</span>
                   <span class="font-medium">{{ level.quantity }} {{ part?.unit }}</span>
                 </div>
@@ -314,7 +314,7 @@ const formatDate = (date: string) => {
           </h2>
           <UTable
             :rows="part?.history || []"
-            :columns="historyColumns"
+            :columns="historyColumns as any[]"
           >
             <template #createdAt-data="{ row }">
               {{ formatDate((row as any).createdAt) }}

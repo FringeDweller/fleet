@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Part } from '~/types'
 
-const { categories, fetchCategories, fetchParts, recordMovement } = useInventory()
+const { categories, fetchCategories, recordMovement } = useInventory()
 const toast = useToast()
 const router = useRouter()
 
@@ -48,10 +48,10 @@ async function onAdjust() {
       color: 'success'
     })
     router.push('/inventory')
-  } catch (error: any) {
+  } catch (error: unknown) {
     toast.add({
       title: 'Error adjusting inventory',
-      description: error.message,
+      description: (error as Error).message,
       color: 'error'
     })
   } finally {

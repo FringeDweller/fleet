@@ -37,8 +37,8 @@ const onStartScan = async (method: 'nfc' | 'qr') => {
 
       step.value = 2
     }
-  } catch (error: any) {
-    toast.add({ title: 'Scan Failed', description: error.message, color: 'error' })
+  } catch (error: unknown) {
+    toast.add({ title: 'Scan Failed', description: (error as Error).message, color: 'error' })
   }
 }
 
@@ -50,12 +50,12 @@ const onCheckpointScan = async (method: 'nfc' | 'qr') => {
       await recordCheckpoint(id, location || undefined)
       toast.add({ title: `Checkpoint ${id} Recorded`, color: 'success' })
     }
-  } catch (error: any) {
-    toast.add({ title: 'Checkpoint Scan Failed', description: error.message, color: 'error' })
+  } catch (error: unknown) {
+    toast.add({ title: 'Checkpoint Scan Failed', description: (error as Error).message, color: 'error' })
   }
 }
 
-const handleFail = async (item: any) => {
+const handleFail = async (item: { status: string | null, photo?: string }) => {
   item.status = 'failed'
   // REQ-902-AC-03: Failed items require photo
   if (!item.photo) {
@@ -137,7 +137,7 @@ const submit = async () => {
       </p>
       <div class="bg-elevated p-4 rounded-lg">
         <p class="text-sm font-medium">
-          Scanned: {{ currentInspection?.checkpoints?.length || 0 }}
+          Scanned: {{ (currentInspection?.checkpoints as any[])?.length || 0 }}
         </p>
       </div>
 
@@ -171,7 +171,7 @@ const submit = async () => {
           label="Next: Checklist"
           color="neutral"
           class="flex-[2]"
-          :disabled="!currentInspection?.checkpoints?.length"
+          :disabled="!(currentInspection?.checkpoints as any[])?.length"
           @click="finishCheckpoints"
         />
       </div>

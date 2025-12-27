@@ -9,10 +9,12 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: 'submitted', data?: Record<string, any>): void
 }>()
 const toast = useToast()
 const isSubmitting = ref(false)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const formData = ref<Record<string, any>>({})
 
 // Initialize form data
@@ -95,10 +97,10 @@ async function handleSubmit() {
             :required="field.required"
             :help="field.helpText"
           >
-            <UInput v-if="['text', 'number', 'date', 'time'].includes(field.type)" v-model="formData[field.key]" :type="field.type === 'number' ? 'number' : 'text'" />
-            <UTextarea v-else-if="field.type === 'textarea'" v-model="formData[field.key]" />
-            <USelect v-else-if="field.type === 'select'" v-model="formData[field.key]" :options="field.options || []" />
-            <UCheckbox v-else-if="field.type === 'checkbox'" v-model="formData[field.key]" :label="field.label" />
+            <UInput v-if="['text', 'number', 'date', 'time'].includes(field.type)" v-model="(formData as any)[field.key]" :type="field.type === 'number' ? 'number' : 'text'" />
+            <UTextarea v-else-if="field.type === 'textarea'" v-model="(formData as any)[field.key]" />
+            <USelect v-else-if="field.type === 'select'" v-model="(formData as any)[field.key]" :options="field.options || []" />
+            <UCheckbox v-else-if="field.type === 'checkbox'" v-model="(formData as any)[field.key]" :label="field.label" />
 
             <div v-else-if="field.type === 'photo'" class="h-32 bg-gray-50 dark:bg-gray-800 rounded border border-dashed flex flex-col items-center justify-center text-dimmed">
               <UIcon name="i-lucide-camera" class="w-8 h-8 mb-2" />

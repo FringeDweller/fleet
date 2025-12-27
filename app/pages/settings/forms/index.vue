@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { TableColumn } from '@nuxt/ui'
-
 interface Form {
   id: string
   title: string
@@ -11,7 +9,7 @@ interface Form {
 
 const { data: forms, refresh } = await useFetch<Form[]>('/api/settings/forms')
 
-const columns: any[] = [
+const columns: Record<string, unknown>[] = [
   { key: 'title', label: 'Title' },
   { key: 'status', label: 'Status' },
   { key: 'createdAt', label: 'Created' },
@@ -42,7 +40,7 @@ async function createForm() {
       <UButton label="Create Form" @click="isOpen = true" />
     </div>
 
-    <UTable :rows="(forms as any[]) || []" :columns="columns">
+    <UTable :rows="(forms as Form[]) || []" :columns="columns as any[]">
       <template #status-data="{ row }">
         <UBadge :color="(row as any).status === 'published' ? 'success' : 'neutral'">
           {{ (row as any).status }}

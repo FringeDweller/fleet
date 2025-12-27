@@ -9,13 +9,13 @@ const { createSchedule, loading } = useMaintenanceSchedules()
 const router = useRouter()
 const toast = useToast()
 
-async function onSubmit(data: any) {
+async function onSubmit(data: Record<string, unknown>) {
   try {
     await createSchedule(data)
     toast.add({ title: 'Schedule created', color: 'success' })
     router.push('/maintenance-schedules')
-  } catch (e: any) {
-    toast.add({ title: 'Error creating schedule', description: e.message, color: 'error' })
+  } catch (e: unknown) {
+    toast.add({ title: 'Error creating schedule', description: (e as Error).message, color: 'error' })
   }
 }
 </script>

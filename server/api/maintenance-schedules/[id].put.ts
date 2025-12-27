@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Convert decimals to strings if present
-  const data: any = { ...body }
+  const data: Record<string, unknown> = { ...body }
   if (body.usageIntervalKm !== undefined) data.usageIntervalKm = body.usageIntervalKm?.toString()
   if (body.usageIntervalHours !== undefined) data.usageIntervalHours = body.usageIntervalHours?.toString()
 

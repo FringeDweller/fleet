@@ -27,10 +27,10 @@ async function onSubmit() {
       color: 'success'
     })
     router.push('/inventory')
-  } catch (error: any) {
+  } catch (error: unknown) {
     toast.add({
       title: 'Error creating part',
-      description: error.message,
+      description: (error as Error).message,
       color: 'error'
     })
   } finally {

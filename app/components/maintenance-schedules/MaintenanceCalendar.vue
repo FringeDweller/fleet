@@ -2,8 +2,8 @@
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, format, isSameMonth, isSameDay, addMonths, subMonths } from 'date-fns'
 
 const props = defineProps<{
-  schedules: any[]
-  workOrders: any[]
+  schedules: Record<string, unknown>[]
+  workOrders: Record<string, unknown>[]
 }>()
 
 const currentDate = ref(new Date())
@@ -15,16 +15,16 @@ const days = computed(() => {
 })
 
 const events = computed(() => {
-  const list: any[] = []
+  const list: Record<string, unknown>[] = []
   // Add Work Orders
   props.workOrders.forEach((wo) => {
     if (wo.dueDate) {
       list.push({
-        id: `wo-${wo.id}`,
-        title: wo.woNumber,
-        date: new Date(wo.dueDate),
+        id: `wo-${wo.id as string}`,
+        title: wo.woNumber as string,
+        date: new Date(wo.dueDate as string),
         type: 'wo',
-        status: wo.status
+        status: wo.status as string
       })
     }
   })
@@ -32,9 +32,9 @@ const events = computed(() => {
   props.schedules.forEach((s) => {
     if (s.nextDueAt) {
       list.push({
-        id: `sch-${s.id}`,
-        title: s.name,
-        date: new Date(s.nextDueAt),
+        id: `sch-${s.id as string}`,
+        title: s.name as string,
+        date: new Date(s.nextDueAt as string),
         type: 'schedule',
         status: 'pending'
       })
@@ -44,7 +44,7 @@ const events = computed(() => {
 })
 
 function getEventsForDay(date: Date) {
-  return events.value.filter(e => isSameDay(e.date, date))
+  return events.value.filter(e => isSameDay(e.date as Date, date))
 }
 
 function nextMonth() {
@@ -94,7 +94,7 @@ function prevMonth() {
         <div class="space-y-1">
           <div
             v-for="event in getEventsForDay(date)"
-            :key="event.id"
+            :key="event.id as string"
             class="text-xs p-1 rounded truncate cursor-pointer"
             :class="event.type === 'wo' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'"
           >

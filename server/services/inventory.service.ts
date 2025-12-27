@@ -1,4 +1,5 @@
-import { eq, and, ilike, or, sql, getTableColumns, desc } from 'drizzle-orm'
+import { eq, and, ilike, or, sql, getTableColumns, desc, type SQL } from 'drizzle-orm'
+import type { PgTransaction } from 'drizzle-orm/pg-core'
 import { db } from '../utils/db'
 import { parts, partCategories, stockMovements, users, assetPartCompatibility, assets, inventoryLocations, partInventory } from '../database/schema'
 
@@ -24,8 +25,8 @@ export const inventoryService = {
         or(
           ilike(parts.sku, search),
           ilike(parts.name, search),
-          ilike(parts.description as any, search)
-        ) as any
+          ilike(parts.description!, search)
+        )!
       )
     }
 
@@ -161,9 +162,9 @@ export const inventoryService = {
 
         const delta = data.type === 'in'
           ? Number(data.quantity)
-          : data.type === 'out'
-            ? -Number(data.quantity)
-            : 0 // adjustment handled differently below
+          : (data.type === 'out'
+              ? -Number(data.quantity)
+              : 0) // adjustment handled differently below
 
         if (data.type === 'adjustment') {
           await this._setLocationInventory(tx, data.partId, data.locationId, Number(data.quantity), data.organizationId)
@@ -179,10 +180,19 @@ export const inventoryService = {
     })
   },
 
-  async _updateLocationInventory(tx: any, partId: string, locationId: string, delta: number, organizationId: string) {
-    const existing = await tx.query.partInventory.findFirst({
-      where: and(eq(partInventory.partId, partId), eq(partInventory.locationId, locationId))
-    })
+  async _updateLocationInventory(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    tx: PgTransaction<any, any, any>,
+    partId: string,
+    locationId: string,
+    delta: number,
+    organizationId: string
+  ) {
+    const [existing] = await tx
+      .select()
+      .from(partInventory)
+      .where(and(eq(partInventory.partId, partId), eq(partInventory.locationId, locationId)))
+      .limit(1)
 
     if (existing) {
       const newQty = Number(existing.quantity || 0) + delta
@@ -199,10 +209,19 @@ export const inventoryService = {
     }
   },
 
-  async _setLocationInventory(tx: any, partId: string, locationId: string, quantity: number, organizationId: string) {
-    const existing = await tx.query.partInventory.findFirst({
-      where: and(eq(partInventory.partId, partId), eq(partInventory.locationId, locationId))
-    })
+  async _setLocationInventory(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    tx: PgTransaction<any, any, any>,
+    partId: string,
+    locationId: string,
+    quantity: number,
+    organizationId: string
+  ) {
+    const [existing] = await tx
+      .select()
+      .from(partInventory)
+      .where(and(eq(partInventory.partId, partId), eq(partInventory.locationId, locationId)))
+      .limit(1)
 
     if (existing) {
       await tx.update(partInventory)
@@ -218,7 +237,11 @@ export const inventoryService = {
     }
   },
 
-  async _updateTotalQuantity(tx: any, partId: string) {
+  async _updateTotalQuantity(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    tx: PgTransaction<any, any, any>,
+    partId: string
+  ) {
     const levels = await tx
       .select({
         total: sql<string>`sum(${partInventory.quantity})`
@@ -239,15 +262,15 @@ export const inventoryService = {
 
     if (!asset) return []
 
-    const whereConditions = [
+    const whereConditions: (SQL<unknown> | undefined)[] = [
       eq(assetPartCompatibility.organizationId, organizationId),
       or(
         eq(assetPartCompatibility.assetId, assetId),
-        eq(assetPartCompatibility.assetCategoryId, asset.categoryId),
+        eq(assetPartCompatibility.assetCategoryId, asset.categoryId!),
         and(
-          eq(assetPartCompatibility.make, asset.make),
+          eq(assetPartCompatibility.make, asset.make!),
           or(
-            eq(assetPartCompatibility.model, asset.model),
+            eq(assetPartCompatibility.model, asset.model!),
             sql`${assetPartCompatibility.model} IS NULL`
           )
         )
@@ -262,7 +285,7 @@ export const inventoryService = {
       .from(assetPartCompatibility)
       .innerJoin(parts, eq(assetPartCompatibility.partId, parts.id))
       .leftJoin(partCategories, eq(parts.categoryId, partCategories.id))
-      .where(and(...whereConditions as any))
+      .where(and(...whereConditions))
       .orderBy(parts.name)
 
     return items

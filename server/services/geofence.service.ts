@@ -1,6 +1,6 @@
 import { eq, and, desc, inArray, sql } from 'drizzle-orm'
 import { db } from '../utils/db'
-import { geofences, geofenceEvents, assetLocations, users, notifications } from '../database/schema'
+import { geofences, geofenceEvents, users, notifications } from '../database/schema'
 import { assetService } from './asset.service'
 import { notificationService } from './notification.service'
 
@@ -36,7 +36,7 @@ export const geofenceService = {
       ))
   },
 
-  isPointInGeofence(lat: number, lng: number, geofence: any) {
+  isPointInGeofence(lat: number, lng: number, geofence: typeof geofences.$inferSelect) {
     if (geofence.type === 'circle') {
       const centerLat = Number(geofence.centerLat)
       const centerLng = Number(geofence.centerLng)
@@ -45,7 +45,7 @@ export const geofenceService = {
       const distance = this.getDistance(lat, lng, centerLat, centerLng)
       return distance <= radius
     } else if (geofence.type === 'polygon' && geofence.coordinates) {
-      return this.isPointInPolygon(lat, lng, geofence.coordinates)
+      return this.isPointInPolygon(lat, lng, geofence.coordinates as { lat: number, lng: number }[])
     }
     return false
   },
@@ -156,14 +156,14 @@ export const geofenceService = {
     }
   },
 
-  isAfterHours(geofence: any) {
+  isAfterHours(geofence: typeof geofences.$inferSelect) {
     if (!geofence.activeHours) return false
 
     const now = new Date()
     const day = now.getDay()
     const time = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0')
 
-    const { start, end, days } = geofence.activeHours as any
+    const { start, end, days } = geofence.activeHours as { start: string, end: string, days: number[] }
 
     if (days && !days.includes(day)) return true
     if (start && time < start) return true
@@ -172,7 +172,7 @@ export const geofenceService = {
     return false
   },
 
-  async triggerAlert(assetLabel: string, geofence: any, type: string, organizationId: string) {
+  async triggerAlert(assetLabel: string, geofence: typeof geofences.$inferSelect, type: string, organizationId: string) {
     let title = ''
     let message = ''
 
@@ -231,14 +231,14 @@ export const geofenceService = {
       .orderBy(geofenceEvents.createdAt)
 
     const logs = []
-    const pendingEntries: Record<string, any> = {}
+    const pendingEntries = new Map<string, typeof geofenceEvents.$inferSelect>()
 
     for (const event of events) {
       const key = `${event.assetId}-${event.geofenceId}`
       if (event.type === 'entry') {
-        pendingEntries[key] = event
-      } else if (event.type === 'exit' && pendingEntries[key]) {
-        const entry = pendingEntries[key]
+        pendingEntries.set(key, event)
+      } else if (event.type === 'exit' && pendingEntries.has(key)) {
+        const entry = pendingEntries.get(key)!
         logs.push({
           assetId: event.assetId,
           geofenceId: event.geofenceId,
@@ -246,7 +246,7 @@ export const geofenceService = {
           exitTime: event.createdAt,
           durationMinutes: Math.round((event.createdAt.getTime() - entry.createdAt.getTime()) / 60000)
         })
-        delete pendingEntries[key]
+        pendingEntries.delete(key)
       }
     }
 

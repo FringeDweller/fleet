@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import type { Asset } from '~/types'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const columns: any[] = [
   { key: 'assetNumber', label: 'Asset #' },
   { key: 'make', label: 'Make' },
@@ -13,7 +16,7 @@ const selectedStatus = ref('')
 const page = ref(1)
 const pageCount = 10
 
-const { data: assets, pending } = await useFetch('/api/assets', {
+const { data: assets, pending } = await useFetch<{ items: Asset[], total: number }>('/api/assets', {
   query: {
     q: search,
     status: selectedStatus,

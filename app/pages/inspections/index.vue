@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { data: inspections, pending } = await useFetch<any[]>('/api/inspections')
+const { data: inspections, pending } = await useFetch<Record<string, unknown>[]>('/api/inspections')
 
 const columns = [
   { key: 'createdAt', label: 'Date' },
@@ -30,7 +30,7 @@ const getStatusColor = (status: string) => {
     <UCard>
       <UTable
         :rows="inspections || []"
-        :columns="columns as any"
+        :columns="columns as any[]"
         :loading="pending"
       >
         <template #createdAt-data="{ row }">

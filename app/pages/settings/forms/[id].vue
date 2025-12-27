@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import FormBuilder from '../../../components/forms/FormBuilder.vue'
-import FormRenderer from '../../../components/forms/FormRenderer.vue'
-import FormAssignmentsList from '../../../components/forms/FormAssignmentsList.vue'
-import FormSubmissionsTable from '../../../components/forms/FormSubmissionsTable.vue'
 import type { FormField } from '../../../../types/form-builder'
 
 const route = useRoute()
 const id = route.params.id as string
 const toast = useToast()
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const { data: form, refresh } = await useFetch<any>(`/api/settings/forms/${id}`)
 
 const items = [
@@ -48,8 +45,8 @@ async function saveForm() {
     })
     toast.add({ title: 'Form saved successfully', color: 'success' })
     refresh()
-  } catch (e) {
-    console.error(e)
+  } catch (error) {
+    console.error(error)
     toast.add({ title: 'Failed to save form', color: 'error' })
   } finally {
     isSaving.value = false
@@ -68,7 +65,8 @@ async function saveAssignment() {
     showAssignModal.value = false
     toast.add({ title: 'Assignment added', color: 'success' })
     assignmentsList.value?.refresh()
-  } catch (e) {
+  } catch (error) {
+    console.error(error)
     toast.add({ title: 'Failed to add assignment', color: 'error' })
   }
 }
@@ -78,12 +76,12 @@ const editTitle = ref(false)
 const titleInput = ref('')
 
 function startTitleEdit() {
-  titleInput.value = form.value?.title || ''
+  titleInput.value = (form.value?.title as string) || ''
   editTitle.value = true
 }
 
 async function saveTitle() {
-  if (titleInput.value !== form.value?.title) {
+  if (form.value && titleInput.value !== form.value.title) {
     form.value.title = titleInput.value
     await $fetch(`/api/settings/forms/${id}`, {
       method: 'PUT',

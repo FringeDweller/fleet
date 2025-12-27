@@ -33,17 +33,17 @@ export const useQrScanner = () => {
 
     isScanning.value = true
 
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       // Add listener
-      const listener = await BarcodeScanner.addListener('barcodesScanned', (result: any) => {
-        listener.remove()
+      BarcodeScanner.addListener('barcodesScanned', (result) => {
         stopScan()
-        resolve(result.barcodes[0]?.rawValue || '')
-      })
-
-      BarcodeScanner.startScan().catch((err) => {
-        isScanning.value = false
-        reject(err)
+        resolve(result.barcodes[0]?.displayValue || result.barcodes[0]?.rawValue || '')
+      }).then((listener) => {
+        BarcodeScanner.startScan().catch((err: unknown) => {
+          isScanning.value = false
+          listener.remove()
+          reject(err)
+        })
       })
     })
   }

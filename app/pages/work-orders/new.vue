@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { data: assets } = await useFetch('/api/assets')
+const { data: assets } = await useFetch<{ items: Record<string, unknown>[] }>('/api/assets')
 
 const state = reactive({
   assetId: undefined,
@@ -16,7 +16,7 @@ const priorityOptions = [
 ]
 
 const assetOptions = computed(() => {
-  return (assets.value?.items || []).map((a: any) => ({
+  return (assets.value?.items || []).map((a: Record<string, unknown>) => ({
     label: `${a.assetNumber} - ${a.make} ${a.model}`,
     value: a.id
   }))

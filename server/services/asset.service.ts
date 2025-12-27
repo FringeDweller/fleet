@@ -21,9 +21,9 @@ export const assetService = {
           ilike(assets.assetNumber, search),
           ilike(assets.make, search),
           ilike(assets.model, search),
-          ilike(assets.licensePlate as any, search),
-          ilike(assets.vin as any, search)
-        ) as any
+          ilike(assets.licensePlate, search),
+          ilike(assets.vin, search)
+        )!
       )
     }
 

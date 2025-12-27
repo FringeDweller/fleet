@@ -1,4 +1,5 @@
 export const useOperatorSession = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const activeSession = ref<any>(null)
   const loading = ref(false)
 

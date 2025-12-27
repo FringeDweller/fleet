@@ -18,8 +18,8 @@ export const useGeolocation = () => {
         longitude: position.coords.longitude
       }
       return coords.value
-    } catch (e: any) {
-      error.value = e.message
+    } catch (e: unknown) {
+      error.value = (e as Error).message
       return null
     } finally {
       loading.value = false

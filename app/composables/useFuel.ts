@@ -3,7 +3,7 @@ export const useFuel = () => {
   const { queueOperation, putItem, getCollection } = useOfflineSync()
   const online = useOnline()
 
-  const recordTransaction = async (data: any) => {
+  const recordTransaction = async (data: Record<string, unknown>) => {
     loading.value = true
     try {
       if (online.value) {
@@ -11,7 +11,7 @@ export const useFuel = () => {
           method: 'POST',
           body: data
         })
-        await putItem('fuel-transactions', result)
+        await putItem('fuel-transactions', result as Record<string, unknown>)
         return result
       } else {
         const transaction = {
@@ -19,8 +19,8 @@ export const useFuel = () => {
           ...data,
           createdAt: new Date().toISOString()
         }
-        await queueOperation('fuel-transactions', 'create', transaction)
-        await putItem('fuel-transactions', transaction)
+        await queueOperation('fuel-transactions', 'create', transaction as Record<string, unknown>)
+        await putItem('fuel-transactions', transaction as Record<string, unknown>)
         return transaction
       }
     } finally {
@@ -34,7 +34,7 @@ export const useFuel = () => {
       // In a real app, we might have a GET /api/fuel?assetId=...
     }
     const all = await getCollection('fuel-transactions')
-    return all.filter((t: any) => t.assetId === assetId)
+    return all.filter((t: Record<string, unknown>) => t.assetId === assetId)
   }
 
   return {

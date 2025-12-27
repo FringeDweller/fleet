@@ -4,7 +4,7 @@ import { workOrders } from '../database/schema/work-orders'
 import { parts } from '../database/schema/inventory'
 import { maintenanceTasks } from '../database/schema/maintenance-tasks'
 import { assetLocations } from '../database/schema/asset-locations'
-import { eq, and } from 'drizzle-orm'
+import { eq, and, type Table } from 'drizzle-orm'
 import { compareHLC } from '../utils/hlc'
 import { geofenceService } from './geofence.service'
 
@@ -13,7 +13,7 @@ export interface SyncOperation {
   hlc: string
   collection: string
   action: 'create' | 'update' | 'delete'
-  data: any
+  data: Record<string, unknown>
 }
 
 export const syncService = {
@@ -34,7 +34,8 @@ export const syncService = {
   },
 
   async processOperation(op: SyncOperation, organizationId: string) {
-    const tableMap: Record<string, unknown> = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const tableMap: Record<string, Table<any>> = {
       assets,
       'work-orders': workOrders,
       'inventory': parts,
@@ -42,18 +43,20 @@ export const syncService = {
       'asset-locations': assetLocations
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const table = tableMap[op.collection] as any
     if (!table) throw new Error(`Unknown collection: ${op.collection}`)
 
-    const recordId = op.data.id || (op.collection === 'asset-locations' ? op.id : null)
+    const recordId = (op.data.id as string) || (op.collection === 'asset-locations' ? op.id : null)
 
     // Get existing record to check HLC
-    let existing: any = null
+    let existing: Record<string, unknown> | null = null
     if (recordId) {
-      [existing] = await db.select().from(table).where(and(
+      const [record] = await db.select().from(table).where(and(
         eq(table.id, recordId),
         eq(table.organizationId, organizationId)
       )).limit(1)
+      existing = record as Record<string, unknown>
     }
 
     if (existing && existing.hlc && compareHLC(op.hlc, existing.hlc as string) <= 0) {
@@ -80,15 +83,15 @@ export const syncService = {
       // If it's a location, process geofences
       if (op.collection === 'asset-locations' && op.action === 'create') {
         await geofenceService.processLocation(
-          op.data.assetId,
+          op.data.assetId as string,
           Number(op.data.latitude),
           Number(op.data.longitude),
           organizationId,
-          op.data.sessionId
+          op.data.sessionId as string
         )
       }
     } else if (op.action === 'delete') {
-      await db.delete(table).where(eq(table.id, op.data.id))
+      await db.delete(table).where(eq(table.id, op.data.id as string))
     }
 
     return { status: 'applied' }

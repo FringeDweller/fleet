@@ -3,7 +3,7 @@ import type { Part, PartCategory } from '~/types'
 export const useInventory = () => {
   const parts = ref<Part[]>([])
   const categories = ref<PartCategory[]>([])
-  const locations = ref<any[]>([])
+  const locations = ref<Record<string, unknown>[]>([])
   const loading = ref(false)
   const total = ref(0)
 
@@ -83,17 +83,17 @@ export const useInventory = () => {
   }
 
   const fetchLocations = async () => {
-    locations.value = await $fetch<any[]>('/api/inventory/locations')
+    locations.value = await $fetch<Record<string, unknown>[]>('/api/inventory/locations')
   }
 
-  const createLocation = async (data: any) => {
+  const createLocation = async (data: Record<string, unknown>) => {
     return await $fetch('/api/inventory/locations', {
       method: 'POST',
       body: data
     })
   }
 
-  const recordMovement = async (data: any) => {
+  const recordMovement = async (data: Record<string, unknown>) => {
     return await $fetch('/api/inventory/movements', {
       method: 'POST',
       body: data

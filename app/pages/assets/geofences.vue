@@ -24,7 +24,7 @@ const { data: geofences, refresh } = await useFetch<Geofence[]>('/api/geofences'
 const isModalOpen = ref(false)
 const isLogsModalOpen = ref(false)
 const selectedGeofence = ref<Partial<Geofence>>({})
-const logs = ref<any[]>([])
+const logs = ref<Record<string, unknown>[]>([])
 
 const openCreateModal = () => {
   selectedGeofence.value = {
@@ -50,7 +50,7 @@ const openEditModal = (geofence: Geofence) => {
 
 const openLogsModal = async (geofence: Geofence) => {
   selectedGeofence.value = geofence
-  logs.value = await $fetch(`/api/geofences/logs?geofenceId=${geofence.id}`)
+  logs.value = await $fetch<Record<string, unknown>[]>(`/api/geofences/logs?geofenceId=${geofence.id}`)
   isLogsModalOpen.value = true
 }
 
@@ -68,15 +68,6 @@ const saveGeofence = async () => {
   }
   isModalOpen.value = false
   refresh()
-}
-
-const deleteGeofence = async (id: string) => {
-  if (confirm('Are you sure you want to delete this geofence?')) {
-    await $fetch(`/api/geofences/${id}`, {
-      method: 'DELETE'
-    })
-    refresh()
-  }
 }
 
 const columns = [

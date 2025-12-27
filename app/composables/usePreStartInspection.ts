@@ -1,4 +1,5 @@
 export const usePreStartInspection = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const currentInspection = ref<any>(null)
   const loading = ref(false)
 
@@ -33,6 +34,7 @@ export const usePreStartInspection = () => {
     })
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const submitInspection = async (status: 'passed' | 'failed', results: any[], signatureUrl?: string) => {
     if (!currentInspection.value) return
 

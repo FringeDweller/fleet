@@ -22,8 +22,8 @@ const handleConnect = async (deviceId: string) => {
   try {
     await connect(deviceId)
     toast.add({ title: 'Connected to OBD Dongle', color: 'success' })
-  } catch (e: any) {
-    toast.add({ title: 'Connection Failed', description: e.message, color: 'error' })
+  } catch (e: unknown) {
+    toast.add({ title: 'Connection Failed', description: (e as Error).message, color: 'error' })
   } finally {
     connecting.value = false
   }

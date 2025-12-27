@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import type { Part } from '~/types'
-
-const columns: any[] = [
+const columns = [
   { key: 'sku', label: 'SKU' },
   { key: 'name', label: 'Name' },
   { key: 'categoryName', label: 'Category' },
@@ -17,7 +15,7 @@ const showLowStockOnly = ref(false)
 const page = ref(1)
 const pageCount = 10
 
-const { data: inventory, pending } = await useFetch('/api/inventory/parts', {
+const { data: inventory, pending } = await useFetch<{ items: Record<string, unknown>[], total: number }>('/api/inventory/parts', {
   query: {
     q: search,
     categoryId: selectedCategory,
@@ -27,12 +25,12 @@ const { data: inventory, pending } = await useFetch('/api/inventory/parts', {
   }
 })
 
-const { data: categories } = await useFetch('/api/inventory/categories')
+const { data: categories } = await useFetch<Record<string, unknown>[]>('/api/inventory/categories')
 
 const categoryOptions = computed(() => {
   const options = [{ label: 'All Categories', value: '' }]
   if (categories.value) {
-    options.push(...(categories.value as any[]).map(c => ({ label: c.name, value: c.id })))
+    options.push(...categories.value.map(c => ({ label: c.name as string, value: c.id as string })))
   }
   return options
 })
@@ -84,7 +82,7 @@ const formatCurrency = (value: string) => {
 
       <UTable
         :rows="inventory?.items || []"
-        :columns="columns"
+        :columns="columns as any[]"
         :loading="pending"
       >
         <template #unitCost-data="{ row }">

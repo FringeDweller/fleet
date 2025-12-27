@@ -24,5 +24,5 @@ export default defineEventHandler(async (event) => {
   `)
 
   // Drizzle with PostgresJS returns the rows directly as a RowList
-  return latestLocations as unknown as Record<string, any>[]
+  return latestLocations as unknown as Record<string, unknown>[]
 })

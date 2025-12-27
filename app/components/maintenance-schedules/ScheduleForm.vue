@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { z } from 'zod'
-import type { FormSubmitEvent } from '#ui/types'
 
 const props = defineProps<{
-  initialData?: any
+  initialData?: Record<string, unknown>
   loading?: boolean
 }>()
 
@@ -16,19 +15,34 @@ onMounted(async () => {
   await Promise.all([fetchAssets(), fetchCategories(), fetchTasks()])
 })
 
-const state = reactive({
-  name: props.initialData?.name || '',
-  taskId: props.initialData?.taskId || '',
+interface ScheduleState {
+  name: string
+  taskId: string
+  targetType: 'asset' | 'category'
+  assetId: string
+  categoryId: string
+  type: 'time' | 'usage' | 'combined'
+  timeInterval: number
+  timeUnit: 'days' | 'weeks' | 'months' | 'years'
+  usageIntervalKm: number
+  usageIntervalHours: number
+  leadTimeDays: number
+  isActive: boolean
+}
+
+const state = reactive<ScheduleState>({
+  name: (props.initialData?.name as string) || '',
+  taskId: (props.initialData?.taskId as string) || '',
   targetType: (props.initialData?.categoryId ? 'category' : 'asset') as 'asset' | 'category',
-  assetId: props.initialData?.assetId || '',
-  categoryId: props.initialData?.categoryId || '',
-  type: (props.initialData?.type || 'time') as 'time' | 'usage' | 'combined',
-  timeInterval: props.initialData?.timeInterval || 0,
-  timeUnit: (props.initialData?.timeUnit || 'months') as 'days' | 'weeks' | 'months' | 'years',
+  assetId: (props.initialData?.assetId as string) || '',
+  categoryId: (props.initialData?.categoryId as string) || '',
+  type: ((props.initialData?.type as string) || 'time') as 'time' | 'usage' | 'combined',
+  timeInterval: (props.initialData?.timeInterval as number) || 0,
+  timeUnit: ((props.initialData?.timeUnit as string) || 'months') as 'days' | 'weeks' | 'months' | 'years',
   usageIntervalKm: props.initialData?.usageIntervalKm ? Number(props.initialData?.usageIntervalKm) : 0,
   usageIntervalHours: props.initialData?.usageIntervalHours ? Number(props.initialData?.usageIntervalHours) : 0,
-  leadTimeDays: props.initialData?.leadTimeDays || 7,
-  isActive: props.initialData?.isActive ?? true
+  leadTimeDays: (props.initialData?.leadTimeDays as number) || 7,
+  isActive: (props.initialData?.isActive as boolean) ?? true
 })
 
 const schema = z.object({
@@ -52,7 +66,8 @@ const schema = z.object({
   path: ['assetId']
 })
 
-async function onSubmit(event: FormSubmitEvent<any>) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function onSubmit(event: any) {
   const data = { ...event.data }
   // Clean up based on targetType
   if (data.targetType === 'asset') data.categoryId = null

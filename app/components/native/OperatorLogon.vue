@@ -51,8 +51,8 @@ const onNfcScan = async () => {
     if (id) {
       await handleLogOn(id)
     }
-  } catch (error: any) {
-    toast.add({ title: 'NFC Scan Failed', description: error.message, color: 'error' })
+  } catch (error: unknown) {
+    toast.add({ title: 'NFC Scan Failed', description: (error as Error).message, color: 'error' })
   }
 }
 
@@ -62,8 +62,8 @@ const onQrScan = async () => {
     if (id) {
       await handleLogOn(id)
     }
-  } catch (error: any) {
-    toast.add({ title: 'QR Scan Failed', description: error.message, color: 'error' })
+  } catch (error: unknown) {
+    toast.add({ title: 'QR Scan Failed', description: (error as Error).message, color: 'error' })
   }
 }
 
@@ -87,8 +87,8 @@ const submitLogOn = async () => {
 
     toast.add({ title: 'Logged on successfully', color: 'success' })
     showManualForm.value = false
-  } catch (error: any) {
-    toast.add({ title: 'Log on failed', description: error.message, color: 'error' })
+  } catch (error: unknown) {
+    toast.add({ title: 'Log on failed', description: (error as Error).message, color: 'error' })
   }
 }
 
@@ -100,8 +100,8 @@ const submitLogOff = async () => {
     })
     toast.add({ title: 'Logged off successfully', color: 'success' })
     showLogOffForm.value = false
-  } catch (error: any) {
-    toast.add({ title: 'Log off failed', description: error.message, color: 'error' })
+  } catch (error: unknown) {
+    toast.add({ title: 'Log off failed', description: (error as Error).message, color: 'error' })
   }
 }
 
@@ -112,8 +112,8 @@ const onHandover = async () => {
   }
 
   try {
-    const sessionId = activeSession.value?.id
-    const asset = activeSession.value?.assetId
+    const sessionId = activeSession.value?.id as string
+    const asset = activeSession.value?.assetId as string
 
     // 1. Log off current session
     await logOff({
@@ -137,8 +137,8 @@ const onHandover = async () => {
       // 4. Redirect
       navigateTo('/login')
     }
-  } catch (error: any) {
-    toast.add({ title: 'Handover failed', description: error.message, color: 'error' })
+  } catch (error: unknown) {
+    toast.add({ title: 'Handover failed', description: (error as Error).message, color: 'error' })
   }
 }
 </script>
@@ -216,7 +216,7 @@ const onHandover = async () => {
         Vehicle: {{ activeSession.assetId }}
       </p>
       <p class="text-sm">
-        Started: {{ new Date(activeSession.startTime).toLocaleString() }}
+        Started: {{ new Date(activeSession.startTime as string).toLocaleString() }}
       </p>
       <div class="pt-2">
         <UButton

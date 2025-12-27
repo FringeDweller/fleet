@@ -131,6 +131,8 @@ export interface Part {
 
   history?: StockMovement[]
 
+  inventoryLevels?: { locationId: string, locationName: string, quantity: string }[]
+
 }
 
 export interface PartCategory {
@@ -208,5 +210,5 @@ export interface FuelAnalytics {
     distance: number
     quantity: number
   }[]
-  anomalies: any[]
+  anomalies: Record<string, unknown>[]
 }
