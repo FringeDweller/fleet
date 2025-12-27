@@ -44,18 +44,16 @@ const _columns = [
   { key: 'totalLaborCost', label: 'Total Labor Cost' }
 ]
 
-function _formatCurrency(value: number) {
-  return new Intl.NumberFormat('en-AU', {
-    style: 'currency',
-    currency: 'AUD'
-  }).format(value)
+function _exportReport() {
+  if (!_report.value) return
+  exportToCSV(_report.value, _columns, `tech-performance-report-${new Date().toISOString().split('T')[0]}`)
 }
 </script>
 
 <template>
   <UDashboardPanel id="tech-performance-report">
     <template #header>
-      <UDashboardNavbar title="Technician Performance Report">
+      <UDashboardNavbar title="Technician Performance Report" :ui="{ right: 'gap-3' }">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
@@ -65,47 +63,48 @@ function _formatCurrency(value: number) {
             icon="i-lucide-refresh-cw"
             variant="ghost"
             color="neutral"
-            :loading="status === 'pending'"
-            @click="() => refresh()"
+            :loading="_status === 'pending'"
+            @click="() => _refresh()"
           />
           <UButton
             icon="i-lucide-download"
             label="Export"
             variant="soft"
             color="neutral"
+            @click="_exportReport"
           />
         </template>
       </UDashboardNavbar>
     </template>
 
     <template #body>
-      <div v-if="report" class="space-y-6">
+      <div v-if="_report" class="space-y-6">
         <!-- Summary Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <UPageCard title="Total Orders Completed" icon="i-lucide-check-circle">
-            <span class="text-2xl font-bold">{{ report.reduce((acc, curr) => acc + curr.completedOrders, 0) }}</span>
+            <span class="text-2xl font-bold">{{ _report.reduce((acc, curr) => acc + curr.completedOrders, 0) }}</span>
           </UPageCard>
           <UPageCard title="Fleet Avg Completion Time" icon="i-lucide-clock">
             <span class="text-2xl font-bold">
-              {{ (report.reduce((acc, curr) => acc + curr.avgCompletionTimeHrs, 0) / (report.length || 1)).toFixed(1) }} hrs
+              {{ (_report.reduce((acc, curr) => acc + curr.avgCompletionTimeHrs, 0) / (_report.length || 1)).toFixed(1) }} hrs
             </span>
           </UPageCard>
           <UPageCard title="Total Labor Efficiency" icon="i-lucide-trending-up">
-            <span class="text-2xl font-bold text-primary">{{ formatCurrency(report.reduce((acc, curr) => acc + curr.totalLaborCost, 0)) }}</span>
+            <span class="text-2xl font-bold text-primary">{{ _formatCurrency(_report.reduce((acc, curr) => acc + curr.totalLaborCost, 0)) }}</span>
           </UPageCard>
         </div>
 
         <!-- Data Table -->
-        <UTable :data="report" :columns="columns as any[]" class="bg-elevated/50 rounded-lg border border-default">
+        <UTable :data="_report" :columns="_columns as any[]" class="bg-elevated/50 rounded-lg border border-default">
           <template #avgCompletionTimeHrs-cell="{ row }">
             {{ row.original.avgCompletionTimeHrs.toFixed(1) }} hrs
           </template>
           <template #totalLaborCost-cell="{ row }">
-            {{ formatCurrency(row.original.totalLaborCost) }}
+            {{ _formatCurrency(row.original.totalLaborCost) }}
           </template>
         </UTable>
       </div>
-      <div v-else-if="status === 'pending'" class="flex items-center justify-center h-64">
+      <div v-else-if="_status === 'pending'" class="flex items-center justify-center h-64">
         <UIcon name="i-lucide-loader-2" class="w-8 h-8 animate-spin text-dimmed" />
       </div>
     </template>

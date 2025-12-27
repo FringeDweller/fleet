@@ -1,4 +1,4 @@
-import { notificationService } from '../services/notification.service'
+import { notificationService } from '../../services/notification.service'
 
 export default defineEventHandler(async (event) => {
   const session = await getUserSession(event)
@@ -11,5 +11,5 @@ export default defineEventHandler(async (event) => {
 
   // Get notifications for organization and user (or all if admin)
   // For now, get all for organization
-  return await notificationService.getNotifications(session.user.organizationId)
+  return await notificationService.getNotifications(session.user.organizationId, session.user.id)
 })

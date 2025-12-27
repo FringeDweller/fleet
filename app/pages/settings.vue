@@ -10,6 +10,11 @@ const _links = [
       exact: true
     },
     {
+      label: 'Organisation',
+      icon: 'i-lucide-building-2',
+      to: '/settings/organization'
+    },
+    {
       label: 'Members',
       icon: 'i-lucide-users',
       to: '/settings/members'
@@ -18,6 +23,21 @@ const _links = [
       label: 'Notifications',
       icon: 'i-lucide-bell',
       to: '/settings/notifications'
+    },
+    {
+      label: 'Alert Rules',
+      icon: 'i-lucide-alert-triangle',
+      to: '/settings/alerts'
+    },
+    {
+      label: 'Roles & Permissions',
+      icon: 'i-lucide-shield-check',
+      to: '/settings/roles'
+    },
+    {
+      label: 'Audit Log',
+      icon: 'i-lucide-history',
+      to: '/settings/audit-logs'
     },
     {
       label: 'Custom Forms',

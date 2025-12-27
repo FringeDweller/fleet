@@ -71,22 +71,24 @@ const _totals = computed(() => {
   return report.value.reduce(
     (acc, curr) => {
       acc.labor += curr.laborCost
-
       acc.parts += curr.partsCost
-
       acc.total += curr.totalCost
-
       return acc
     },
     { labor: 0, parts: 0, total: 0 }
   )
 })
+
+function _exportReport() {
+  if (!report.value) return
+  exportToCSV(report.value, _columns, `maintenance-costs-report-${new Date().toISOString().split('T')[0]}`)
+}
 </script>
 
 <template>
   <UDashboardPanel id="maintenance-costs-report">
     <template #header>
-      <UDashboardNavbar title="Maintenance Cost Report">
+      <UDashboardNavbar title="Maintenance Cost Report" :ui="{ right: 'gap-3' }">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
@@ -96,14 +98,15 @@ const _totals = computed(() => {
             icon="i-lucide-refresh-cw"
             variant="ghost"
             color="neutral"
-            :loading="status === 'pending'"
-            @click="() => refresh()"
+            :loading="_status === 'pending'"
+            @click="() => _refresh()"
           />
           <UButton
             icon="i-lucide-download"
             label="Export"
             variant="soft"
             color="neutral"
+            @click="_exportReport"
           />
         </template>
       </UDashboardNavbar>
@@ -114,30 +117,30 @@ const _totals = computed(() => {
         <!-- Summary Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <UPageCard title="Total Labor Cost" icon="i-lucide-user">
-            <span class="text-2xl font-bold">{{ formatCurrency(totals.labor) }}</span>
+            <span class="text-2xl font-bold">{{ _formatCurrency(_totals.labor) }}</span>
           </UPageCard>
           <UPageCard title="Total Parts Cost" icon="i-lucide-package">
-            <span class="text-2xl font-bold">{{ formatCurrency(totals.parts) }}</span>
+            <span class="text-2xl font-bold">{{ _formatCurrency(_totals.parts) }}</span>
           </UPageCard>
           <UPageCard title="Total Maintenance Cost" icon="i-lucide-dollar-sign">
-            <span class="text-2xl font-bold text-primary">{{ formatCurrency(totals.total) }}</span>
+            <span class="text-2xl font-bold text-primary">{{ _formatCurrency(_totals.total) }}</span>
           </UPageCard>
         </div>
 
         <!-- Data Table -->
-        <UTable :data="report" :columns="columns as any[]" class="bg-elevated/50 rounded-lg border border-default">
+        <UTable :data="report" :columns="_columns as any[]" class="bg-elevated/50 rounded-lg border border-default">
           <template #laborCost-cell="{ row }">
-            {{ formatCurrency(row.original.laborCost) }}
+            {{ _formatCurrency(row.original.laborCost) }}
           </template>
           <template #partsCost-cell="{ row }">
-            {{ formatCurrency(row.original.partsCost) }}
+            {{ _formatCurrency(row.original.partsCost) }}
           </template>
           <template #totalCost-cell="{ row }">
-            <span class="font-bold">{{ formatCurrency(row.original.totalCost) }}</span>
+            <span class="font-bold">{{ _formatCurrency(row.original.totalCost) }}</span>
           </template>
         </UTable>
       </div>
-      <div v-else-if="status === 'pending'" class="flex items-center justify-center h-64">
+      <div v-else-if="_status === 'pending'" class="flex items-center justify-center h-64">
         <UIcon name="i-lucide-loader-2" class="w-8 h-8 animate-spin text-dimmed" />
       </div>
     </template>

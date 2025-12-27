@@ -43,12 +43,17 @@ const _getScoreColor = (score: number) => {
   if (score < 70) return 'warning'
   return 'success'
 }
+
+function _exportReport() {
+  if (!_report.value) return
+  exportToCSV(_report.value.data, _columns, `utilisation-report-${new Date().toISOString().split('T')[0]}`)
+}
 </script>
 
 <template>
   <UDashboardPanel id="utilisation-report">
     <template #header>
-      <UDashboardNavbar title="Asset Utilisation Report">
+      <UDashboardNavbar title="Asset Utilisation Report" :ui="{ right: 'gap-3' }">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
@@ -58,14 +63,15 @@ const _getScoreColor = (score: number) => {
             icon="i-lucide-refresh-cw"
             variant="ghost"
             color="neutral"
-            :loading="status === 'pending'"
-            @click="() => refresh()"
+            :loading="_status === 'pending'"
+            @click="() => _refresh()"
           />
           <UButton
             icon="i-lucide-download"
             label="Export"
             variant="soft"
             color="neutral"
+            @click="_exportReport"
           />
         </template>
       </UDashboardNavbar>

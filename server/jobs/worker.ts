@@ -1,5 +1,6 @@
 import { Worker } from 'bullmq'
 import { maintenanceSchedulerProcessor } from './maintenance-scheduler'
+import { documentExpiryCheckerProcessor } from './document-expiry-checker'
 import { maintenanceQueue } from './queue'
 
 const connection = {
@@ -8,29 +9,54 @@ const connection = {
 
 console.log('Starting worker...')
 
-const maintenanceWorker = new Worker('maintenance', maintenanceSchedulerProcessor, { connection })
+const worker = new Worker(
+  'maintenance',
+  async (job) => {
+    switch (job.name) {
+      case 'daily-maintenance':
+        await maintenanceSchedulerProcessor()
+        break
+      case 'daily-document-expiry':
+        await documentExpiryCheckerProcessor()
+        break
+      default:
+        console.warn(`Unknown job name: ${job.name}`)
+    }
+  },
+  { connection }
+)
 
-maintenanceWorker.on('completed', (job) => {
-  console.log(`Job ${job.id} has completed!`)
+worker.on('completed', (job) => {
+  console.log(`Job ${job.id} (${job.name}) has completed!`)
 })
 
-maintenanceWorker.on('failed', (job, err) => {
-  console.log(`Job ${job?.id} has failed with ${err.message}`)
+worker.on('failed', (job, err) => {
+  console.log(`Job ${job?.id} (${job?.name}) has failed with ${err.message}`)
 })
 
 async function setupRecurringJobs() {
-  // Remove existing repeatable jobs to avoid duplicates if pattern changes (optional but good practice)
-  // For now, just add. BullMQ handles deduplication by job ID/pattern usually.
   await maintenanceQueue.add(
-    'daily-check',
+    'daily-maintenance',
     {},
     {
       repeat: {
         pattern: '0 0 * * *' // Daily at midnight
-      }
+      },
+      jobId: 'daily-maintenance'
     }
   )
-  console.log('Scheduled daily maintenance check.')
+
+  await maintenanceQueue.add(
+    'daily-document-expiry',
+    {},
+    {
+      repeat: {
+        pattern: '0 1 * * *' // Daily at 1 AM
+      },
+      jobId: 'daily-document-expiry'
+    }
+  )
+  console.log('Scheduled recurring jobs.')
 }
 
 setupRecurringJobs()

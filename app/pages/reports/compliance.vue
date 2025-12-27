@@ -59,12 +59,16 @@ const _maintenanceCompliance = computed(() => {
       100
   )
 })
+function _exportReport() {
+  if (!report.value) return
+  exportToCSV(report.value.expiringCertifications, _certColumns, `compliance-expiring-certs-${new Date().toISOString().split('T')[0]}`)
+}
 </script>
 
 <template>
   <UDashboardPanel id="compliance-report">
     <template #header>
-      <UDashboardNavbar title="Compliance Report">
+      <UDashboardNavbar title="Compliance Report" :ui="{ right: 'gap-3' }">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
@@ -74,14 +78,15 @@ const _maintenanceCompliance = computed(() => {
             icon="i-lucide-refresh-cw"
             variant="ghost"
             color="neutral"
-            :loading="status === 'pending'"
-            @click="() => refresh()"
+            :loading="_status === 'pending'"
+            @click="() => _refresh()"
           />
           <UButton
             icon="i-lucide-download"
             label="Export"
             variant="soft"
             color="neutral"
+            @click="_exportReport"
           />
         </template>
       </UDashboardNavbar>
@@ -93,8 +98,8 @@ const _maintenanceCompliance = computed(() => {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <UPageCard title="Inspection Compliance" icon="i-lucide-shield-check">
             <div class="flex items-center gap-4">
-              <span class="text-3xl font-bold" :class="inspectionCompliance < 80 ? 'text-error' : 'text-success'">
-                {{ inspectionCompliance }}%
+              <span class="text-3xl font-bold" :class="_inspectionCompliance < 80 ? 'text-error' : 'text-success'">
+                {{ _inspectionCompliance }}%
               </span>
               <div class="text-xs text-dimmed">
                 {{ report.inspections.passed }} passed / {{ report.inspections.total }} total
@@ -103,8 +108,8 @@ const _maintenanceCompliance = computed(() => {
           </UPageCard>
           <UPageCard title="Maintenance Compliance" icon="i-lucide-calendar-check">
             <div class="flex items-center gap-4">
-              <span class="text-3xl font-bold" :class="maintenanceCompliance < 90 ? 'text-error' : 'text-success'">
-                {{ maintenanceCompliance }}%
+              <span class="text-3xl font-bold" :class="_maintenanceCompliance < 90 ? 'text-error' : 'text-success'">
+                {{ _maintenanceCompliance }}%
               </span>
               <div class="text-xs text-dimmed">
                 {{ report.maintenance.overdue }} overdue / {{ report.maintenance.total }} scheduled
@@ -119,7 +124,7 @@ const _maintenanceCompliance = computed(() => {
             <UIcon name="i-lucide-award" />
             Expiring Certifications (Next 30 Days)
           </h3>
-          <UTable :data="report.expiringCertifications" :columns="certColumns as any[]" class="bg-elevated/50 rounded-lg border border-default">
+          <UTable :data="report.expiringCertifications" :columns="_certColumns as any[]" class="bg-elevated/50 rounded-lg border border-default">
             <template #expiryDate-cell="{ row }">
               <span class="text-error font-medium">{{ new Date(row.original.expiryDate).toLocaleDateString() }}</span>
             </template>
@@ -129,7 +134,7 @@ const _maintenanceCompliance = computed(() => {
           </div>
         </div>
       </div>
-      <div v-else-if="status === 'pending'" class="flex items-center justify-center h-64">
+      <div v-else-if="_status === 'pending'" class="flex items-center justify-center h-64">
         <UIcon name="i-lucide-loader-2" class="w-8 h-8 animate-spin text-dimmed" />
       </div>
     </template>

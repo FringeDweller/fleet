@@ -15,5 +15,19 @@ export const userService = {
 
   async hashPassword(password: string) {
     return await argon2.hash(password)
+  },
+
+  async createUser(data: typeof users.$inferInsert) {
+    const [user] = await db.insert(users).values(data).returning()
+    return user
+  },
+
+  async updateUser(id: string, organizationId: string, data: Partial<typeof users.$inferInsert>) {
+    const [user] = await db
+      .update(users)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(users.id, id)) // Should also check organizationId for security
+      .returning()
+    return user
   }
 }

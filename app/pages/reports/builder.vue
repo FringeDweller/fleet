@@ -71,39 +71,44 @@ const _columns = computed(() => {
     label: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')
   }))
 })
+function _exportResults() {
+  if (results.value.length === 0) return
+  exportToCSV(results.value, _columns.value, `custom-report-${new Date().toISOString().split('T')[0]}`)
+}
 </script>
 
 <template>
   <UDashboardPanel id="report-builder">
     <template #header>
-      <UDashboardNavbar title="Custom Report Builder">
+      <UDashboardNavbar title="Custom Report Builder" :ui="{ right: 'gap-3' }">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
 
         <template #right>
           <UButton
-
             label="Run Report"
-
             icon="i-lucide-play"
-
             :loading="isExecuting"
-
-            @click="executeReport"
+            @click="_executeReport"
           />
 
           <UButton
-
             label="Save Report"
-
             icon="i-lucide-save"
-
             variant="soft"
-
+            color="neutral"
             :loading="isSaving"
+            @click="_saveReport"
+          />
 
-            @click="saveReport"
+          <UButton
+            v-if="results.length > 0"
+            icon="i-lucide-download"
+            label="Export"
+            variant="soft"
+            color="neutral"
+            @click="_exportResults"
           />
         </template>
       </UDashboardNavbar>
@@ -114,20 +119,18 @@ const _columns = computed(() => {
         <!-- Sidebar: Configuration -->
 
         <div class="col-span-12 lg:col-span-3 space-y-6 overflow-y-auto pb-20">
-          <UFormGroup label="Report Name">
+          <UFormField label="Report Name">
             <UInput v-model="definition.name" placeholder="Monthly Asset Usage" />
-          </UFormGroup>
+          </UFormField>
 
-          <UFormGroup label="Data Source">
+          <UFormField label="Data Source">
             <USelect
-
               v-model="definition.dataSource"
-
-              :options="dataSources"
+              :options="_dataSources"
             />
-          </UFormGroup>
+          </UFormField>
 
-          <div class="pt-4 border-t">
+          <div class="pt-4 border-t border-default">
             <h4 class="text-sm font-bold mb-4">
               Filters
             </h4>
@@ -141,7 +144,7 @@ const _columns = computed(() => {
         <!-- Main: Results Preview -->
 
         <div class="col-span-12 lg:col-span-9 bg-elevated/25 rounded-lg border border-default overflow-hidden flex flex-col">
-          <div class="p-4 border-b bg-elevated/50 flex justify-between items-center text-sm font-medium">
+          <div class="p-4 border-b border-default bg-elevated/50 flex justify-between items-center text-sm font-medium">
             <span>Results Preview</span>
 
             <span v-if="results.length > 0" class="text-dimmed">{{ results.length }} rows found</span>
@@ -149,12 +152,9 @@ const _columns = computed(() => {
 
           <div class="flex-1 overflow-auto">
             <UTable
-
               v-if="results.length > 0"
-
               :data="results"
-
-              :columns="columns as any[]"
+              :columns="_columns as any[]"
             />
 
             <div v-else class="flex flex-col items-center justify-center h-full text-dimmed space-y-4">

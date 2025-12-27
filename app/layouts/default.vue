@@ -211,6 +211,8 @@ const _groups = computed(() => [
 ])
 
 const { isNative: _isNative } = useCapacitor()
+const { isNotificationsSlideoverOpen: _isNotificationsSlideoverOpen } = useDashboard()
+const { unreadCount: _unreadCount } = useNotifications()
 const breakpoints = useBreakpoints(breakpointsTailwind)
 const _isMobile = breakpoints.smaller('lg')
 
@@ -281,7 +283,20 @@ onMounted(async () => {
       <template #header="{ collapsed }">
         <div class="flex items-center justify-between w-full min-w-0">
           <TeamsMenu :collapsed="collapsed" />
-          <PwaSyncStatus v-if="!collapsed" />
+          <div class="flex items-center gap-1">
+            <UButton
+              v-if="!collapsed"
+              color="neutral"
+              variant="ghost"
+              square
+              @click="_isNotificationsSlideoverOpen = true"
+            >
+              <UChip :text="_unreadCount" :show="_unreadCount > 0" color="error" inset size="md">
+                <UIcon name="i-lucide-bell" class="size-5 shrink-0" />
+              </UChip>
+            </UButton>
+            <PwaSyncStatus v-if="!collapsed" />
+          </div>
         </div>
       </template>
 
@@ -310,13 +325,13 @@ onMounted(async () => {
       </template>
     </UDashboardSidebar>
 
-    <UDashboardSearch :groups="groups" />
+    <UDashboardSearch :groups="_groups" />
 
     <slot />
 
     <UNavigationMenu
-      v-if="isNative || isMobile"
-      :items="mobileLinks"
+      v-if="_isNative || _isMobile"
+      :items="_mobileLinks"
       class="fixed bottom-0 left-0 right-0 lg:hidden bg-elevated/75 backdrop-blur border-t border-default px-4 pb-safe z-50"
       :ui="{ list: 'flex justify-around' }"
     />
