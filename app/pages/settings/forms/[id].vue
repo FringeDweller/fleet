@@ -8,14 +8,18 @@ const toast = useToast()
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const { data: form, refresh } = await useFetch<any>(`/api/settings/forms/${id}`)
 
+const { data: versions, refresh: refreshVersions } = await useFetch<any[]>(`/api/settings/forms/${id}/versions`)
+
 const items = [
   { label: 'Builder', icon: 'i-lucide-layout-template', slot: 'builder' },
   { label: 'Assignments', icon: 'i-lucide-link', slot: 'assignments' },
+  { label: 'Versions', icon: 'i-lucide-history', slot: 'versions' },
   { label: 'Submissions', icon: 'i-lucide-database', slot: 'submissions' }
 ]
 
 const formFields = ref<FormField[]>([])
 const isSaving = ref(false)
+const isPublishing = ref(false)
 const showPreview = ref(false)
 const showAssignModal = ref(false)
 const assignmentsList = ref()
@@ -36,20 +40,58 @@ watchEffect(() => {
 async function saveForm() {
   isSaving.value = true
   try {
-    await $fetch(`/api/settings/forms/${id}`, {
+    const res = await $fetch<any>(`/api/settings/forms/${id}`, {
       method: 'PUT',
       body: {
         schema: formFields.value,
         title: form.value?.title
       }
     })
-    toast.add({ title: 'Form saved successfully', color: 'success' })
-    refresh()
+    
+    if (res.id !== id) {
+      // New version was created (because we saved changes to a published form)
+      toast.add({ title: 'New draft version created', color: 'success' })
+      navigateTo(`/settings/forms/${res.id}`)
+    } else {
+      toast.add({ title: 'Form saved successfully', color: 'success' })
+      refresh()
+    }
   } catch (error) {
     console.error(error)
     toast.add({ title: 'Failed to save form', color: 'error' })
   } finally {
     isSaving.value = false
+  }
+}
+
+async function publishForm() {
+  isPublishing.value = true
+  try {
+    await $fetch(`/api/settings/forms/${id}/publish`, { method: 'POST' })
+    toast.add({ title: 'Form published successfully', color: 'success' })
+    refresh()
+    refreshVersions()
+  } catch (error) {
+    console.error(error)
+    toast.add({ title: 'Failed to publish form', color: 'error' })
+  } finally {
+    isPublishing.value = false
+  }
+}
+
+async function rollback(versionId: string) {
+  try {
+    await $fetch(`/api/settings/forms/${versionId}/rollback`, { method: 'POST' })
+    toast.add({ title: 'Rolled back to this version', color: 'success' })
+    if (versionId !== id) {
+      navigateTo(`/settings/forms/${versionId}`)
+    } else {
+      refresh()
+      refreshVersions()
+    }
+  } catch (error) {
+    console.error(error)
+    toast.add({ title: 'Failed to rollback', color: 'error' })
   }
 }
 
@@ -125,6 +167,15 @@ async function saveTitle() {
           @click="showPreview = true"
         />
         <UButton
+          v-if="form.status === 'draft'"
+          label="Publish"
+          icon="i-lucide-send"
+          color="success"
+          variant="soft"
+          :loading="isPublishing"
+          @click="publishForm"
+        />
+        <UButton
           label="Save Changes"
           icon="i-lucide-save"
           :loading="isSaving"
@@ -176,6 +227,58 @@ async function saveTitle() {
                 </div>
               </div>
             </UModal>
+          </div>
+        </template>
+
+        <template #versions>
+          <div class="p-6 max-w-4xl mx-auto w-full overflow-y-auto">
+            <h3 class="text-lg font-bold mb-4">
+              Form Versions
+            </h3>
+            <div class="space-y-4">
+              <div
+                v-for="v in versions"
+                :key="v.id"
+                class="p-4 border rounded-lg flex justify-between items-center bg-white dark:bg-gray-900"
+                :class="{ 'ring-2 ring-primary-500': v.id === id }"
+              >
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-bold">Version {{ v.version }}</span>
+                    <UBadge
+                      :color="v.status === 'published' ? 'success' : v.status === 'draft' ? 'neutral' : 'gray'"
+                      size="xs"
+                      variant="subtle"
+                    >
+                      {{ v.status }}
+                    </UBadge>
+                    <span v-if="v.id === id" class="text-xs text-primary-500 font-medium">(Current)</span>
+                  </div>
+                  <p class="text-xs text-dimmed mt-1">
+                    Updated {{ new Date(v.updatedAt).toLocaleString() }}
+                  </p>
+                </div>
+                <div class="flex gap-2">
+                  <UButton
+                    v-if="v.id !== id"
+                    label="View"
+                    size="xs"
+                    variant="ghost"
+                    icon="i-lucide-eye"
+                    :to="`/settings/forms/${v.id}`"
+                  />
+                  <UButton
+                    v-if="v.status !== 'published'"
+                    label="Rollback"
+                    size="xs"
+                    variant="soft"
+                    color="neutral"
+                    icon="i-lucide-rotate-ccw"
+                    @click="rollback(v.id)"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </template>
 

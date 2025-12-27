@@ -6,5 +6,5 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 403, message: 'Unauthorized' })
   }
 
-  return await formService.listForms(session.user.organizationId)
+  return await formService.listLatestForms(session.user.organizationId)
 })
