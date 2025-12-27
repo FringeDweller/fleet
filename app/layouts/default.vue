@@ -96,6 +96,12 @@ const links = [[{
     onSelect: () => {
       open.value = false
     }
+  }, {
+    label: 'Technician Performance',
+    to: '/reports/technician-performance',
+    onSelect: () => {
+      open.value = false
+    }
   }]
 }, {
   label: 'Settings',

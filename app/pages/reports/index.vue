@@ -15,6 +15,12 @@ const reports = [
     description: 'Detailed breakdown of labor and parts costs per asset.',
     icon: 'i-lucide-dollar-sign',
     to: '/reports/maintenance-costs'
+  },
+  {
+    title: 'Technician Performance',
+    description: 'Track work order completion rates and efficiency per technician.',
+    icon: 'i-lucide-user-check',
+    to: '/reports/technician-performance'
   }
 ]
 </script>

@@ -1,6 +1,6 @@
 import { eq, and, gte, lte, sql } from 'drizzle-orm'
 import { db } from '../utils/db'
-import { operatorSessions, assets, assetCategories, workOrders } from '../database/schema'
+import { operatorSessions, assets, assetCategories, workOrders, users } from '../database/schema'
 
 export interface AssetUtilisation {
   assetId: string
@@ -117,5 +117,33 @@ export const reportService = {
       partsCost: Number(r.partsCost || 0),
       totalCost: Number(r.totalCost || 0)
     })).sort((a, b) => b.totalCost - a.totalCost)
+  },
+
+  async getTechnicianPerformance(organizationId: string, range: { start: Date, end: Date }) {
+    const results = await db
+      .select({
+        technicianId: users.id,
+        technicianName: sql<string>`${users.firstName} || ' ' || ${users.lastName}`,
+        completedOrders: sql<number>`count(${workOrders.id})`,
+        avgCompletionTimeHrs: sql<number>`avg(extract(epoch from (${workOrders.updatedAt} - ${workOrders.createdAt})) / 3600)`,
+        totalLaborCost: sql<number>`sum(${workOrders.laborCost})`
+      })
+      .from(workOrders)
+      .innerJoin(users, eq(workOrders.assignedToId, users.id))
+      .where(and(
+        eq(workOrders.organizationId, organizationId),
+        eq(workOrders.status, 'completed'),
+        gte(workOrders.createdAt, range.start),
+        lte(workOrders.createdAt, range.end)
+      ))
+      .groupBy(users.id, users.firstName, users.lastName)
+
+    return results.map(r => ({
+      technicianId: r.technicianId,
+      technicianName: r.technicianName,
+      completedOrders: Number(r.completedOrders || 0),
+      avgCompletionTimeHrs: Number(r.avgCompletionTimeHrs || 0),
+      totalLaborCost: Number(r.totalLaborCost || 0)
+    })).sort((a, b) => b.completedOrders - a.completedOrders)
   }
 }
