@@ -40,6 +40,11 @@ const links = [
       to: '/settings/audit-logs'
     },
     {
+      label: 'Data Export',
+      icon: 'i-lucide-download',
+      to: '/settings/exports'
+    },
+    {
       label: 'Custom Forms',
       icon: 'i-lucide-file-text',
       to: '/settings/forms'
