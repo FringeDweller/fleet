@@ -65,7 +65,7 @@ export const useOperatorSession = () => {
           startLocationLng: null,
           endLocationLat: null,
           endLocationLng: null,
-          organizationId: (user.value as any)?.organizationId || '',
+          organizationId: user.value?.organizationId || '',
           status: 'active',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()

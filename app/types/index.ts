@@ -218,12 +218,12 @@ export interface Inspection {
   sessionId?: string | null
   status: 'passed' | 'failed' | 'pending'
   notes: string | null
-  data: Record<string, any>
-  checkpoints?: any[]
+  data: Record<string, unknown>
+  checkpoints?: unknown[]
   startTime?: string
   endTime?: string
-  location?: any
-  results?: any[]
+  location?: unknown
+  results?: unknown[]
   signatureUrl?: string
   organizationId: string
   createdAt: string
@@ -258,7 +258,7 @@ export interface Geofence {
   radius: string | null
   coordinates: { lat: number; lng: number }[] | null
   category: 'depot' | 'job_site' | 'restricted' | 'other'
-  activeHours: any | null
+  activeHours: unknown | null
   alertOnEntry: 'always' | 'never' | 'after_hours'
   alertOnExit: 'always' | 'never' | 'after_hours'
   organizationId: string
@@ -299,7 +299,7 @@ export interface FormAssignment {
   targetModule: string
   targetId: string | null
   targetName?: string
-  conditions: Record<string, any>
+  conditions: Record<string, unknown>
   organizationId: string
   createdAt: string
   updatedAt: string
@@ -310,7 +310,7 @@ export interface FormSubmission {
   formId: string
   targetModule: string
   targetId: string
-  data: Record<string, any>
+  data: Record<string, unknown>
   submittedBy: string
   organizationId: string
   createdAt: string

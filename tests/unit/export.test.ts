@@ -14,14 +14,14 @@ describe('exportToCSV', () => {
     global.URL.createObjectURL = createObjectURLMock
 
     // Mock Blob
-    let blobContent: string = ''
+    let blobContent = ''
     class MockBlob {
-      content: any
-      options: any
-      constructor(content: any[], options: any) {
+      content: unknown[]
+      options: unknown
+      constructor(content: unknown[], options: unknown) {
         this.content = content
         this.options = options
-        blobContent = content[0]
+        blobContent = content[0] as string
       }
     }
     vi.stubGlobal('Blob', MockBlob)
@@ -31,7 +31,7 @@ describe('exportToCSV', () => {
       setAttribute: vi.fn(),
       style: { visibility: '' },
       click: vi.fn()
-    } as any
+    } as unknown as HTMLAnchorElement
     const createElementSpy = vi.spyOn(document, 'createElement').mockReturnValue(linkMock)
     const appendChildSpy = vi.spyOn(document.body, 'appendChild').mockImplementation(() => linkMock)
     const removeChildSpy = vi.spyOn(document.body, 'removeChild').mockImplementation(() => linkMock)

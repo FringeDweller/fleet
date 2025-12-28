@@ -1,5 +1,5 @@
-import { and, eq, ilike, or, type SQL } from 'drizzle-orm'
-import { assets, inspections, parts, scheduledExports, users, workOrders } from '../database/schema'
+import { and, eq, ilike, or } from 'drizzle-orm'
+import { assets, inspections, parts, scheduledExports, workOrders } from '../database/schema'
 import { db } from '../utils/db'
 
 export interface ExportField {

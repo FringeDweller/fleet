@@ -1,4 +1,4 @@
-import { and, eq, type Table } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { assetLocations } from '../database/schema/asset-locations'
 import { assets } from '../database/schema/assets'
 import { parts } from '../database/schema/inventory'

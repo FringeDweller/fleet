@@ -54,7 +54,7 @@ export const usePushNotifications = () => {
   // Update badge count
   watch(
     unreadCount,
-    (count) => {
+    (_count) => {
       if (isNative.value) {
         PushNotifications.removeAllDeliveredNotifications() // Optional: clear notifications if desired
         // PushNotifications.setBadge({ count }) // Note: check plugin support for setBadge

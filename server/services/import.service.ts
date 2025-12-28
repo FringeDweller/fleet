@@ -137,7 +137,7 @@ class AssetImportHandler implements ImportHandler {
       return {
         created: 0,
         updated: 0,
-        errors: [{ row: 0, message: 'Batch insert failed: ' + e.message }]
+        errors: [{ row: 0, message: `Batch insert failed: ${e.message}` }]
       }
     }
   }

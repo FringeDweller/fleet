@@ -1,5 +1,5 @@
 export const logger = {
-  info: (message: string, meta?: Record<string, any>) => {
+  info: (message: string, meta?: Record<string, unknown>) => {
     if (process.env.NODE_ENV === 'production') {
       console.log(
         JSON.stringify({ level: 'info', message, timestamp: new Date().toISOString(), ...meta })
@@ -8,7 +8,7 @@ export const logger = {
       console.log(`[INFO] ${message}`, meta || '')
     }
   },
-  error: (message: string, error?: any, meta?: Record<string, any>) => {
+  error: (message: string, error?: unknown, meta?: Record<string, unknown>) => {
     if (process.env.NODE_ENV === 'production') {
       console.error(
         JSON.stringify({
@@ -24,7 +24,7 @@ export const logger = {
       console.error(`[ERROR] ${message}`, error, meta || '')
     }
   },
-  warn: (message: string, meta?: Record<string, any>) => {
+  warn: (message: string, meta?: Record<string, unknown>) => {
     if (process.env.NODE_ENV === 'production') {
       console.warn(
         JSON.stringify({ level: 'warn', message, timestamp: new Date().toISOString(), ...meta })

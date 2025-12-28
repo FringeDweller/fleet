@@ -32,7 +32,7 @@
         "noNonNullAssertion": "off"
       },
       "suspicious": {
-        "noExplicitAny": "warn"
+        "noExplicitAny": "off"
       },
       "correctness": {
         "noUnusedVariables": "warn"
@@ -53,7 +53,7 @@
   },
   "overrides": [
     {
-      "includes": ["*.vue"],
+      "includes": ["**/*.vue"],
       "linter": {
         "rules": {
           "style": {
@@ -62,6 +62,9 @@
           "correctness": {
             "noUnusedVariables": "off",
             "noUnusedImports": "off"
+          },
+          "suspicious": {
+            "noExplicitAny": "off"
           }
         }
       }

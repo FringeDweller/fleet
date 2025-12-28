@@ -1,4 +1,4 @@
-import { and, eq, type Table } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { assets, customReports, inspections, parts, users, workOrders } from '../database/schema'
 import { db } from '../utils/db'
 

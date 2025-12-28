@@ -18,7 +18,7 @@ const { data: fields } = await useFetch(() => `/api/import/fields?type=${selecte
 
 function onFileSelect(e: Event) {
   const target = e.target as HTMLInputElement
-  if (target.files && target.files[0]) {
+  if (target.files?.[0]) {
     file.value = target.files[0]
   }
 }

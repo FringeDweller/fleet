@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('Assets', () => {
   test.beforeEach(async ({ page }) => {
@@ -13,18 +13,18 @@ test.describe('Assets', () => {
   test('should list assets', async ({ page }) => {
     await page.goto('/assets')
     await expect(page.getByRole('heading', { name: 'Assets' })).toBeVisible()
-    
+
     // Check if table has data (assuming seeded data)
     await expect(page.getByRole('table')).toBeVisible()
   })
 
   test('should view asset details', async ({ page }) => {
     await page.goto('/assets')
-    
+
     // Click on the first asset link (assuming it exists)
     const firstAssetLink = page.locator('tbody tr').first().locator('a')
     await firstAssetLink.click()
-    
+
     // Should be on asset detail page
     await expect(page).toHaveURL(/\/assets\/.+/)
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()

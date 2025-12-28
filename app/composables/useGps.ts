@@ -34,9 +34,17 @@ export const useGps = () => {
     }
   }
 
-  const handleNewLocation = async (position: any) => {
+  const handleNewLocation = async (position: GeolocationPosition) => {
     const coords = position.coords
-    lastLocation.value = { ...coords }
+    lastLocation.value = {
+      latitude: coords.latitude,
+      longitude: coords.longitude,
+      speed: coords.speed,
+      heading: coords.heading,
+      altitude: coords.altitude,
+      accuracy: coords.accuracy,
+      altitudeAccuracy: coords.altitudeAccuracy
+    }
 
     // Only track if there's an active session
     if (!activeSession.value) return

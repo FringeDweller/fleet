@@ -26,7 +26,7 @@ export const usePreStartInspection = () => {
       checkpoints: [],
       data: {},
       notes: null,
-      organizationId: (user.value as any)?.organizationId || '',
+      organizationId: user.value?.organizationId || '',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     }
