@@ -964,9 +964,10 @@ All device features on mobile devices use Capacitor plugins exclusively:
 #### Unit Testing (Vitest) [TR-TST-01]
 - **Scope**: All business logic, server services, composables, and utility functions.
 - **Coverage**: Minimum 80% code coverage for core business logic and services.
+- **Pass Rate**: 100% pass rate required for all tests. No flaky or skipped tests allowed in production branch.
 - **Execution**: Automated via Vitest; must run on every commit and PR.
 - **Component Testing**: Critical UI components tested for state transitions and event emission.
-- **Acceptance Criteria Coverage**: Unit tests MUST be written for ALL acceptance criteria (REQ-*-AC-*) defined in this PRD.
+- **Acceptance Criteria Coverage**: Unit tests MUST be written for ALL acceptance criteria (REQ-*-AC-*) defined in this PRD where applicable.
 
 #### Type Checking [TR-TST-02]
 - **Scope**: Entire codebase (Frontend, Backend, and Shared Types).
@@ -981,8 +982,10 @@ All device features on mobile devices use Capacitor plugins exclusively:
 - **Bundle Analysis**: Performance monitoring of bundle sizes to prevent regression.
 
 #### End-to-End Testing (Playwright) [TR-TST-04]
-- **Scope**: Critical user journeys and high-risk workflows.
+- **Scope**: All user stories and acceptance criteria.
 - **Tooling**: Playwright.
+- **Coverage**: 100% E2E coverage required for all defined Acceptance Criteria (REQ-*-AC-*).
+- **Pass Rate**: 100% pass rate required for all E2E tests.
 - **Environments**: Cross-browser (Chromium, Firefox, WebKit) and Mobile emulation.
 - **Key Journeys**:
   - User authentication and role-based access control.
