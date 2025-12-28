@@ -1,6 +1,7 @@
 import { and, eq, getTableColumns, ilike, or, sql } from 'drizzle-orm'
 import { assetCategories, assets } from '../database/schema'
 import { db } from '../utils/db'
+import { decrypt, encrypt } from '../utils/encryption'
 
 export const assetService = {
   async listAssets(
@@ -23,9 +24,9 @@ export const assetService = {
         or(
           ilike(assets.assetNumber, search),
           ilike(assets.make, search),
-          ilike(assets.model, search),
-          ilike(assets.licensePlate, search),
-          ilike(assets.vin, search)
+          ilike(assets.model, search)
+          // ilike(assets.licensePlate, search), // Searching on encrypted fields won't work easily
+          // ilike(assets.vin, search)
         )!
       )
     }
@@ -45,8 +46,15 @@ export const assetService = {
       .offset(offset)
       .orderBy(assets.createdAt)
 
+    // Decrypt sensitive fields
+    const decryptedItems = items.map((item) => ({
+      ...item,
+      vin: item.vin ? decrypt(item.vin) : item.vin,
+      licensePlate: item.licensePlate ? decrypt(item.licensePlate) : item.licensePlate
+    }))
+
     return {
-      items,
+      items: decryptedItems,
       total: Number(totalResult?.count || 0)
     }
   },
@@ -61,11 +69,25 @@ export const assetService = {
       .leftJoin(assetCategories, eq(assets.categoryId, assetCategories.id))
       .where(and(eq(assets.id, id), eq(assets.organizationId, organizationId)))
       .limit(1)
-    return results[0]
+
+    const asset = results[0]
+    if (asset) {
+      return {
+        ...asset,
+        vin: asset.vin ? decrypt(asset.vin) : asset.vin,
+        licensePlate: asset.licensePlate ? decrypt(asset.licensePlate) : asset.licensePlate
+      }
+    }
+    return asset
   },
 
   async createAsset(data: typeof assets.$inferInsert) {
-    const [asset] = await db.insert(assets).values(data).returning()
+    const encryptedData = {
+      ...data,
+      vin: data.vin ? encrypt(data.vin) : data.vin,
+      licensePlate: data.licensePlate ? encrypt(data.licensePlate) : data.licensePlate
+    }
+    const [asset] = await db.insert(assets).values(encryptedData).returning()
     return asset
   },
 
