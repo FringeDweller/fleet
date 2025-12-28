@@ -1,5 +1,6 @@
 import { Worker } from 'bullmq'
 import { notificationService } from '../services/notification.service'
+import { logger } from '../utils/logger'
 import { documentExpiryCheckerProcessor } from './document-expiry-checker'
 import { maintenanceSchedulerProcessor } from './maintenance-scheduler'
 import { maintenanceQueue } from './queue'
@@ -14,7 +15,7 @@ let notificationWorker: Worker | null = null
 export async function startWorkers() {
   if (worker) return
 
-  console.log('Starting workers...')
+  logger.info('Starting workers...')
 
   worker = new Worker(
     'maintenance',
@@ -27,18 +28,18 @@ export async function startWorkers() {
           await documentExpiryCheckerProcessor()
           break
         default:
-          console.warn(`Unknown job name: ${job.name}`)
+          logger.warn(`Unknown job name: ${job.name}`)
       }
     },
     { connection }
   )
 
   worker.on('completed', (job) => {
-    console.log(`Job ${job.id} (${job.name}) has completed!`)
+    logger.info(`Job ${job.id} (${job.name}) has completed!`)
   })
 
   worker.on('failed', (job, err) => {
-    console.log(`Job ${job?.id} (${job?.name}) has failed with ${err.message}`)
+    logger.error(`Job ${job?.id} (${job?.name}) has failed`, err)
   })
 
   notificationWorker = new Worker(
@@ -52,26 +53,26 @@ export async function startWorkers() {
           await notificationService.processPushNotification(job.data.userId, job.data.payload)
           break
         default:
-          console.warn(`Unknown notification job name: ${job.name}`)
+          logger.warn(`Unknown notification job name: ${job.name}`)
       }
     },
     { connection }
   )
 
   notificationWorker.on('completed', (job) => {
-    console.log(`Notification Job ${job.id} (${job.name}) has completed!`)
+    logger.info(`Notification Job ${job.id} (${job.name}) has completed!`)
   })
 
   notificationWorker.on('failed', (job, err) => {
-    console.log(`Notification Job ${job?.id} (${job?.name}) has failed with ${err.message}`)
+    logger.error(`Notification Job ${job?.id} (${job?.name}) has failed`, err)
   })
 
   await setupRecurringJobs()
-  console.log('Workers started.')
+  logger.info('Workers started.')
 }
 
 export async function stopWorkers() {
-  console.log('Stopping workers...')
+  logger.info('Stopping workers...')
   if (worker) {
     await worker.close()
     worker = null
@@ -80,7 +81,7 @@ export async function stopWorkers() {
     await notificationWorker.close()
     notificationWorker = null
   }
-  console.log('Workers stopped.')
+  logger.info('Workers stopped.')
 }
 
 async function setupRecurringJobs() {
@@ -105,5 +106,5 @@ async function setupRecurringJobs() {
       jobId: 'daily-document-expiry'
     }
   )
-  console.log('Scheduled recurring jobs.')
+  logger.info('Scheduled recurring jobs.')
 }
