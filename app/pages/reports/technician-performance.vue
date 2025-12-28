@@ -51,7 +51,7 @@ const formatCurrency = (value: number) => {
 function _exportReport() {
   if (!_report.value) return
   exportToCSV(
-    _report.value,
+    _report.value as unknown as Record<string, unknown>[],
     columns,
     `tech-performance-report-${new Date().toISOString().split('T')[0]}`
   )

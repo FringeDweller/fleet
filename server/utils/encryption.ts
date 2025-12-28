@@ -23,6 +23,10 @@ export function decrypt(hash: string): string {
 
   const [ivHex, authTagHex, encryptedText] = parts
 
+  if (!ivHex || !authTagHex || !encryptedText) {
+    return hash
+  }
+
   const iv = Buffer.from(ivHex, 'hex')
   const authTag = Buffer.from(authTagHex, 'hex')
   const decipher = createDecipheriv(algorithm, key, iv)

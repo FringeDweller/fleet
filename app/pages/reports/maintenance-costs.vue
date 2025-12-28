@@ -82,7 +82,7 @@ const _totals = computed(() => {
 function _exportReport() {
   if (!report.value) return
   exportToCSV(
-    report.value,
+    report.value as unknown as Record<string, unknown>[],
     _columns,
     `maintenance-costs-report-${new Date().toISOString().split('T')[0]}`
   )

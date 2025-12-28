@@ -34,7 +34,7 @@ export const useGps = () => {
     }
   }
 
-  const handleNewLocation = async (position: GeolocationPosition) => {
+  const handleNewLocation = async (position: any) => {
     const coords = position.coords
     lastLocation.value = {
       latitude: coords.latitude,
