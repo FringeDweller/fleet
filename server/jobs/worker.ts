@@ -8,57 +8,80 @@ const connection = {
   url: process.env.REDIS_URL || 'redis://localhost:6379'
 }
 
-console.log('Starting worker...')
+let worker: Worker | null = null
+let notificationWorker: Worker | null = null
 
-const worker = new Worker(
-  'maintenance',
-  async (job) => {
-    switch (job.name) {
-      case 'daily-maintenance':
-        await maintenanceSchedulerProcessor()
-        break
-      case 'daily-document-expiry':
-        await documentExpiryCheckerProcessor()
-        break
-      default:
-        console.warn(`Unknown job name: ${job.name}`)
-    }
-  },
-  { connection }
-)
+export async function startWorkers() {
+  if (worker) return
 
-worker.on('completed', (job) => {
-  console.log(`Job ${job.id} (${job.name}) has completed!`)
-})
+  console.log('Starting workers...')
 
-worker.on('failed', (job, err) => {
-  console.log(`Job ${job?.id} (${job?.name}) has failed with ${err.message}`)
-})
+  worker = new Worker(
+    'maintenance',
+    async (job) => {
+      switch (job.name) {
+        case 'daily-maintenance':
+          await maintenanceSchedulerProcessor()
+          break
+        case 'daily-document-expiry':
+          await documentExpiryCheckerProcessor()
+          break
+        default:
+          console.warn(`Unknown job name: ${job.name}`)
+      }
+    },
+    { connection }
+  )
 
-const notificationWorker = new Worker(
-  'notifications',
-  async (job) => {
-    switch (job.name) {
-      case 'send-email':
-        await notificationService.processEmailNotification(job.data.userId, job.data.payload)
-        break
-      case 'send-push':
-        await notificationService.processPushNotification(job.data.userId, job.data.payload)
-        break
-      default:
-        console.warn(`Unknown notification job name: ${job.name}`)
-    }
-  },
-  { connection }
-)
+  worker.on('completed', (job) => {
+    console.log(`Job ${job.id} (${job.name}) has completed!`)
+  })
 
-notificationWorker.on('completed', (job) => {
-  console.log(`Notification Job ${job.id} (${job.name}) has completed!`)
-})
+  worker.on('failed', (job, err) => {
+    console.log(`Job ${job?.id} (${job?.name}) has failed with ${err.message}`)
+  })
 
-notificationWorker.on('failed', (job, err) => {
-  console.log(`Notification Job ${job?.id} (${job?.name}) has failed with ${err.message}`)
-})
+  notificationWorker = new Worker(
+    'notifications',
+    async (job) => {
+      switch (job.name) {
+        case 'send-email':
+          await notificationService.processEmailNotification(job.data.userId, job.data.payload)
+          break
+        case 'send-push':
+          await notificationService.processPushNotification(job.data.userId, job.data.payload)
+          break
+        default:
+          console.warn(`Unknown notification job name: ${job.name}`)
+      }
+    },
+    { connection }
+  )
+
+  notificationWorker.on('completed', (job) => {
+    console.log(`Notification Job ${job.id} (${job.name}) has completed!`)
+  })
+
+  notificationWorker.on('failed', (job, err) => {
+    console.log(`Notification Job ${job?.id} (${job?.name}) has failed with ${err.message}`)
+  })
+
+  await setupRecurringJobs()
+  console.log('Workers started.')
+}
+
+export async function stopWorkers() {
+  console.log('Stopping workers...')
+  if (worker) {
+    await worker.close()
+    worker = null
+  }
+  if (notificationWorker) {
+    await notificationWorker.close()
+    notificationWorker = null
+  }
+  console.log('Workers stopped.')
+}
 
 async function setupRecurringJobs() {
   await maintenanceQueue.add(
@@ -84,7 +107,3 @@ async function setupRecurringJobs() {
   )
   console.log('Scheduled recurring jobs.')
 }
-
-setupRecurringJobs()
-
-console.log('Worker started.')

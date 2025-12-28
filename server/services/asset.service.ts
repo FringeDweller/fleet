@@ -1,6 +1,6 @@
 import { and, eq, getTableColumns, ilike, or, sql } from 'drizzle-orm'
 import { assetCategories, assets } from '../database/schema'
-import { db } from '../utils/db'
+import { db, replica } from '../utils/db'
 import { decrypt, encrypt } from '../utils/encryption'
 
 export const assetService = {
@@ -33,12 +33,12 @@ export const assetService = {
 
     const whereClause = and(...whereConditions)
 
-    const [totalResult] = await db
+    const [totalResult] = await replica
       .select({ count: sql<number>`count(*)` })
       .from(assets)
       .where(whereClause)
 
-    const items = await db
+    const items = await replica
       .select()
       .from(assets)
       .where(whereClause)
