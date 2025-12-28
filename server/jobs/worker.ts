@@ -1,4 +1,5 @@
 import { Worker } from 'bullmq'
+import { notificationService } from '../services/notification.service'
 import { documentExpiryCheckerProcessor } from './document-expiry-checker'
 import { maintenanceSchedulerProcessor } from './maintenance-scheduler'
 import { maintenanceQueue } from './queue'
@@ -32,6 +33,31 @@ worker.on('completed', (job) => {
 
 worker.on('failed', (job, err) => {
   console.log(`Job ${job?.id} (${job?.name}) has failed with ${err.message}`)
+})
+
+const notificationWorker = new Worker(
+  'notifications',
+  async (job) => {
+    switch (job.name) {
+      case 'send-email':
+        await notificationService.processEmailNotification(job.data.userId, job.data.payload)
+        break
+      case 'send-push':
+        await notificationService.processPushNotification(job.data.userId, job.data.payload)
+        break
+      default:
+        console.warn(`Unknown notification job name: ${job.name}`)
+    }
+  },
+  { connection }
+)
+
+notificationWorker.on('completed', (job) => {
+  console.log(`Notification Job ${job.id} (${job.name}) has completed!`)
+})
+
+notificationWorker.on('failed', (job, err) => {
+  console.log(`Notification Job ${job?.id} (${job?.name}) has failed with ${err.message}`)
 })
 
 async function setupRecurringJobs() {

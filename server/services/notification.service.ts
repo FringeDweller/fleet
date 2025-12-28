@@ -1,5 +1,6 @@
 import { and, desc, eq } from 'drizzle-orm'
 import { notificationPreferences, notifications, pushTokens, users } from '../database/schema'
+import { notificationQueue } from '../jobs/queue'
 import { db } from '../utils/db'
 
 export const notificationService = {
@@ -93,13 +94,24 @@ export const notificationService = {
       link?: string
     }
   ) {
+    await notificationQueue.add('send-email', { userId, payload })
+  },
+
+  async processEmailNotification(
+    userId: string,
+    payload: {
+      subject: string
+      message: string
+      link?: string
+    }
+  ) {
     const user = await db.query.users.findFirst({
       where: eq(users.id, userId)
     })
 
     if (!user) return
 
-    console.log(`Sending email notification to user ${user.email}: ${payload.subject}`)
+    console.log(`Processing email notification for user ${user.email}: ${payload.subject}`)
 
     // In a real app, you would use nodemailer, sendgrid, postmark, etc.
     // const html = `
@@ -122,6 +134,17 @@ export const notificationService = {
       data?: Record<string, string>
     }
   ) {
+    await notificationQueue.add('send-push', { userId, payload })
+  },
+
+  async processPushNotification(
+    userId: string,
+    payload: {
+      title: string
+      body: string
+      data?: Record<string, string>
+    }
+  ) {
     const tokens = await db.query.pushTokens.findMany({
       where: eq(pushTokens.userId, userId)
     })
@@ -129,7 +152,7 @@ export const notificationService = {
     if (tokens.length === 0) return
 
     console.log(
-      `Sending push notification to user ${userId} (${tokens.length} devices): ${payload.title}`
+      `Processing push notification for user ${userId} (${tokens.length} devices): ${payload.title}`
     )
 
     // In a real app, you would use firebase-admin or similar here

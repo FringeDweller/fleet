@@ -25,7 +25,8 @@ export const geofenceEvents = pgTable(
     return {
       geofenceIdIdx: index('geofence_events_geofence_id_idx').on(table.geofenceId),
       assetIdIdx: index('geofence_events_asset_id_idx').on(table.assetId),
-      createdAtIdx: index('geofence_events_created_at_idx').on(table.createdAt)
+      createdAtIdx: index('geofence_events_created_at_idx').on(table.createdAt),
+      organizationIdx: index('geofence_events_organization_idx').on(table.organizationId)
     }
   }
 )

@@ -5,3 +5,4 @@ const connection = {
 }
 
 export const maintenanceQueue = new Queue('maintenance', { connection })
+export const notificationQueue = new Queue('notifications', { connection })
