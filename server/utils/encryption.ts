@@ -16,10 +16,12 @@ export function encrypt(text: string): string {
 }
 
 export function decrypt(hash: string): string {
-  const [ivHex, authTagHex, encryptedText] = hash.split(':')
-  if (!ivHex || !authTagHex || !encryptedText) {
-    return hash // Return as is if not in expected format (maybe already decrypted or legacy)
+  const parts = hash.split(':')
+  if (parts.length !== 3) {
+    return hash // Return as is if not in expected format
   }
+
+  const [ivHex, authTagHex, encryptedText] = parts
 
   const iv = Buffer.from(ivHex, 'hex')
   const authTag = Buffer.from(authTagHex, 'hex')

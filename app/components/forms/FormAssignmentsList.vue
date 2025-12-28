@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { format } from 'date-fns'
+import type { FormAssignment } from '~/types'
 
 const props = defineProps<{
   formId: string
 }>()
 
-const { data: assignments, refresh } = await useFetch<any[]>('/api/settings/forms/assignments', {
-  query: { formId: props.formId }
-})
+const { data: assignments, refresh } = await useFetch<FormAssignment[]>(
+  '/api/settings/forms/assignments',
+  {
+    query: { formId: props.formId }
+  }
+)
 
 defineExpose({ refresh })
 

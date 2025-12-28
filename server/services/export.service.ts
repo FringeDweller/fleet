@@ -1,6 +1,6 @@
 import { and, eq, ilike, or, type SQL } from 'drizzle-orm'
+import { assets, inspections, parts, scheduledExports, users, workOrders } from '../database/schema'
 import { db } from '../utils/db'
-import { assets, inspections, workOrders, users, parts, scheduledExports } from '../database/schema'
 
 export interface ExportField {
   key: string
@@ -51,7 +51,7 @@ class AssetExportHandler implements ExportHandler {
 
     if (!columns || columns.length === 0) return results
 
-    return results.map(row => {
+    return results.map((row) => {
       const filtered: any = {}
       for (const col of columns) {
         filtered[col] = (row as any)[col]
@@ -81,10 +81,7 @@ class WorkOrderExportHandler implements ExportHandler {
     if (filters?.q) {
       const search = `%${filters.q}%`
       whereConditions.push(
-        or(
-          ilike(workOrders.woNumber, search),
-          ilike(workOrders.description, search)
-        )!
+        or(ilike(workOrders.woNumber, search), ilike(workOrders.description, search))!
       )
     }
 
@@ -95,7 +92,7 @@ class WorkOrderExportHandler implements ExportHandler {
 
     if (!columns || columns.length === 0) return results
 
-    return results.map(row => {
+    return results.map((row) => {
       const filtered: any = {}
       for (const col of columns) {
         filtered[col] = (row as any)[col]
@@ -130,7 +127,7 @@ class InspectionExportHandler implements ExportHandler {
 
     if (!columns || columns.length === 0) return results
 
-    return results.map(row => {
+    return results.map((row) => {
       const filtered: any = {}
       for (const col of columns) {
         filtered[col] = (row as any)[col]
@@ -159,11 +156,7 @@ class InventoryExportHandler implements ExportHandler {
     if (filters?.q) {
       const search = `%${filters.q}%`
       whereConditions.push(
-        or(
-          ilike(parts.sku, search),
-          ilike(parts.name, search),
-          ilike(parts.description, search)
-        )!
+        or(ilike(parts.sku, search), ilike(parts.name, search), ilike(parts.description, search))!
       )
     }
 
@@ -174,7 +167,7 @@ class InventoryExportHandler implements ExportHandler {
 
     if (!columns || columns.length === 0) return results
 
-    return results.map(row => {
+    return results.map((row) => {
       const filtered: any = {}
       for (const col of columns) {
         filtered[col] = (row as any)[col]
@@ -215,4 +208,3 @@ export const exportService = {
     return result
   }
 }
-

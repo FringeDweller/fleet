@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
+import { assetCategories, assets } from '../database/schema'
 import { db } from '../utils/db'
-import { assets, assetCategories } from '../database/schema'
 
 export interface ImportField {
   key: string
@@ -22,7 +22,10 @@ export interface ImportResult {
 
 export interface ImportHandler {
   getFields(): ImportField[]
-  validate(rows: Record<string, any>[], organizationId: string): Promise<{ validRows: any[], invalidRows: any[], errors: ImportError[] }>
+  validate(
+    rows: Record<string, any>[],
+    organizationId: string
+  ): Promise<{ validRows: any[]; invalidRows: any[]; errors: ImportError[] }>
   execute(validRows: any[], organizationId: string): Promise<ImportResult>
 }
 
@@ -33,7 +36,12 @@ class AssetImportHandler implements ImportHandler {
       { key: 'make', label: 'Make', required: true },
       { key: 'model', label: 'Model', required: true },
       { key: 'year', label: 'Year', required: true },
-      { key: 'category', label: 'Category Name', required: true, description: 'Must match an existing category' },
+      {
+        key: 'category',
+        label: 'Category Name',
+        required: true,
+        description: 'Must match an existing category'
+      },
       { key: 'vin', label: 'VIN', required: false },
       { key: 'licensePlate', label: 'License Plate', required: false },
       { key: 'status', label: 'Status', required: false },
@@ -42,21 +50,27 @@ class AssetImportHandler implements ImportHandler {
     ]
   }
 
-  async validate(rows: Record<string, any>[], organizationId: string): Promise<{ validRows: any[], invalidRows: any[], errors: ImportError[] }> {
+  async validate(
+    rows: Record<string, any>[],
+    organizationId: string
+  ): Promise<{ validRows: any[]; invalidRows: any[]; errors: ImportError[] }> {
     const errors: ImportError[] = []
     const validRows: any[] = []
     const invalidRows: any[] = []
 
     // Fetch categories for lookup
-    const categories = await db.select().from(assetCategories).where(eq(assetCategories.organizationId, organizationId))
-    const categoryMap = new Map(categories.map(c => [c.name.toLowerCase(), c.id]))
-    
+    const categories = await db
+      .select()
+      .from(assetCategories)
+      .where(eq(assetCategories.organizationId, organizationId))
+    const categoryMap = new Map(categories.map((c) => [c.name.toLowerCase(), c.id]))
+
     // Fetch existing asset numbers to minimize DB constraint errors
     // Note: Schema has global unique on assetNumber, but realistically we check within org first.
     // If strict global unique is required, we should check global.
     // For now assuming we just want to avoid obvious dupes.
     const existingAssets = await db.select({ assetNumber: assets.assetNumber }).from(assets)
-    const existingAssetNumbers = new Set(existingAssets.map(a => a.assetNumber.toLowerCase()))
+    const existingAssetNumbers = new Set(existingAssets.map((a) => a.assetNumber.toLowerCase()))
 
     for (const [i, row] of rows.entries()) {
       const rowErrors: string[] = []
@@ -71,7 +85,7 @@ class AssetImportHandler implements ImportHandler {
 
       // Uniqueness check
       if (row.assetNumber && existingAssetNumbers.has(String(row.assetNumber).toLowerCase())) {
-         rowErrors.push(`Asset Number '${row.assetNumber}' already exists`)
+        rowErrors.push(`Asset Number '${row.assetNumber}' already exists`)
       }
 
       // Category lookup
@@ -97,7 +111,7 @@ class AssetImportHandler implements ImportHandler {
   async execute(validRows: any[], organizationId: string): Promise<ImportResult> {
     if (validRows.length === 0) return { created: 0, updated: 0, errors: [] }
 
-    const records = validRows.map(row => ({
+    const records = validRows.map((row) => ({
       organizationId,
       assetNumber: String(row.assetNumber),
       make: String(row.make),
@@ -113,14 +127,18 @@ class AssetImportHandler implements ImportHandler {
 
     // Batch insert
     try {
-        await db.insert(assets).values(records)
-        return { created: records.length, updated: 0, errors: [] }
+      await db.insert(assets).values(records)
+      return { created: records.length, updated: 0, errors: [] }
     } catch (e: any) {
-        console.error('Bulk insert failed', e)
-        // If one fails in a batch, all fail. 
-        // We could switch to one-by-one or ON CONFLICT DO NOTHING but requirement implies "Import with error report".
-        // For now, fail the batch.
-        return { created: 0, updated: 0, errors: [{ row: 0, message: 'Batch insert failed: ' + e.message }] }
+      console.error('Bulk insert failed', e)
+      // If one fails in a batch, all fail.
+      // We could switch to one-by-one or ON CONFLICT DO NOTHING but requirement implies "Import with error report".
+      // For now, fail the batch.
+      return {
+        created: 0,
+        updated: 0,
+        errors: [{ row: 0, message: 'Batch insert failed: ' + e.message }]
+      }
     }
   }
 }

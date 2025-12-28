@@ -69,6 +69,15 @@ bun run lint:fix
 
 # Type check
 bun run typecheck
+
+# Run unit tests
+bun run test
+
+# Run E2E tests (requires dev server running)
+bun run test:e2e
+
+# Install Playwright browsers (if needed)
+npx playwright install
 ```
 
 ## Development Conventions

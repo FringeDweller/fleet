@@ -45,7 +45,7 @@ export const useAssets = () => {
   }
 
   const fetchCategories = async () => {
-    categories.value = await $fetch('/api/assets/categories')
+    categories.value = await $fetch<AssetCategory[]>('/api/assets/categories')
   }
 
   return {

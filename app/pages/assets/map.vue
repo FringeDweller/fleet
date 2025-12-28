@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { AssetLocation, Geofence } from '~/types'
+
 definePageMeta({
   middleware: 'auth'
 })
@@ -7,9 +9,9 @@ const {
   data: locations,
   refresh: refreshLocations,
   status: loadStatus
-} = await useFetch<any[]>('/api/assets/locations/latest')
+} = await useFetch<AssetLocation[]>('/api/assets/locations/latest')
 
-const { data: geofences } = await useFetch<any[]>('/api/geofences')
+const { data: geofences } = await useFetch<Geofence[]>('/api/geofences')
 
 const refresh = () => {
   refreshLocations()

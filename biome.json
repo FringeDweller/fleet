@@ -58,6 +58,10 @@
         "rules": {
           "style": {
             "useSelfClosingElements": "off"
+          },
+          "correctness": {
+            "noUnusedVariables": "off",
+            "noUnusedImports": "off"
           }
         }
       }

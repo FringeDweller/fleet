@@ -10,7 +10,7 @@ const types = [
 
 const selectedType = ref('assets')
 const searchQuery = ref('')
-const availableFields = ref<{ key: string, label: string }[]>([])
+const availableFields = ref<{ key: string; label: string }[]>([])
 const selectedFields = ref<string[]>([])
 const isExporting = ref(false)
 const isScheduling = ref(false)
@@ -26,9 +26,11 @@ const exportName = ref('')
 
 async function fetchFields() {
   try {
-    const fields = await $fetch<{ key: string, label: string }[]>(`/api/settings/exports/fields?type=${selectedType.value}`)
+    const fields = await $fetch<{ key: string; label: string }[]>(
+      `/api/settings/exports/fields?type=${selectedType.value}`
+    )
     availableFields.value = fields
-    selectedFields.value = fields.map(f => f.key)
+    selectedFields.value = fields.map((f) => f.key)
     exportName.value = `${selectedType.value} Export`
   } catch (err) {
     console.error(err)
@@ -67,11 +69,15 @@ async function handleExport() {
     })
 
     const columnsForCSV = availableFields.value
-      .filter(f => selectedFields.value.includes(f.key))
-      .map(f => ({ key: f.key, header: f.label }))
+      .filter((f) => selectedFields.value.includes(f.key))
+      .map((f) => ({ key: f.key, header: f.label }))
 
-    exportToCSV(data, columnsForCSV, `${selectedType.value}-export-${new Date().toISOString().split('T')[0]}`)
-    
+    exportToCSV(
+      data,
+      columnsForCSV,
+      `${selectedType.value}-export-${new Date().toISOString().split('T')[0]}`
+    )
+
     toast.add({ title: 'Export successful', color: 'success' })
   } catch (err) {
     console.error(err)
@@ -99,7 +105,7 @@ async function handleSchedule() {
         schedule: selectedSchedule.value
       }
     })
-    
+
     toast.add({ title: 'Export scheduled successfully', color: 'success' })
     fetchScheduledExports()
   } catch (err) {
@@ -114,7 +120,7 @@ function toggleAll() {
   if (selectedFields.value.length === availableFields.value.length) {
     selectedFields.value = []
   } else {
-    selectedFields.value = availableFields.value.map(f => f.key)
+    selectedFields.value = availableFields.value.map((f) => f.key)
   }
 }
 </script>

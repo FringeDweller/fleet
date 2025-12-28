@@ -1,7 +1,12 @@
 <script setup lang="ts">
-const { data: lowStockParts, status } = await useFetch<any>('/api/inventory/parts', {
-  query: { lowStock: 'true', limit: 5 }
-})
+import type { Part } from '~/types'
+
+const { data: lowStockParts, status } = await useFetch<{ items: Part[]; total: number }>(
+  '/api/inventory/parts',
+  {
+    query: { lowStock: 'true', limit: 5 }
+  }
+)
 
 const pending = computed(() => status.value === 'pending')
 </script>

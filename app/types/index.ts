@@ -98,6 +98,7 @@ export interface Asset {
   currentHours: string | null
   createdAt: string
   updatedAt: string
+  categoryName?: string
 }
 
 export interface AssetCategory {
@@ -224,6 +225,93 @@ export interface Inspection {
   location?: any
   results?: any[]
   signatureUrl?: string
+  organizationId: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface AssetLocation {
+  id: string
+  assetId: string
+  sessionId: string | null
+  latitude: string
+  longitude: string
+  speed: string | null
+  heading: string | null
+  altitude: string | null
+  organizationId: string
+  hlc: string | null
+  createdAt: string
+  assetNumber: string
+  assetMake: string
+  assetModel: string
+  assetStatus: string | null
+}
+
+export interface Geofence {
+  id: string
+  name: string
+  description: string | null
+  type: 'circle' | 'polygon'
+  centerLat: string | null
+  centerLng: string | null
+  radius: string | null
+  coordinates: { lat: number; lng: number }[] | null
+  category: 'depot' | 'job_site' | 'restricted' | 'other'
+  activeHours: any | null
+  alertOnEntry: 'always' | 'never' | 'after_hours'
+  alertOnExit: 'always' | 'never' | 'after_hours'
+  organizationId: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface Document {
+  id: string
+  name: string
+  mimeType: string
+  size: number
+  url: string
+  categoryId: string | null
+  expiryDate: string | null
+  version: number
+  rootId: string | null
+  isLatest: boolean
+  organizationId: string
+  createdBy: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface DocumentCategory {
+  id: string
+  name: string
+  slug: string
+  parentId: string | null
+  organizationId: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface FormAssignment {
+  id: string
+  formId: string
+  targetModule: string
+  targetId: string | null
+  targetName?: string
+  conditions: Record<string, any>
+  organizationId: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface FormSubmission {
+  id: string
+  formId: string
+  targetModule: string
+  targetId: string
+  data: Record<string, any>
+  submittedBy: string
   organizationId: string
   createdAt: string
   updatedAt: string

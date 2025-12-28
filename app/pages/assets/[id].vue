@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import type { Asset, Part } from '~/types'
+
 const route = useRoute()
 const assetId = route.params.id as string
 
-const { data: asset, status } = await useFetch<any>(`/api/assets/${assetId}`)
-const { data: compatibleParts, status: partsStatus } = await useFetch<any[]>(
+const { data: asset, status } = await useFetch<Asset>(`/api/assets/${assetId}`)
+const { data: compatibleParts, status: partsStatus } = await useFetch<Part[]>(
   `/api/inventory/compatibility/asset/${assetId}`
 )
 

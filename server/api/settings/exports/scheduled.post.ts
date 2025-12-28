@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event)
-  
+
   return await exportService.createScheduledExport({
     ...body,
     organizationId: session.user.organizationId,

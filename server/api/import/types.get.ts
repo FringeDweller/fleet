@@ -1,5 +1,3 @@
 export default defineEventHandler(() => {
-  return [
-    { id: 'assets', label: 'Assets' }
-  ]
+  return [{ id: 'assets', label: 'Assets' }]
 })

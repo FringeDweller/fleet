@@ -1,4 +1,10 @@
-const { data: _categories } = await useFetch<any[]>('/api/documents/categories')
+<script setup lang="ts">
+import type { DocumentCategory } from '~/types'
+
+const { data: _categories } = await useFetch<DocumentCategory[]>('/api/documents/categories')
+
+const toast = useToast()
+const emit = defineEmits(['uploaded'])
 
 const _fileInput = ref<HTMLInputElement | null>(null)
 const selectedFile = ref<File | null>(null)
@@ -109,7 +115,7 @@ function _handleDrop(e: DragEvent) {
 
     <div class="flex justify-end gap-2">
       <UButton label="Cancel" variant="ghost" @click="$emit('uploaded')" />
-      <UButton label="Start Upload" icon="i-lucide-upload" :loading="isUploading" :disabled="!selectedFile" @click="uploadFile" />
+      <UButton label="Start Upload" icon="i-lucide-upload" :loading="isUploading" :disabled="!selectedFile" @click="_uploadFile" />
     </div>
   </div>
 </template>

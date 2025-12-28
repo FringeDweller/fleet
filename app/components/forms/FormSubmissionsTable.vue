@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { FormSubmission } from '~/types'
 import type { FormField } from '../../../types/form-builder'
 
 const props = defineProps<{
@@ -6,7 +7,7 @@ const props = defineProps<{
   schema: FormField[]
 }>()
 
-const { data: submissions } = await useFetch<Record<string, unknown>[]>(`/api/forms/submissions`, {
+const { data: submissions } = await useFetch<FormSubmission[]>(`/api/forms/submissions`, {
   query: { formId: props.formId }
 })
 
@@ -37,13 +38,12 @@ function exportToCSV() {
     .map((sub) => {
       return columns.value
         .map((col) => {
-          if (col.accessorKey === 'createdAt')
-            return new Date(sub.createdAt as string).toLocaleString()
+          if (col.accessorKey === 'createdAt') return new Date(sub.createdAt).toLocaleString()
           if (col.accessorKey === 'targetModule') return sub.targetModule
           if (col.accessorKey === 'submittedBy') return sub.submittedBy
           if (col.accessorKey.startsWith('data.')) {
             const key = col.accessorKey.split('.')[1] as string
-            return `"${(sub.data as Record<string, unknown>)?.[key] || ''}"`
+            return `"${sub.data?.[key] || ''}"`
           }
           return ''
         })
@@ -60,10 +60,10 @@ function exportToCSV() {
   link.click()
 }
 
-const selectedSubmission = ref<Record<string, unknown> | null>(null)
+const selectedSubmission = ref<FormSubmission | null>(null)
 const showModal = ref(false)
 
-function viewDetail(sub: Record<string, unknown>) {
+function viewDetail(sub: FormSubmission) {
   selectedSubmission.value = sub
   showModal.value = true
 }
@@ -83,18 +83,18 @@ function viewDetail(sub: Record<string, unknown>) {
       />
     </div>
 
-    <UTable :data="(submissions as any[]) || []" :columns="(columns as any[])">
+    <UTable :data="submissions || []" :columns="columns">
       <template #createdAt-cell="{ row }">
-        {{ new Date((row as any).createdAt).toLocaleDateString() }}
+        {{ new Date(row.original.createdAt).toLocaleDateString() }}
       </template>
       <template #actions-cell="{ row }">
-        <UButton icon="i-lucide-eye" variant="ghost" @click="viewDetail(row as any)" />
+        <UButton icon="i-lucide-eye" variant="ghost" @click="viewDetail(row.original)" />
       </template>
 
       <!-- Dynamic data columns -->
-      <template v-for="col in (columns as any[]).filter((c: any) => c.accessorKey.startsWith('data.'))" :key="col.accessorKey" #[`${col.accessorKey}-cell`]="{ row }: any">
+      <template v-for="col in columns.filter((c) => c.accessorKey.startsWith('data.'))" :key="col.accessorKey" #[`${col.accessorKey}-cell`]="{ row }">
         <span class="truncate max-w-[150px] inline-block">
-          {{ (row as any).data?.[col.accessorKey.split('.')[1]] }}
+          {{ (row.original as FormSubmission).data?.[col.accessorKey.split('.')[1] || ''] }}
         </span>
       </template>
     </UTable>
@@ -120,7 +120,7 @@ function viewDetail(sub: Record<string, unknown>) {
             </div>
             <div v-else class="flex flex-col gap-1 border-b border-default pb-2">
               <span class="text-[10px] text-dimmed uppercase font-bold tracking-wider">{{ field.label }}</span>
-              <span class="text-sm whitespace-pre-wrap">{{ (selectedSubmission.data as Record<string, any>)[field.key] || '-' }}</span>
+              <span class="text-sm whitespace-pre-wrap">{{ (selectedSubmission.data as Record<string, unknown>)[field.key] || '-' }}</span>
             </div>
           </div>
         </div>

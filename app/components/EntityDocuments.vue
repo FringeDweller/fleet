@@ -1,13 +1,15 @@
 <script setup lang="ts">
+import type { Document } from '~/types'
+
 const props = defineProps<{
   entityType: string
   entityId: string
 }>()
 
-const { data: documents, refresh } = await useFetch<any[]>(
+const { data: documents, refresh } = await useFetch<Document[]>(
   `/api/documents/links/${props.entityType}/${props.entityId}`
 )
-const { data: allDocuments } = await useFetch<any[]>('/api/documents')
+const { data: allDocuments } = await useFetch<Document[]>('/api/documents')
 
 const isLinkModalOpen = ref(false)
 const selectedDocId = ref<string | null>(null)

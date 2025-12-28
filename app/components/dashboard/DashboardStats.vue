@@ -5,18 +5,20 @@ const props = defineProps<{
   range: Range
 }>()
 
-const { data: _stats, status } = await useAsyncData<Stat[]>(
+const {
+  data: _stats,
+  status,
+  refresh
+} = await useAsyncData(
   'dashboard-stats',
   () => {
     const params = new URLSearchParams()
-    if (props.range.start) params.append('start', props.range.start.toISOString())
-    if (props.range.end) params.append('end', props.range.end.toISOString())
-
-    return $fetch(`/api/dashboard/stats?${params.toString()}`)
+    if (props.range?.start) params.append('start', props.range.start.toISOString())
+    if (props.range?.end) params.append('end', props.range.end.toISOString())
+    return $fetch<Stat[]>(`/api/dashboard/stats?${params.toString()}`)
   },
   {
-    watch: [() => props.range],
-    default: () => []
+    watch: [() => props.range]
   }
 )
 

@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import type { Inspection } from '~/types'
+
 const route = useRoute()
 const id = route.params.id as string
 
-const { data: inspection, status } = await useFetch<any>(`/api/inspections/${id}`)
+const { data: inspection, status } = await useFetch<Inspection>(`/api/inspections/${id}`)
 
 const pending = computed(() => status.value === 'pending')
 

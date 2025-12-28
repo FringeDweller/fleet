@@ -1,15 +1,17 @@
 <script setup lang="ts">
+import type { Document, DocumentCategory } from '~/types'
+
 const selectedCategoryId = ref<string | 'all'>('all')
 const searchQuery = ref('')
 
-const { data: documents, refresh } = await useFetch<any[]>('/api/documents', {
+const { data: documents, refresh } = await useFetch<Document[]>('/api/documents', {
   query: computed(() => ({
     categoryId: selectedCategoryId.value === 'all' ? undefined : selectedCategoryId.value,
     search: searchQuery.value || undefined
   }))
 })
 
-const { data: categories, refresh: refreshCategories } = await useFetch<any[]>(
+const { data: categories, refresh: refreshCategories } = await useFetch<DocumentCategory[]>(
   '/api/documents/categories'
 )
 
@@ -29,15 +31,15 @@ const columns = [
 ]
 
 const isVersionModalOpen = ref(false)
-const selectedDocForVersions = ref<any>(null)
-const { data: versions, refresh: refreshVersions } = await useFetch<any[]>(
+const selectedDocForVersions = ref<Document | null>(null)
+const { data: versions, refresh: refreshVersions } = await useFetch<Document[]>(
   () =>
     selectedDocForVersions.value
       ? `/api/documents/${selectedDocForVersions.value.id}/versions`
       : '/api/documents' // Fallback to avoid null
 )
 
-function showVersions(doc: any) {
+function showVersions(doc: Document) {
   selectedDocForVersions.value = doc
   isVersionModalOpen.value = true
 }
@@ -135,7 +137,7 @@ const categoryOptions = computed(() => {
           </div>
         </template>
         <template #categoryId-cell="{ row }">
-          <span class="text-sm text-gray-500">{{ categoryMap[row.original.categoryId] || '-' }}</span>
+          <span class="text-sm text-gray-500">{{ row.original.categoryId ? categoryMap[row.original.categoryId] : '-' }}</span>
         </template>
         <template #size-cell="{ row }">
           {{ formatSize(row.original.size) }}

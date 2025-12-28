@@ -9,8 +9,8 @@ const file = ref<File | null>(null)
 const parsedData = ref<any[]>([])
 const csvHeaders = ref<string[]>([])
 const fieldMapping = ref<Record<string, string>>({}) // System Field Key -> CSV Header
-const validationResult = ref<{ validRows: any[], invalidRows: any[], errors: any[] } | null>(null)
-const importResult = ref<{ created: number, updated: number, errors: any[] } | null>(null)
+const validationResult = ref<{ validRows: any[]; invalidRows: any[]; errors: any[] } | null>(null)
+const importResult = ref<{ created: number; updated: number; errors: any[] } | null>(null)
 const isProcessing = ref(false)
 
 const { data: importTypes } = await useFetch('/api/import/types')
@@ -25,7 +25,7 @@ function onFileSelect(e: Event) {
 
 function parseFile() {
   if (!file.value) return
-  
+
   isProcessing.value = true
   Papa.parse(file.value, {
     header: true,
@@ -47,10 +47,13 @@ function parseFile() {
 function autoMap() {
   if (!fields.value) return
   const mapping: Record<string, string> = {}
-  
-  fields.value.forEach(field => {
+
+  fields.value.forEach((field) => {
     // Try exact match then fuzzy
-    const match = csvHeaders.value.find(h => h.toLowerCase() === field.label.toLowerCase() || h.toLowerCase() === field.key.toLowerCase())
+    const match = csvHeaders.value.find(
+      (h) =>
+        h.toLowerCase() === field.label.toLowerCase() || h.toLowerCase() === field.key.toLowerCase()
+    )
     if (match) {
       mapping[field.key] = match
     }
@@ -60,7 +63,7 @@ function autoMap() {
 
 function downloadTemplate() {
   if (!fields.value) return
-  const headers = fields.value.map(f => f.key) 
+  const headers = fields.value.map((f) => f.key)
   const csv = Papa.unparse([headers])
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
   const link = document.createElement('a')
@@ -71,7 +74,7 @@ function downloadTemplate() {
 
 async function validateData() {
   // Transform data based on mapping
-  const mappedRows = parsedData.value.map(row => {
+  const mappedRows = parsedData.value.map((row) => {
     const newRow: Record<string, any> = {}
     for (const [sysKey, csvHeader] of Object.entries(fieldMapping.value)) {
       if (csvHeader) {
@@ -98,7 +101,7 @@ async function validateData() {
 
 async function executeImport() {
   if (!validationResult.value) return
-  
+
   isProcessing.value = true
   try {
     const res = await $fetch('/api/import/execute', {
