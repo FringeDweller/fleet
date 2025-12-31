@@ -1,6 +1,7 @@
 import { and, eq, ilike, or } from 'drizzle-orm'
 import { assets, inspections, parts, scheduledExports, workOrders } from '../database/schema'
 import { db } from '../utils/db'
+import { decrypt } from '../utils/encryption'
 
 export interface ExportField {
   key: string
@@ -37,9 +38,10 @@ class AssetExportHandler implements ExportHandler {
         or(
           ilike(assets.assetNumber, search),
           ilike(assets.make, search),
-          ilike(assets.model, search),
-          ilike(assets.licensePlate, search),
-          ilike(assets.vin, search)
+          ilike(assets.model, search)
+          // Encryption makes ilike searching hard on these fields without a blind index
+          // ilike(assets.licensePlate, search),
+          // ilike(assets.vin, search)
         )!
       )
     }
@@ -49,9 +51,16 @@ class AssetExportHandler implements ExportHandler {
       .from(assets)
       .where(and(...whereConditions))
 
-    if (!columns || columns.length === 0) return results
+    // Decrypt sensitive fields
+    const decryptedResults = results.map((row) => ({
+      ...row,
+      vin: row.vin ? decrypt(row.vin) : row.vin,
+      licensePlate: row.licensePlate ? decrypt(row.licensePlate) : row.licensePlate
+    }))
 
-    return results.map((row) => {
+    if (!columns || columns.length === 0) return decryptedResults
+
+    return decryptedResults.map((row) => {
       const filtered: any = {}
       for (const col of columns) {
         filtered[col] = (row as any)[col]

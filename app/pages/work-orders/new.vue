@@ -1,5 +1,7 @@
 <script setup lang="ts">
 const { data: assets } = await useFetch<{ items: Record<string, unknown>[] }>('/api/assets')
+const toast = useToast()
+const loading = ref(false)
 
 const state = reactive({
   assetId: undefined,
@@ -16,15 +18,35 @@ const priorityOptions = [
 ]
 
 const assetOptions = computed(() => {
-  return (assets.value?.items || []).map((a: Record<string, unknown>) => ({
+  return (assets.value?.items || []).map((a: any) => ({
     label: `${a.assetNumber} - ${a.make} ${a.model}`,
     value: a.id
   }))
 })
 
 const onSubmit = async () => {
-  // TODO: Implement create API
-  console.log('Create WO', state)
+  loading.value = true
+  try {
+    await $fetch('/api/work-orders', {
+      method: 'POST',
+      body: state
+    })
+    toast.add({
+      title: 'Success',
+      description: 'Work order created successfully',
+      color: 'success'
+    })
+    await navigateTo('/work-orders')
+  } catch (err: unknown) {
+    const error = err as { data?: { message?: string } }
+    toast.add({
+      title: 'Error',
+      description: error.data?.message || 'Failed to create work order',
+      color: 'error'
+    })
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
@@ -37,32 +59,33 @@ const onSubmit = async () => {
     </div>
 
     <UForm :state="state" class="space-y-4" @submit="onSubmit">
-      <UFormGroup label="Asset" name="assetId" required>
-        <USelectMenu
+      <UFormField label="Asset" name="assetId" required>
+        <USelect
           v-model="state.assetId"
-          :options="assetOptions"
+          :items="assetOptions"
+          label-key="label"
+          value-key="value"
           placeholder="Select an asset"
-          searchable
         />
-      </UFormGroup>
+      </UFormField>
 
-      <UFormGroup label="Description" name="description" required>
-        <UTextarea v-model="state.description" />
-      </UFormGroup>
+      <UFormField label="Description" name="description" required>
+        <UTextarea v-model="state.description" placeholder="Describe the maintenance needed" />
+      </UFormField>
 
-      <UFormGroup label="Priority" name="priority" required>
-        <USelect v-model="state.priority" :options="priorityOptions" />
-      </UFormGroup>
+      <UFormField label="Priority" name="priority" required>
+        <USelect v-model="state.priority" :items="priorityOptions" label-key="label" value-key="value" />
+      </UFormField>
 
-      <UFormGroup label="Due Date" name="dueDate">
+      <UFormField label="Due Date" name="dueDate">
         <UInput v-model="state.dueDate" type="date" />
-      </UFormGroup>
+      </UFormField>
 
       <div class="flex justify-end gap-4 mt-6">
         <UButton to="/work-orders" color="neutral" variant="ghost">
           Cancel
         </UButton>
-        <UButton type="submit" color="primary">
+        <UButton type="submit" color="primary" :loading="loading">
           Create Work Order
         </UButton>
       </div>

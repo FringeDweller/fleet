@@ -1,6 +1,7 @@
 import { eq } from 'drizzle-orm'
 import { assetCategories, assets } from '../database/schema'
 import { db } from '../utils/db'
+import { encrypt } from '../utils/encryption'
 
 export interface ImportField {
   key: string
@@ -118,8 +119,8 @@ class AssetImportHandler implements ImportHandler {
       model: String(row.model),
       year: Number(row.year),
       categoryId: row.categoryId, // Resolved in validation
-      vin: row.vin ? String(row.vin) : undefined,
-      licensePlate: row.licensePlate ? String(row.licensePlate) : undefined,
+      vin: row.vin ? encrypt(String(row.vin)) : undefined,
+      licensePlate: row.licensePlate ? encrypt(String(row.licensePlate)) : undefined,
       status: row.status || 'active',
       currentMileage: row.currentMileage ? String(row.currentMileage) : '0',
       currentHours: row.currentHours ? String(row.currentHours) : '0'

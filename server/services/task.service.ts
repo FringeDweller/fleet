@@ -24,6 +24,27 @@ export const taskService = {
     return task
   },
 
+  async updateTask(
+    id: string,
+    organizationId: string,
+    data: Partial<typeof maintenanceTasks.$inferInsert>
+  ) {
+    const [task] = await db
+      .update(maintenanceTasks)
+      .set({ ...data, updatedAt: new Date() })
+      .where(and(eq(maintenanceTasks.id, id), eq(maintenanceTasks.organizationId, organizationId)))
+      .returning()
+    return task
+  },
+
+  async deleteTask(id: string, organizationId: string) {
+    const [task] = await db
+      .delete(maintenanceTasks)
+      .where(and(eq(maintenanceTasks.id, id), eq(maintenanceTasks.organizationId, organizationId)))
+      .returning()
+    return task
+  },
+
   async listGroups(organizationId: string) {
     return await db.select().from(taskGroups).where(eq(taskGroups.organizationId, organizationId))
   },

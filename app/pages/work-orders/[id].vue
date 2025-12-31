@@ -309,27 +309,21 @@ const getStatusColor = (status: string) => {
         </template>
       </UTabs>
 
-      <UModal v-model="isAddPartModalOpen">
-        <UCard>
-          <template #header>
-            <h3 class="text-base font-semibold">
-              Add Part to Work Order
-            </h3>
-          </template>
+      <UModal v-model:open="isAddPartModalOpen" title="Add Part to Work Order">
+        <template #body>
           <div class="space-y-4">
-            <UFormGroup label="Part">
-              <USelectMenu
+            <UFormField label="Part">
+              <USelect
                 v-model="selectedPartId"
-                :options="allParts"
-                option-attribute="name"
-                value-attribute="id"
-                searchable
+                :items="allParts.map(p => ({ ...p, description: p.description || undefined }))"
+                label-key="name"
+                value-key="id"
                 placeholder="Select a part..."
               />
-            </UFormGroup>
-            <UFormGroup label="Quantity">
+            </UFormField>
+            <UFormField label="Quantity">
               <UInput v-model="partQuantity" type="number" step="0.01" />
-            </UFormGroup>
+            </UFormField>
             <div class="flex justify-end gap-3">
               <UButton color="neutral" variant="ghost" @click="isAddPartModalOpen = false">
                 Cancel
@@ -339,36 +333,33 @@ const getStatusColor = (status: string) => {
               </UButton>
             </div>
           </div>
-        </UCard>
+        </template>
       </UModal>
 
-      <UModal v-model="isCompleteModalOpen">
-        <UCard>
-          <template #header>
-            <h3 class="text-base font-semibold">
-              Complete Work Order
-            </h3>
-          </template>
+      <UModal v-model:open="isCompleteModalOpen" title="Complete Work Order">
+        <template #body>
           <div class="space-y-4">
             <p>Please provide final details for completion:</p>
-            <UFormGroup label="Inventory Location (Parts Origin)">
+            <UFormField label="Inventory Location (Parts Origin)">
               <USelect
                 v-model="selectedLocationId"
-                :options="locations.map(l => ({ label: l.name, value: l.id }))"
+                :items="locations"
+                label-key="name"
+                value-key="id"
                 placeholder="Select location..."
               />
-            </UFormGroup>
+            </UFormField>
             <div class="grid grid-cols-2 gap-4">
-              <UFormGroup label="Final Mileage">
+              <UFormField label="Final Mileage">
                 <UInput v-model="completionMileage" type="number" placeholder="0.00" />
-              </UFormGroup>
-              <UFormGroup label="Final Hours">
+              </UFormField>
+              <UFormField label="Final Hours">
                 <UInput v-model="completionHours" type="number" placeholder="0.00" />
-              </UFormGroup>
+              </UFormField>
             </div>
-            <UFormGroup label="Labor Cost ($)">
+            <UFormField label="Labor Cost ($)">
               <UInput v-model="laborCost" type="number" step="0.01" />
-            </UFormGroup>
+            </UFormField>
             <div class="flex justify-end gap-3 pt-4">
               <UButton color="neutral" variant="ghost" @click="isCompleteModalOpen = false">
                 Cancel
@@ -378,7 +369,7 @@ const getStatusColor = (status: string) => {
               </UButton>
             </div>
           </div>
-        </UCard>
+        </template>
       </UModal>
     </div>
     <div v-else class="text-center p-8">

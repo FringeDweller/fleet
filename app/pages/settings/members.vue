@@ -88,7 +88,7 @@ async function deleteMember(id: string) {
 }
 
 const columns = [
-  { accessorKey: 'member', header: 'Member' },
+  { accessorKey: 'name', header: 'Member' },
   { accessorKey: 'role', header: 'Role' },
   { accessorKey: 'actions', header: '' }
 ]
@@ -96,21 +96,19 @@ const columns = [
 
 <template>
   <div class="space-y-6">
-    <UPageCard
-      title="Members"
-      description="Manage your team members and their roles."
-      variant="naked"
-    >
-      <template #right>
-        <UButton
-          label="Invite Member"
-          icon="i-lucide-plus"
-          @click="openAddModal"
-        />
-      </template>
-    </UPageCard>
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-2xl font-bold">Members</h2>
+        <p class="text-gray-500">Manage your team members and their roles.</p>
+      </div>
+      <UButton
+        label="Add Member"
+        icon="i-lucide-plus"
+        @click="openAddModal"
+      />
+    </div>
 
-    <UPageCard variant="subtle" :ui="{ body: 'p-0' }">
+    <UCard :ui="{ body: 'p-0' }">
       <template #header>
         <UInput
           v-model="q"
@@ -124,7 +122,7 @@ const columns = [
         :data="filteredMembers"
         :columns="columns"
       >
-        <template #member-cell="{ row }">
+        <template #name-cell="{ row }">
           <div class="flex items-center gap-3">
             <UAvatar v-bind="row.original.avatar" size="sm" />
             <div>
@@ -159,11 +157,11 @@ const columns = [
           </div>
         </template>
       </UTable>
-    </UPageCard>
+    </UCard>
 
     <UModal v-model:open="isModalOpen" title="Member Details">
       <template #body>
-        <UForm :state="state" class="space-y-4" @submit="saveMember">
+        <form class="space-y-4" @submit.prevent="saveMember">
           <div class="grid grid-cols-2 gap-4">
             <UFormField label="First Name" required>
               <UInput v-model="state.firstName" />
@@ -180,7 +178,7 @@ const columns = [
           <UFormField label="Role" required>
             <USelect
               v-model="state.role"
-              :options="['owner', 'manager', 'technician', 'operator']"
+              :items="['owner', 'manager', 'technician', 'operator']"
             />
           </UFormField>
 
@@ -201,7 +199,7 @@ const columns = [
               :loading="isSaving"
             />
           </div>
-        </UForm>
+        </form>
       </template>
     </UModal>
   </div>

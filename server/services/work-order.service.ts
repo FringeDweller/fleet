@@ -9,6 +9,7 @@ import {
   workOrders
 } from '../database/schema'
 import { db } from '../utils/db'
+import { auditService } from './audit.service'
 
 export const workOrderService = {
   async listWorkOrders(
@@ -62,6 +63,32 @@ export const workOrderService = {
       items,
       total: Number(totalResult?.count || 0)
     }
+  },
+
+  async createWorkOrder(data: typeof workOrders.$inferInsert) {
+    if (!data.woNumber) {
+      const [countResult] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(workOrders)
+        .where(eq(workOrders.organizationId, data.organizationId))
+
+      const count = Number(countResult?.count || 0) + 1
+      data.woNumber = `WO-${count.toString().padStart(5, '0')}`
+    }
+
+    const [wo] = await db.insert(workOrders).values(data).returning()
+
+    if (wo) {
+      await auditService.log({
+        organizationId: wo.organizationId,
+        action: 'create',
+        entityType: 'work_order',
+        entityId: wo.id,
+        details: { woNumber: wo.woNumber }
+      })
+    }
+
+    return wo
   },
 
   async getWorkOrderById(id: string, organizationId: string) {
@@ -234,9 +261,9 @@ export const workOrderService = {
         .set({
           status: 'completed',
           checklist: data.checklist || wo.checklist,
-          completionMileage: data.completionMileage,
-          completionHours: data.completionHours,
-          laborCost: data.laborCost,
+          completionMileage: data.completionMileage || null,
+          completionHours: data.completionHours || null,
+          laborCost: data.laborCost || '0',
           updatedAt: new Date()
         })
         .where(eq(workOrders.id, id))
@@ -245,16 +272,23 @@ export const workOrderService = {
       // Also update costs after labor is added
       await this._updateWorkOrderCosts(tx, id)
 
+      if (updatedWo) {
+        await auditService.log({
+          organizationId,
+          action: 'complete',
+          entityType: 'work_order',
+          entityId: id,
+          details: { woNumber: wo.woNumber }
+        })
+      }
+
       // 4. Update asset with completion readings
       if (data.completionMileage || data.completionHours) {
-        await tx
-          .update(assets)
-          .set({
-            currentMileage: data.completionMileage,
-            currentHours: data.completionHours,
-            updatedAt: new Date()
-          })
-          .where(eq(assets.id, wo.assetId))
+        const assetUpdates: any = { updatedAt: new Date() }
+        if (data.completionMileage) assetUpdates.currentMileage = data.completionMileage
+        if (data.completionHours) assetUpdates.currentHours = data.completionHours
+
+        await tx.update(assets).set(assetUpdates).where(eq(assets.id, wo.assetId))
       }
 
       return updatedWo

@@ -6,6 +6,7 @@ const password = process.env.NUXT_SESSION_PASSWORD || 'default-secret-do-not-use
 const key = scryptSync(password, 'salt', 32)
 
 export function encrypt(text: string): string {
+  if (!text) return text
   const iv = randomBytes(12)
   const cipher = createCipheriv(algorithm, key, iv)
   let encrypted = cipher.update(text, 'utf8', 'hex')
@@ -16,6 +17,7 @@ export function encrypt(text: string): string {
 }
 
 export function decrypt(hash: string): string {
+  if (!hash) return hash
   const parts = hash.split(':')
   if (parts.length !== 3) {
     return hash // Return as is if not in expected format

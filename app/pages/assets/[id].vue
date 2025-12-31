@@ -3,14 +3,71 @@ import type { Asset, Part } from '~/types'
 
 const route = useRoute()
 const assetId = route.params.id as string
+const toast = useToast()
 
-const { data: asset, status } = await useFetch<Asset>(`/api/assets/${assetId}`)
+const { data: asset, status, refresh } = await useFetch<Asset>(`/api/assets/${assetId}`)
 const { data: compatibleParts, status: partsStatus } = await useFetch<Part[]>(
   `/api/inventory/compatibility/asset/${assetId}`
 )
 
 const pending = computed(() => status.value === 'pending')
 const loadingParts = computed(() => partsStatus.value === 'pending')
+
+const isEditOpen = ref(false)
+const editLoading = ref(false)
+const isDeleteConfirmOpen = ref(false)
+const deleteLoading = ref(false)
+
+async function handleEditSubmit(data: Partial<Asset>) {
+  editLoading.value = true
+  try {
+    await $fetch(`/api/assets/${assetId}`, {
+      method: 'PUT',
+      body: data
+    })
+    toast.add({
+      title: 'Success',
+      description: 'Asset updated successfully',
+      color: 'success'
+    })
+    isEditOpen.value = false
+    await refresh()
+  } catch (err: unknown) {
+    const error = err as { data?: { message?: string } }
+    toast.add({
+      title: 'Error',
+      description: error.data?.message || 'Failed to update asset',
+      color: 'error'
+    })
+  } finally {
+    editLoading.value = false
+  }
+}
+
+async function handleDelete() {
+  deleteLoading.value = true
+  try {
+    await $fetch(`/api/assets/${assetId}`, {
+      method: 'DELETE'
+    })
+    toast.add({
+      title: 'Success',
+      description: 'Asset deleted successfully',
+      color: 'success'
+    })
+    await navigateTo('/assets')
+  } catch (err: unknown) {
+    const error = err as { data?: { message?: string } }
+    toast.add({
+      title: 'Error',
+      description: error.data?.message || 'Failed to delete asset',
+      color: 'error'
+    })
+  } finally {
+    deleteLoading.value = false
+    isDeleteConfirmOpen.value = false
+  }
+}
 
 const items = [
   { label: 'Overview', slot: 'overview' },
@@ -45,11 +102,41 @@ const items = [
           <UBadge :color="asset.status === 'active' ? 'success' : 'neutral'" size="lg">
             {{ asset.status }}
           </UBadge>
-          <UButton icon="i-lucide-pencil" color="neutral" variant="ghost">
+          <UButton icon="i-lucide-pencil" color="neutral" variant="ghost" @click="isEditOpen = true">
             Edit
+          </UButton>
+          <UButton icon="i-lucide-trash" color="error" variant="ghost" @click="isDeleteConfirmOpen = true">
+            Delete
           </UButton>
         </div>
       </div>
+
+      <UModal v-model:open="isEditOpen" title="Edit Asset">
+        <template #body>
+          <AssetsAssetForm
+            :initial-values="asset"
+            :loading="editLoading"
+            @submit="handleEditSubmit"
+            @cancel="isEditOpen = false"
+          />
+        </template>
+      </UModal>
+
+      <UModal v-model:open="isDeleteConfirmOpen" title="Delete Asset">
+        <template #body>
+          <div class="space-y-4">
+            <p>Are you sure you want to delete asset <strong>{{ asset.assetNumber }}</strong>? This action cannot be undone.</p>
+            <div class="flex justify-end gap-3">
+              <UButton variant="ghost" @click="isDeleteConfirmOpen = false">
+                Cancel
+              </UButton>
+              <UButton color="error" :loading="deleteLoading" @click="handleDelete">
+                Delete Asset
+              </UButton>
+            </div>
+          </div>
+        </template>
+      </UModal>
 
       <UTabs :items="items" class="w-full">
         <template #overview>

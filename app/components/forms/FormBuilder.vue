@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { VueDraggable } from 'vue-draggable-plus'
 import type { FormField } from '../../../types/form-builder'
 
 const props = defineProps<{
@@ -15,7 +16,7 @@ const fields = computed({
 const selectedFieldId = ref<string | null>(null)
 const selectedField = computed(() => fields.value.find((f) => f.id === selectedFieldId.value))
 
-const toolset = [
+const toolset = ref([
   { type: 'text', label: 'Text Input', icon: 'i-lucide-type' },
   { type: 'textarea', label: 'Text Area', icon: 'i-lucide-align-justify' },
   { type: 'number', label: 'Number', icon: 'i-lucide-hash' },
@@ -26,7 +27,7 @@ const toolset = [
   { type: 'section', label: 'Section Header', icon: 'i-lucide-heading' },
   { type: 'photo', label: 'Photo Upload', icon: 'i-lucide-camera' },
   { type: 'signature', label: 'Signature', icon: 'i-lucide-pen-tool' }
-]
+])
 
 function onClone(element: Record<string, unknown>) {
   return {
@@ -158,7 +159,7 @@ function otherFields(currentField: FormField) {
                 </h3>
               </div>
 
-              <UFormGroup
+              <UFormField
                 v-else
                 :label="element.label"
                 :required="element.required"
@@ -166,7 +167,7 @@ function otherFields(currentField: FormField) {
               >
                 <UInput v-if="['text', 'number', 'date', 'time'].includes(element.type)" :placeholder="element.placeholder" disabled />
                 <UTextarea v-else-if="element.type === 'textarea'" :placeholder="element.placeholder" disabled />
-                <USelect v-else-if="element.type === 'select'" :options="['Option 1', 'Option 2']" disabled />
+                <USelect v-else-if="element.type === 'select'" :items="['Option 1', 'Option 2']" disabled />
                 <UCheckbox v-else-if="element.type === 'checkbox'" label="Check this option" disabled />
                 <div v-else-if="element.type === 'photo'" class="h-24 bg-gray-50 dark:bg-gray-800 rounded border border-dashed flex items-center justify-center text-dimmed">
                   <UIcon name="i-lucide-camera" class="w-6 h-6 mr-2" /> Photo Upload
@@ -174,7 +175,7 @@ function otherFields(currentField: FormField) {
                 <div v-else-if="element.type === 'signature'" class="h-24 bg-gray-50 dark:bg-gray-800 rounded border border-dashed flex items-center justify-center text-dimmed">
                   <UIcon name="i-lucide-pen-tool" class="w-6 h-6 mr-2" /> Signature Pad
                 </div>
-              </UFormGroup>
+              </UFormField>
             </div>
 
             <!-- Remove Action -->
@@ -207,21 +208,21 @@ function otherFields(currentField: FormField) {
           </p>
         </div>
 
-        <UFormGroup label="Label" required>
+        <UFormField label="Label" required>
           <UInput v-model="selectedField.label" />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup label="Field Key" help="Unique identifier for data storage">
+        <UFormField label="Field Key" help="Unique identifier for data storage">
           <UInput v-model="selectedField.key" />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup v-if="['text', 'number', 'textarea'].includes(selectedField.type)" label="Placeholder">
+        <UFormField v-if="['text', 'number', 'textarea'].includes(selectedField.type)" label="Placeholder">
           <UInput v-model="selectedField.placeholder" />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup label="Help Text">
+        <UFormField label="Help Text">
           <UInput v-model="selectedField.helpText" />
-        </UFormGroup>
+        </UFormField>
 
         <div class="space-y-4 pt-4 border-t">
           <UCheckbox v-model="selectedField.required" label="Required Field" />

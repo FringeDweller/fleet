@@ -2,6 +2,7 @@ import { and, eq, getTableColumns, ilike, or, sql } from 'drizzle-orm'
 import { assetCategories, assets } from '../database/schema'
 import { db, replica } from '../utils/db'
 import { decrypt, encrypt } from '../utils/encryption'
+import { auditService } from './audit.service'
 
 export const assetService = {
   async listAssets(
@@ -88,6 +89,60 @@ export const assetService = {
       licensePlate: data.licensePlate ? encrypt(data.licensePlate) : data.licensePlate
     }
     const [asset] = await db.insert(assets).values(encryptedData).returning()
+
+    if (asset) {
+      await auditService.log({
+        organizationId: asset.organizationId,
+        action: 'create',
+        entityType: 'asset',
+        entityId: asset.id,
+        details: { assetNumber: asset.assetNumber }
+      })
+    }
+
+    return asset
+  },
+
+  async updateAsset(id: string, organizationId: string, data: Partial<typeof assets.$inferInsert>) {
+    const updateData: any = { ...data }
+    if (data.vin) updateData.vin = encrypt(data.vin)
+    if (data.licensePlate) updateData.licensePlate = encrypt(data.licensePlate)
+
+    const [asset] = await db
+      .update(assets)
+      .set({ ...updateData, updatedAt: new Date() })
+      .where(and(eq(assets.id, id), eq(assets.organizationId, organizationId)))
+      .returning()
+
+    if (asset) {
+      await auditService.log({
+        organizationId,
+        action: 'update',
+        entityType: 'asset',
+        entityId: asset.id,
+        details: { changes: data }
+      })
+    }
+
+    return asset
+  },
+
+  async deleteAsset(id: string, organizationId: string) {
+    const [asset] = await db
+      .delete(assets)
+      .where(and(eq(assets.id, id), eq(assets.organizationId, organizationId)))
+      .returning()
+
+    if (asset) {
+      await auditService.log({
+        organizationId,
+        action: 'delete',
+        entityType: 'asset',
+        entityId: asset.id,
+        details: { assetNumber: asset.assetNumber }
+      })
+    }
+
     return asset
   },
 

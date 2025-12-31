@@ -25,11 +25,11 @@ test.describe('Fleet Management Core Features', () => {
     await page.goto('/assets')
     await page.locator('tbody tr').first().locator('a').click()
     await page.getByRole('tab', { name: 'Fuel' }).click()
-    await expect(page.getByText('Fuel Analytics')).toBeVisible()
+    await expect(page.getByText('Fuel History')).toBeVisible()
   })
 
   test('Inspections - should list inspections', async ({ page }) => {
     await page.goto('/inspections')
-    await expect(page.getByRole('heading', { name: 'Inspections' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Inspection History' })).toBeVisible()
   })
 })

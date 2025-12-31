@@ -65,26 +65,24 @@ function toggleChannel(eventKey: string, channel: 'inApp' | 'push' | 'email') {
 
 <template>
   <div class="space-y-6">
-    <UPageCard
-      title="Notification Preferences"
-      description="Configure how and when you want to be notified."
-      variant="naked"
-    >
-      <template #right>
-        <UButton
-          label="Save Changes"
-          :loading="isSaving"
-          @click="savePreferences"
-        />
-      </template>
-    </UPageCard>
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-2xl font-bold">Notification Preferences</h2>
+        <p class="text-gray-500">Configure how and when you want to be notified.</p>
+      </div>
+      <UButton
+        label="Save Changes"
+        :loading="isSaving"
+        @click="savePreferences"
+      />
+    </div>
 
-    <UPageCard variant="subtle">
+    <UCard>
       <div class="overflow-x-auto">
         <table class="w-full text-sm text-left">
           <thead>
             <tr class="border-b border-default">
-              <th class="py-3 font-semibold text-highlighted">Event Type</th>
+              <th class="py-3 font-semibold text-highlighted text-left">Event Type</th>
               <th class="py-3 font-semibold text-highlighted text-center">In-App</th>
               <th class="py-3 font-semibold text-highlighted text-center">Push</th>
               <th class="py-3 font-semibold text-highlighted text-center">Email</th>
@@ -92,7 +90,7 @@ function toggleChannel(eventKey: string, channel: 'inApp' | 'push' | 'email') {
           </thead>
           <tbody class="divide-y divide-default">
             <tr v-for="event in eventTypes" :key="event.key">
-              <td class="py-4">
+              <td class="py-4 text-left">
                 <div class="font-medium text-highlighted">{{ event.label }}</div>
                 <div class="text-xs text-dimmed">{{ event.description }}</div>
               </td>
@@ -121,15 +119,14 @@ function toggleChannel(eventKey: string, channel: 'inApp' | 'push' | 'email') {
           </tbody>
         </table>
       </div>
-    </UPageCard>
+    </UCard>
 
-    <UPageCard
-      title="Quiet Hours"
-      description="Suppress push notifications during these hours."
-      variant="naked"
-    />
+    <div class="pt-6 border-t border-default">
+      <h3 class="text-lg font-bold">Quiet Hours</h3>
+      <p class="text-gray-500">Suppress push notifications during these hours.</p>
+    </div>
 
-    <UPageCard variant="subtle">
+    <UCard>
       <div class="space-y-4">
         <UFormField label="Enable Quiet Hours" description="Turn off push notifications during a specific time.">
           <USwitch v-model="state.quietHours.enabled" />
@@ -144,6 +141,6 @@ function toggleChannel(eventKey: string, channel: 'inApp' | 'push' | 'email') {
           </UFormField>
         </div>
       </div>
-    </UPageCard>
+    </UCard>
   </div>
 </template>

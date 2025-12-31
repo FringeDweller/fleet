@@ -86,6 +86,31 @@ const editState = reactive({
 })
 
 const updating = ref(false)
+const isDeleteConfirmOpen = ref(false)
+const deleteLoading = ref(false)
+
+async function onDelete() {
+  deleteLoading.value = true
+  try {
+    await $fetch(`/api/inventory/parts/${partId}`, {
+      method: 'DELETE'
+    })
+    toast.add({
+      title: 'Part deleted',
+      color: 'success'
+    })
+    await navigateTo('/inventory')
+  } catch (error: unknown) {
+    toast.add({
+      title: 'Error deleting part',
+      description: (error as Error).message,
+      color: 'error'
+    })
+  } finally {
+    deleteLoading.value = false
+    isDeleteConfirmOpen.value = false
+  }
+}
 
 async function onUpdate() {
   updating.value = true
@@ -128,10 +153,10 @@ const formatDate = (date: string) => {
 </script>
 
 <template>
-  <UDashboardPage>
-    <UDashboardPanel grow>
+  <UDashboardPanel grow id="part-detail">
+    <template #header>
       <UDashboardNavbar :title="part?.name || 'Part Details'">
-        <template #left>
+        <template #leading>
           <UButton
             icon="i-heroicons-arrow-left"
             color="neutral"
@@ -140,47 +165,65 @@ const formatDate = (date: string) => {
           />
         </template>
         <template #right>
-          <UButton
-            label="Record Movement"
-            icon="i-heroicons-arrows-right-left"
-            color="primary"
-            @click="isMovementModalOpen = true"
-          />
+          <div class="flex gap-2">
+            <UButton
+              label="Record Movement"
+              icon="i-heroicons-arrows-right-left"
+              color="primary"
+              @click="isMovementModalOpen = true"
+            />
+            <UButton
+              icon="i-lucide-trash"
+              color="error"
+              variant="ghost"
+              @click="isDeleteConfirmOpen = true"
+            />
+          </div>
         </template>
       </UDashboardNavbar>
+    </template>
 
+    <template #body>
       <div class="p-4 space-y-8 overflow-y-auto">
-        <UModal v-model="isMovementModalOpen">
-          <UCard>
-            <template #header>
-              <div class="flex items-center justify-between">
-                <h3 class="text-base font-semibold leading-6">
-                  Record Stock Movement
-                </h3>
-                <UButton
-                  color="neutral"
-                  variant="ghost"
-                  icon="i-heroicons-x-mark"
-                  class="-my-1"
-                  @click="isMovementModalOpen = false"
-                />
+        <UModal v-model:open="isDeleteConfirmOpen" title="Delete Part">
+          <template #body>
+            <div class="space-y-4">
+              <p>Are you sure you want to delete part <strong>{{ part?.name }}</strong>? This action cannot be undone.</p>
+              <div class="flex justify-end gap-3">
+                <UButton variant="ghost" @click="isDeleteConfirmOpen = false">
+                  Cancel
+                </UButton>
+                <UButton color="error" :loading="deleteLoading" @click="onDelete">
+                  Delete Part
+                </UButton>
               </div>
-            </template>
+            </div>
+          </template>
+        </UModal>
 
-            <UForm :state="movementState" class="space-y-4" @submit="onRecordMovement">
-              <UFormGroup label="Type" name="type">
-                <USelect v-model="movementState.type" :options="[{ label: 'Stock In', value: 'in' }, { label: 'Stock Out', value: 'out' }, { label: 'Adjustment (Absolute)', value: 'adjustment' }, { label: 'Transfer', value: 'transfer' }]" />
-              </UFormGroup>
+        <UModal v-model:open="isMovementModalOpen" title="Record Stock Movement">
+          <template #body>
+            <div class="space-y-4">
+              <UFormField label="Type" name="type">
+                <USelect
+                  v-model="movementState.type"
+                  :items="[{ label: 'Stock In', value: 'in' }, { label: 'Stock Out', value: 'out' }, { label: 'Adjustment (Absolute)', value: 'adjustment' }, { label: 'Transfer', value: 'transfer' }]"
+                  label-key="label"
+                  value-key="value"
+                />
+              </UFormField>
 
-              <UFormGroup :label="movementState.type === 'transfer' ? 'From Location' : 'Location'" name="locationId" required>
+              <UFormField :label="movementState.type === 'transfer' ? 'From Location' : 'Location'" name="locationId" required>
                 <USelect
                   v-model="movementState.locationId"
-                  :options="locations.map(l => ({ label: l.name, value: l.id }))"
+                  :items="locations"
+                  label-key="name"
+                  value-key="id"
                   placeholder="Select location"
                 />
-              </UFormGroup>
+              </UFormField>
 
-              <UFormGroup
+              <UFormField
                 v-if="movementState.type === 'transfer'"
                 label="To Location"
                 name="toLocationId"
@@ -188,29 +231,31 @@ const formatDate = (date: string) => {
               >
                 <USelect
                   v-model="movementState.toLocationId"
-                  :options="locations.map(l => ({ label: l.name, value: l.id }))"
+                  :items="locations"
+                  label-key="name"
+                  value-key="id"
                   placeholder="Select destination"
                 />
-              </UFormGroup>
+              </UFormField>
 
-              <UFormGroup label="Quantity" name="quantity" required>
+              <UFormField label="Quantity" name="quantity" required>
                 <UInput v-model="movementState.quantity" type="number" step="0.01" />
-              </UFormGroup>
+              </UFormField>
 
-              <UFormGroup label="Reason" name="reason">
+              <UFormField label="Reason" name="reason">
                 <UInput v-model="movementState.reason" placeholder="e.g. Received shipment, Used for repairs" />
-              </UFormGroup>
+              </UFormField>
 
               <div class="flex justify-end gap-3">
                 <UButton color="neutral" variant="ghost" @click="isMovementModalOpen = false">
                   Cancel
                 </UButton>
-                <UButton type="submit" color="primary" :loading="recordingMovement">
+                <UButton color="primary" :loading="recordingMovement" @click="onRecordMovement">
                   Record
                 </UButton>
               </div>
-            </UForm>
-          </UCard>
+            </div>
+          </template>
         </UModal>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -219,53 +264,55 @@ const formatDate = (date: string) => {
             <h2 class="text-lg font-semibold mb-4">
               Edit Part Information
             </h2>
-            <UForm :state="editState" class="space-y-4" @submit="onUpdate">
-              <UFormGroup label="SKU" name="sku" required>
+            <form class="space-y-4" @submit.prevent="onUpdate">
+              <UFormField label="SKU" name="sku" required>
                 <UInput v-model="editState.sku" />
-              </UFormGroup>
+              </UFormField>
 
-              <UFormGroup label="Name" name="name" required>
+              <UFormField label="Name" name="name" required>
                 <UInput v-model="editState.name" />
-              </UFormGroup>
+              </UFormField>
 
-              <UFormGroup label="Description" name="description">
+              <UFormField label="Description" name="description">
                 <UTextarea v-model="editState.description" />
-              </UFormGroup>
+              </UFormField>
 
               <div class="grid grid-cols-2 gap-4">
-                <UFormGroup label="Unit" name="unit" required>
+                <UFormField label="Unit" name="unit" required>
                   <UInput v-model="editState.unit" />
-                </UFormGroup>
+                </UFormField>
 
-                <UFormGroup label="Category" name="categoryId">
+                <UFormField label="Category" name="categoryId">
                   <USelect
                     v-model="editState.categoryId"
-                    :options="categories.map(c => ({ label: c.name, value: c.id }))"
+                    :items="categories.map(c => ({ ...c, description: c.description || undefined }))"
+                    label-key="name"
+                    value-key="id"
                     placeholder="Select category"
                   />
-                </UFormGroup>
+                </UFormField>
               </div>
 
               <div class="grid grid-cols-3 gap-4">
-                <UFormGroup label="Unit Cost" name="unitCost">
+                <UFormField label="Unit Cost" name="unitCost">
                   <UInput v-model="editState.unitCost" type="number" step="0.01" />
-                </UFormGroup>
+                </UFormField>
 
-                <UFormGroup label="Reorder Threshold" name="reorderThreshold">
+                <UFormField label="Reorder Threshold" name="reorderThreshold">
                   <UInput v-model="editState.reorderThreshold" type="number" step="0.01" />
-                </UFormGroup>
+                </UFormField>
 
-                <UFormGroup label="Reorder Quantity" name="reorderQuantity">
+                <UFormField label="Reorder Quantity" name="reorderQuantity">
                   <UInput v-model="editState.reorderQuantity" type="number" step="0.01" />
-                </UFormGroup>
+                </UFormField>
               </div>
 
-              <div class="flex justify-end">
+              <div class="flex justify-end mt-4">
                 <UButton type="submit" color="primary" :loading="updating">
                   Update Part
                 </UButton>
               </div>
-            </UForm>
+            </form>
           </section>
 
           <!-- Status & Stats -->
@@ -337,6 +384,6 @@ const formatDate = (date: string) => {
           </UTable>
         </section>
       </div>
-    </UDashboardPanel>
-  </UDashboardPage>
+    </template>
+  </UDashboardPanel>
 </template>

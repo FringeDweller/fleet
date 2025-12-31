@@ -111,6 +111,21 @@ export const inventoryService = {
     return part
   },
 
+  async deletePart(id: string, organizationId: string) {
+    return await db.transaction(async (tx) => {
+      // Delete related records
+      await tx.delete(partInventory).where(eq(partInventory.partId, id))
+      await tx.delete(stockMovements).where(eq(stockMovements.partId, id))
+      await tx.delete(assetPartCompatibility).where(eq(assetPartCompatibility.partId, id))
+
+      const [part] = await tx
+        .delete(parts)
+        .where(and(eq(parts.id, id), eq(parts.organizationId, organizationId)))
+        .returning()
+      return part
+    })
+  },
+
   async listCategories(organizationId: string) {
     return await db
       .select()
@@ -155,7 +170,11 @@ export const inventoryService = {
   async recordMovement(data: typeof stockMovements.$inferInsert) {
     return await db.transaction(async (tx) => {
       // 1. Record the movement
-      const [movement] = await tx.insert(stockMovements).values(data).returning()
+      const movementData = {
+        ...data,
+        toLocationId: data.toLocationId || null
+      }
+      const [movement] = await tx.insert(stockMovements).values(movementData).returning()
 
       if (data.type === 'transfer') {
         if (!data.locationId || !data.toLocationId)

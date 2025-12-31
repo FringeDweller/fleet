@@ -203,7 +203,7 @@ async function saveTitle() {
       <UTabs :items="items" class="flex-1 flex flex-col overflow-hidden">
         <template #builder>
           <div class="flex-1 overflow-hidden">
-            <FormBuilder v-model="formFields" />
+            <FormsFormBuilder v-model="formFields" />
           </div>
         </template>
 
@@ -216,30 +216,29 @@ async function saveTitle() {
               <UButton label="Add Assignment" icon="i-lucide-plus" @click="showAssignModal = true" />
             </div>
 
-            <FormAssignmentsList ref="assignmentsList" :form-id="id" />
+            <FormsFormAssignmentsList ref="assignmentsList" :form-id="id" />
 
-            <UModal v-model="showAssignModal">
-              <div class="p-6 space-y-4">
-                <h3 class="font-bold">
-                  New Assignment
-                </h3>
-                <UFormGroup label="Target Module">
-                  <USelect
-                    v-model="newAssignment.targetModule"
-                    :options="[
-                      { label: 'Assets', value: 'assets' },
-                      { label: 'Work Orders', value: 'work_orders' },
-                      { label: 'Inspections', value: 'inspections' },
-                      { label: 'Operators', value: 'operators' }
-                    ]"
-                  />
-                </UFormGroup>
+            <UModal v-model:open="showAssignModal" title="New Assignment">
+              <template #body>
+                <div class="space-y-4">
+                  <UFormField label="Target Module">
+                    <USelect
+                      v-model="newAssignment.targetModule"
+                      :items="[
+                        { label: 'Assets', value: 'assets' },
+                        { label: 'Work Orders', value: 'work_orders' },
+                        { label: 'Inspections', value: 'inspections' },
+                        { label: 'Operators', value: 'operators' }
+                      ]"
+                    />
+                  </UFormField>
 
-                <div class="flex justify-end gap-2">
-                  <UButton label="Cancel" variant="ghost" @click="showAssignModal = false" />
-                  <UButton label="Save" @click="saveAssignment" />
+                  <div class="flex justify-end gap-2">
+                    <UButton label="Cancel" variant="ghost" @click="showAssignModal = false" />
+                    <UButton label="Save" @click="saveAssignment" />
+                  </div>
                 </div>
-              </div>
+              </template>
             </UModal>
           </div>
         </template>
@@ -305,24 +304,15 @@ async function saveTitle() {
     </div>
 
     <!-- Preview Modal -->
-    <UModal v-model="showPreview">
-      <div class="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
-        <div class="flex justify-between items-center border-b pb-4 mb-4 sticky top-0 bg-white dark:bg-gray-900 z-10">
-          <h3 class="text-xl font-bold">
-            Preview: {{ form.title }}
-          </h3>
-          <UButton
-            icon="i-lucide-x"
-            variant="ghost"
-            color="neutral"
-            @click="showPreview = false"
-          />
+    <UModal v-model:open="showPreview" :title="`Preview: ${form.title}`">
+      <template #body>
+        <div class="space-y-4 max-h-[80vh] overflow-y-auto">
+          <FormsFormRenderer :form-id="id" :fields="formFields" />
+          <div class="flex justify-end pt-4 border-t mt-6">
+            <UButton label="Close Preview" @click="showPreview = false" />
+          </div>
         </div>
-        <FormsFormRenderer :form-id="id" :fields="formFields" />
-        <div class="flex justify-end pt-4 border-t mt-6">
-          <UButton label="Close Preview" @click="showPreview = false" />
-        </div>
-      </div>
+      </template>
     </UModal>
   </div>
 </template>

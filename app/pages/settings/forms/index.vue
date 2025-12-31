@@ -55,17 +55,16 @@ async function createForm() {
       </template>
     </UTable>
 
-    <UModal v-model="isOpen">
-      <div class="p-6 space-y-4">
-        <h3 class="font-bold">
-          New Form
-        </h3>
-        <UInput v-model="newFormTitle" placeholder="Form Title" />
-        <div class="flex justify-end gap-2">
-          <UButton label="Cancel" variant="ghost" @click="isOpen = false" />
-          <UButton label="Create" @click="createForm" />
+    <UModal v-model:open="isOpen" title="New Form">
+      <template #body>
+        <div class="space-y-4">
+          <UInput v-model="newFormTitle" placeholder="Form Title" />
+          <div class="flex justify-end gap-2">
+            <UButton label="Cancel" variant="ghost" @click="isOpen = false" />
+            <UButton label="Create" @click="createForm" />
+          </div>
         </div>
-      </div>
+      </template>
     </UModal>
   </div>
 </template>
