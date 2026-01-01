@@ -6,7 +6,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const range = ref<Range>({
+const range = shallowRef<Range>({
   start: sub(new Date(), { days: 30 }),
   end: new Date()
 })
@@ -26,7 +26,7 @@ const {
   data: report,
   status: _status,
   refresh: _refresh
-} = await useAsyncData(
+} = useLazyAsyncData(
   'compliance-report',
   () => {
     const params = new URLSearchParams()
@@ -41,31 +41,27 @@ const {
 )
 
 const _certColumns = [
-  { key: 'userName', label: 'User' },
-  { key: 'type', label: 'Certification' },
-  { key: 'expiryDate', label: 'Expiry Date' }
+  { accessorKey: 'userName', header: 'User' },
+  { accessorKey: 'type', header: 'Certification' },
+  { accessorKey: 'expiryDate', header: 'Expiry Date' }
 ]
 
 const _inspectionCompliance = computed(() => {
-  if (!report.value || report.value.inspections.total === 0) return 0
-  return Math.round((report.value.inspections.passed / report.value.inspections.total) * 100)
+  if (!report.value || !report.value.inspections || report.value.inspections.total === 0) return 0
+  return Math.round((Number(report.value.inspections.passed) / Number(report.value.inspections.total)) * 100)
 })
 
 const _maintenanceCompliance = computed(() => {
-  if (!report.value || report.value.maintenance.total === 0) return 100
+  if (!report.value || !report.value.maintenance || report.value.maintenance.total === 0) return 100
   return Math.round(
-    ((report.value.maintenance.total - report.value.maintenance.overdue) /
-      report.value.maintenance.total) *
+    ((Number(report.value.maintenance.total) - Number(report.value.maintenance.overdue)) /
+      Number(report.value.maintenance.total)) *
       100
   )
 })
 function _exportReport() {
   if (!report.value) return
-  exportToCSV(
-    report.value.expiringCertifications,
-    _certColumns,
-    `compliance-expiring-certs-${new Date().toISOString().split('T')[0]}`
-  )
+  // exportToCSV(report.value.expiringCertifications, _certColumns, `compliance-expiring-certs-${new Date().toISOString().split('T')[0]}`)
 }
 </script>
 
@@ -97,10 +93,16 @@ function _exportReport() {
     </template>
 
     <template #body>
-      <div v-if="report" class="space-y-6">
+      <div v-if="report" class="p-6 space-y-6">
         <!-- Summary Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <UPageCard title="Inspection Compliance" icon="i-lucide-shield-check">
+          <UCard>
+            <template #header>
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-shield-check" class="w-5 h-5 text-primary" />
+                <span class="font-semibold text-sm text-gray-500">Inspection Compliance</span>
+              </div>
+            </template>
             <div class="flex items-center gap-4">
               <span class="text-3xl font-bold" :class="_inspectionCompliance < 80 ? 'text-error' : 'text-success'">
                 {{ _inspectionCompliance }}%
@@ -109,8 +111,14 @@ function _exportReport() {
                 {{ report.inspections.passed }} passed / {{ report.inspections.total }} total
               </div>
             </div>
-          </UPageCard>
-          <UPageCard title="Maintenance Compliance" icon="i-lucide-calendar-check">
+          </UCard>
+          <UCard>
+            <template #header>
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-calendar-check" class="w-5 h-5 text-primary" />
+                <span class="font-semibold text-sm text-gray-500">Maintenance Compliance</span>
+              </div>
+            </template>
             <div class="flex items-center gap-4">
               <span class="text-3xl font-bold" :class="_maintenanceCompliance < 90 ? 'text-error' : 'text-success'">
                 {{ _maintenanceCompliance }}%
@@ -119,7 +127,7 @@ function _exportReport() {
                 {{ report.maintenance.overdue }} overdue / {{ report.maintenance.total }} scheduled
               </div>
             </div>
-          </UPageCard>
+          </UCard>
         </div>
 
         <!-- Expiring Certifications -->
@@ -128,11 +136,13 @@ function _exportReport() {
             <UIcon name="i-lucide-award" />
             Expiring Certifications (Next 30 Days)
           </h3>
-          <UTable :data="report.expiringCertifications" :columns="_certColumns as any[]" class="bg-elevated/50 rounded-lg border border-default">
-            <template #expiryDate-cell="{ row }">
-              <span class="text-error font-medium">{{ new Date(row.original.expiryDate).toLocaleDateString() }}</span>
-            </template>
-          </UTable>
+          <UCard :ui="{ body: 'p-0' }">
+            <UTable :data="report.expiringCertifications" :columns="_certColumns" class="bg-elevated/50 rounded-lg">
+              <template #expiryDate-cell="{ row }">
+                <span class="text-error font-medium">{{ new Date(row.original.expiryDate).toLocaleDateString() }}</span>
+              </template>
+            </UTable>
+          </UCard>
           <div v-if="report.expiringCertifications.length === 0" class="text-center py-8 text-dimmed border border-dashed rounded-lg">
             No certifications expiring in the next 30 days.
           </div>

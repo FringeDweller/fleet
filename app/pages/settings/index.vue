@@ -54,23 +54,19 @@ function onFileClick() {
     :state="profile"
     @submit="onSubmit"
   >
-    <UPageCard
-      title="Profile"
-      description="These informations will be displayed publicly."
-      variant="naked"
-      orientation="horizontal"
-      class="mb-4"
-    >
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-2xl font-bold">General</h2>
+        <p class="text-gray-500">Manage your profile and public information.</p>
+      </div>
       <UButton
-        form="settings"
         label="Save changes"
-        color="neutral"
-        type="submit"
-        class="w-fit lg:ms-auto"
+        :loading="loading"
+        @click="onSubmit"
       />
-    </UPageCard>
+    </div>
 
-    <UPageCard variant="subtle">
+    <UCard>
       <UFormField
         name="name"
         label="Name"
@@ -153,6 +149,6 @@ function onFileClick() {
           class="w-full"
         />
       </UFormField>
-    </UPageCard>
+    </UCard>
   </UForm>
 </template>

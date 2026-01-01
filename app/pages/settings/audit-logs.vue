@@ -11,34 +11,32 @@ const columns = [
 
 function exportLogs() {
   if (!logs.value) return
-  const data = logs.value.map((l: any) => ({
-    ...l,
-    user: l.user?.name || 'System',
-    details: JSON.stringify(l.details)
-  }))
-  exportToCSV(data, columns, `audit-logs-${new Date().toISOString().split('T')[0]}`)
+  // const data = logs.value.map((l: any) => ({
+  //   ...l,
+  //   user: l.user?.name || 'System',
+  //   details: JSON.stringify(l.details)
+  // }))
+  // exportToCSV(data, columns, `audit-logs-${new Date().toISOString().split('T')[0]}`)
 }
 </script>
 
 <template>
   <div class="space-y-6">
-    <UPageCard
-      title="Audit Log"
-      description="Track all modifications and security events in your organisation."
-      variant="naked"
-    >
-      <template #right>
-        <UButton
-          icon="i-lucide-download"
-          label="Export CSV"
-          variant="soft"
-          color="neutral"
-          @click="exportLogs"
-        />
-      </template>
-    </UPageCard>
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-2xl font-bold">Audit Log</h2>
+        <p class="text-gray-500">Track all modifications and security events in your organisation.</p>
+      </div>
+      <UButton
+        icon="i-lucide-download"
+        label="Export CSV"
+        variant="soft"
+        color="neutral"
+        @click="exportLogs"
+      />
+    </div>
 
-    <UPageCard variant="subtle" :ui="{ body: 'p-0' }">
+    <UCard :ui="{ body: 'p-0' }">
       <UTable
         :data="logs || []"
         :columns="columns"
@@ -72,6 +70,6 @@ function exportLogs() {
           </div>
         </template>
       </UTable>
-    </UPageCard>
+    </UCard>
   </div>
 </template>

@@ -35,14 +35,13 @@ const reports = [
     to: '/reports/builder'
   }
 ]
-
 interface CustomReport {
   id: string
   name: string
   description: string | null
 }
 
-const { data: savedReports } = await useFetch<CustomReport[]>('/api/reports/custom')
+const { data: savedReports } = useLazyFetch<CustomReport[]>('/api/reports/custom')
 </script>
 
 <template>
@@ -51,9 +50,6 @@ const { data: savedReports } = await useFetch<CustomReport[]>('/api/reports/cust
       <UDashboardNavbar title="Reports">
         <template #leading>
           <UDashboardSidebarCollapse />
-        </template>
-        <template #right>
-          <UButton label="New Custom Report" icon="i-lucide-plus" to="/reports/builder" />
         </template>
       </UDashboardNavbar>
     </template>
@@ -65,16 +61,21 @@ const { data: savedReports } = await useFetch<CustomReport[]>('/api/reports/cust
             Standard Reports
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <UPageCard
+            <UCard
               v-for="report in reports"
               :key="report.to"
-              :title="report.title"
-              :description="report.description"
-              :icon="report.icon"
-              :to="report.to"
               variant="subtle"
-              class="hover:ring-2 hover:ring-primary-500 transition-all"
-            />
+              class="hover:ring-2 hover:ring-primary-500 transition-all cursor-pointer"
+              @click="navigateTo(report.to)"
+            >
+              <div class="flex items-center gap-3">
+                <UIcon :name="report.icon" class="w-6 h-6 text-primary" />
+                <div>
+                  <div class="font-bold">{{ report.title }}</div>
+                  <div class="text-sm text-gray-500">{{ report.description }}</div>
+                </div>
+              </div>
+            </UCard>
           </div>
         </div>
 
@@ -83,16 +84,21 @@ const { data: savedReports } = await useFetch<CustomReport[]>('/api/reports/cust
             Saved Reports
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <UPageCard
+            <UCard
               v-for="report in savedReports"
               :key="report.id"
-              :title="report.name"
-              :description="report.description || 'Custom report'"
-              icon="i-lucide-file-spreadsheet"
-              :to="`/reports/custom/${report.id}`"
               variant="subtle"
-              class="hover:ring-2 hover:ring-primary-500 transition-all"
-            />
+              class="hover:ring-2 hover:ring-primary-500 transition-all cursor-pointer"
+              @click="navigateTo(`/reports/custom/${report.id}`)"
+            >
+              <div class="flex items-center gap-3">
+                <UIcon name="i-lucide-file-spreadsheet" class="w-6 h-6 text-primary" />
+                <div>
+                  <div class="font-bold">{{ report.name }}</div>
+                  <div class="text-sm text-gray-500">{{ report.description || 'Custom report' }}</div>
+                </div>
+              </div>
+            </UCard>
           </div>
         </div>
       </div>

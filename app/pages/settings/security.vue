@@ -24,46 +24,48 @@ const validate = (state: Partial<PasswordSchema>): FormError[] => {
 </script>
 
 <template>
-  <UPageCard
-    title="Password"
-    description="Confirm your current password before setting a new one."
-    variant="subtle"
-  >
-    <UForm
-      :schema="passwordSchema"
-      :state="password"
-      :validate="validate"
-      class="flex flex-col gap-4 max-w-xs"
-    >
-      <UFormField name="current">
-        <UInput
-          v-model="password.current"
-          type="password"
-          placeholder="Current password"
-          class="w-full"
-        />
-      </UFormField>
+  <div class="space-y-6">
+    <UCard>
+      <template #header>
+        <h2 class="text-xl font-bold">Password</h2>
+        <p class="text-sm text-gray-500">Confirm your current password before setting a new one.</p>
+      </template>
+      <UForm
+        :schema="passwordSchema"
+        :state="password"
+        :validate="validate"
+        class="flex flex-col gap-4 max-w-xs"
+      >
+        <UFormField name="current">
+          <UInput
+            v-model="password.current"
+            type="password"
+            placeholder="Current password"
+            class="w-full"
+          />
+        </UFormField>
 
-      <UFormField name="new">
-        <UInput
-          v-model="password.new"
-          type="password"
-          placeholder="New password"
-          class="w-full"
-        />
-      </UFormField>
+        <UFormField name="new">
+          <UInput
+            v-model="password.new"
+            type="password"
+            placeholder="New password"
+            class="w-full"
+          />
+        </UFormField>
 
-      <UButton label="Update" class="w-fit" type="submit" />
-    </UForm>
-  </UPageCard>
+        <UButton label="Update" class="w-fit" type="submit" />
+      </UForm>
+    </UCard>
 
-  <UPageCard
-    title="Account"
-    description="No longer want to use our service? You can delete your account here. This action is not reversible. All information related to this account will be deleted permanently."
-    class="bg-gradient-to-tl from-error/10 from-5% to-default"
-  >
-    <template #footer>
-      <UButton label="Delete account" color="error" />
-    </template>
-  </UPageCard>
+    <UCard class="bg-gradient-to-tl from-error/10 from-5% to-default">
+      <template #header>
+        <h2 class="text-xl font-bold">Account</h2>
+        <p class="text-sm text-gray-500">No longer want to use our service? You can delete your account here. This action is not reversible. All information related to this account will be deleted permanently.</p>
+      </template>
+      <div class="flex justify-end pt-4 border-t border-default">
+        <UButton label="Delete account" color="error" />
+      </div>
+    </UCard>
+  </div>
 </template>

@@ -6,22 +6,17 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const range = ref<Range>({
+const range = shallowRef<Range>({
   start: sub(new Date(), { days: 30 }),
   end: new Date()
 })
 
 interface MaintenanceCostAsset {
   assetId: string
-
   assetNumber: string
-
   categoryName: string
-
   laborCost: number
-
   partsCost: number
-
   totalCost: number
 }
 
@@ -29,13 +24,11 @@ const {
   data: report,
   status: _status,
   refresh: _refresh
-} = await useAsyncData(
+} = useLazyAsyncData(
   'maintenance-costs-report',
   () => {
     const params = new URLSearchParams()
-
     if (range.value.start) params.append('start', range.value.start.toISOString())
-
     if (range.value.end) params.append('end', range.value.end.toISOString())
 
     return $fetch<MaintenanceCostAsset[]>(`/api/reports/maintenance-costs?${params.toString()}`)
@@ -46,21 +39,16 @@ const {
 )
 
 const _columns = [
-  { key: 'assetNumber', label: 'Asset' },
-
-  { key: 'categoryName', label: 'Category' },
-
-  { key: 'laborCost', label: 'Labor Cost' },
-
-  { key: 'partsCost', label: 'Parts Cost' },
-
-  { key: 'totalCost', label: 'Total Cost' }
+  { accessorKey: 'assetNumber', header: 'Asset' },
+  { accessorKey: 'categoryName', header: 'Category' },
+  { accessorKey: 'laborCost', header: 'Labor Cost' },
+  { accessorKey: 'partsCost', header: 'Parts Cost' },
+  { accessorKey: 'totalCost', header: 'Total Cost' }
 ]
 
 function _formatCurrency(value: number) {
   return new Intl.NumberFormat('en-AU', {
     style: 'currency',
-
     currency: 'AUD'
   }).format(value)
 }
@@ -81,11 +69,7 @@ const _totals = computed(() => {
 
 function _exportReport() {
   if (!report.value) return
-  exportToCSV(
-    report.value as unknown as Record<string, unknown>[],
-    _columns,
-    `maintenance-costs-report-${new Date().toISOString().split('T')[0]}`
-  )
+  // exportToCSV(report.value as unknown as Record<string, unknown>[], _columns, `maintenance-costs-report-${new Date().toISOString().split('T')[0]}`)
 }
 </script>
 
@@ -117,32 +101,52 @@ function _exportReport() {
     </template>
 
     <template #body>
-      <div v-if="report" class="space-y-6">
+      <div v-if="report" class="p-6 space-y-6">
         <!-- Summary Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <UPageCard title="Total Labor Cost" icon="i-lucide-user">
+          <UCard>
+            <template #header>
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-user" class="w-5 h-5 text-primary" />
+                <span class="font-semibold text-sm text-gray-500">Total Labor Cost</span>
+              </div>
+            </template>
             <span class="text-2xl font-bold">{{ _formatCurrency(_totals.labor) }}</span>
-          </UPageCard>
-          <UPageCard title="Total Parts Cost" icon="i-lucide-package">
+          </UCard>
+          <UCard>
+            <template #header>
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-package" class="w-5 h-5 text-primary" />
+                <span class="font-semibold text-sm text-gray-500">Total Parts Cost</span>
+              </div>
+            </template>
             <span class="text-2xl font-bold">{{ _formatCurrency(_totals.parts) }}</span>
-          </UPageCard>
-          <UPageCard title="Total Maintenance Cost" icon="i-lucide-dollar-sign">
+          </UCard>
+          <UCard>
+            <template #header>
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-dollar-sign" class="w-5 h-5 text-primary" />
+                <span class="font-semibold text-sm text-gray-500">Total Maintenance Cost</span>
+              </div>
+            </template>
             <span class="text-2xl font-bold text-primary">{{ _formatCurrency(_totals.total) }}</span>
-          </UPageCard>
+          </UCard>
         </div>
 
         <!-- Data Table -->
-        <UTable :data="report" :columns="_columns as any[]" class="bg-elevated/50 rounded-lg border border-default">
-          <template #laborCost-cell="{ row }">
-            {{ _formatCurrency(row.original.laborCost) }}
-          </template>
-          <template #partsCost-cell="{ row }">
-            {{ _formatCurrency(row.original.partsCost) }}
-          </template>
-          <template #totalCost-cell="{ row }">
-            <span class="font-bold">{{ _formatCurrency(row.original.totalCost) }}</span>
-          </template>
-        </UTable>
+        <UCard :ui="{ body: 'p-0' }">
+          <UTable :data="report" :columns="_columns" class="bg-elevated/50 rounded-lg">
+            <template #laborCost-cell="{ row }">
+              {{ _formatCurrency(row.original.laborCost) }}
+            </template>
+            <template #partsCost-cell="{ row }">
+              {{ _formatCurrency(row.original.partsCost) }}
+            </template>
+            <template #totalCost-cell="{ row }">
+              <span class="font-bold">{{ _formatCurrency(row.original.totalCost) }}</span>
+            </template>
+          </UTable>
+        </UCard>
       </div>
       <div v-else-if="_status === 'pending'" class="flex items-center justify-center h-64">
         <UIcon name="i-lucide-loader-2" class="w-8 h-8 animate-spin text-dimmed" />

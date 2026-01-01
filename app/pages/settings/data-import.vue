@@ -13,8 +13,8 @@ const validationResult = ref<{ validRows: any[]; invalidRows: any[]; errors: any
 const importResult = ref<{ created: number; updated: number; errors: any[] } | null>(null)
 const isProcessing = ref(false)
 
-const { data: importTypes } = await useFetch('/api/import/types')
-const { data: fields } = await useFetch(() => `/api/import/fields?type=${selectedType.value}`)
+const { data: importTypes } = await useFetch<any[]>('/api/import/types')
+const { data: fields } = await useFetch<any[]>(() => `/api/import/fields?type=${selectedType.value}`)
 
 function onFileSelect(e: Event) {
   const target = e.target as HTMLInputElement
@@ -131,18 +131,25 @@ function reset() {
 
 <template>
   <div class="space-y-6">
-    <UPageCard title="Data Import" description="Bulk import data into the system." variant="naked">
-       <template #right>
-         <UButton v-if="currentStep === 1" label="Download Template" icon="i-lucide-download" color="neutral" variant="ghost" @click="downloadTemplate" />
-         <UButton v-if="currentStep === 4" label="Import Another File" @click="reset" />
-       </template>
-    </UPageCard>
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-2xl font-bold">Data Import</h2>
+        <p class="text-gray-500">Bulk import data into the system.</p>
+      </div>
+      <div class="flex gap-2">
+        <UButton v-if="currentStep === 1" label="Download Template" icon="i-lucide-download" color="neutral" variant="ghost" @click="downloadTemplate" />
+        <UButton v-if="currentStep === 4" label="Import Another File" @click="reset" />
+      </div>
+    </div>
 
     <!-- Step 1: Upload -->
-    <UPageCard v-if="currentStep === 1" title="1. Upload File" variant="subtle">
+    <UCard v-if="currentStep === 1">
+       <template #header>
+         <h3 class="font-bold">1. Upload File</h3>
+       </template>
        <div class="space-y-4">
          <UFormField label="Import Type">
-           <USelect v-model="selectedType" :options="importTypes || []" option-attribute="label" value-attribute="id" />
+           <USelect v-model="selectedType" :items="importTypes || []" label-key="label" value-key="id" />
          </UFormField>
          
          <div class="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-8 text-center">
@@ -154,10 +161,13 @@ function reset() {
             <UButton label="Next: Map Columns" :disabled="!file" :loading="isProcessing" @click="parseFile" />
          </div>
        </div>
-    </UPageCard>
+    </UCard>
 
     <!-- Step 2: Mapping -->
-    <UPageCard v-if="currentStep === 2" title="2. Map Columns" variant="subtle">
+    <UCard v-if="currentStep === 2">
+       <template #header>
+         <h3 class="font-bold">2. Map Columns</h3>
+       </template>
        <div class="space-y-4">
          <p class="text-sm text-muted">Map your CSV columns to the system fields.</p>
          
@@ -170,7 +180,7 @@ function reset() {
                </div>
                <USelect 
                  v-model="fieldMapping[field.key]" 
-                 :options="csvHeaders" 
+                 :items="csvHeaders" 
                  placeholder="Select CSV Header" 
                />
             </div>
@@ -181,10 +191,13 @@ function reset() {
             <UButton label="Next: Validate" :loading="isProcessing" @click="validateData" />
          </div>
        </div>
-    </UPageCard>
+    </UCard>
 
     <!-- Step 3: Validate -->
-    <UPageCard v-if="currentStep === 3" title="3. Review & Import" variant="subtle">
+    <UCard v-if="currentStep === 3">
+       <template #header>
+         <h3 class="font-bold">3. Review & Import</h3>
+       </template>
        <div class="space-y-4">
           <div class="grid grid-cols-3 gap-4">
              <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-md border border-green-200 dark:border-green-800">
@@ -228,10 +241,13 @@ function reset() {
              />
           </div>
        </div>
-    </UPageCard>
+    </UCard>
 
     <!-- Step 4: Result -->
-    <UPageCard v-if="currentStep === 4" title="Import Result" variant="subtle">
+    <UCard v-if="currentStep === 4">
+       <template #header>
+         <h3 class="font-bold">Import Result</h3>
+       </template>
        <div class="space-y-4 text-center py-8">
           <UIcon name="i-lucide-check-circle" class="w-16 h-16 text-green-500 mx-auto" />
           <h3 class="text-xl font-bold">Import Successful</h3>
@@ -244,6 +260,6 @@ function reset() {
              </ul>
           </div>
        </div>
-    </UPageCard>
+    </UCard>
   </div>
 </template>

@@ -8,7 +8,7 @@ const props = defineProps<{
 const {
   data: _stats,
   status,
-  refresh
+  refresh: _refresh
 } = await useAsyncData(
   'dashboard-stats',
   () => {
@@ -26,12 +26,11 @@ const loading = computed(() => status.value === 'pending')
 </script>
 
 <template>
-  <UPageGrid class="lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-px">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
     <template v-if="loading && (!_stats || _stats.length === 0)">
-      <UPageCard
+      <UCard
         v-for="i in 4"
         :key="i"
-        class="lg:rounded-none first:rounded-l-lg last:rounded-r-lg"
       >
         <div class="flex items-center gap-4">
           <USkeleton class="h-12 w-12 rounded-full" />
@@ -40,27 +39,24 @@ const loading = computed(() => status.value === 'pending')
             <USkeleton class="h-6 w-16" />
           </div>
         </div>
-      </UPageCard>
+      </UCard>
     </template>
 
     <template v-else>
-      <UPageCard
+      <UCard
         v-for="(stat, index) in _stats"
         :key="index"
-        :icon="stat.icon"
-        :title="stat.title"
-        :to="stat.to"
-        variant="subtle"
-        :ui="{
-          container: 'gap-y-1.5',
-          wrapper: 'items-start',
-          leading: 'p-2.5 rounded-full bg-primary/10 ring ring-inset ring-primary/25 flex-col',
-          title: 'font-normal text-muted text-xs uppercase'
-        }"
-        class="lg:rounded-none first:rounded-l-lg last:rounded-r-lg hover:z-1"
+        class="hover:ring-2 hover:ring-primary-500 transition-all cursor-pointer"
+        @click="navigateTo(stat.to)"
       >
-        <div class="flex items-center gap-2">
-          <span class="text-2xl font-semibold text-highlighted">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="p-2 rounded-full bg-primary/10 ring ring-inset ring-primary/25">
+            <UIcon :name="stat.icon" class="size-5 text-primary" />
+          </div>
+          <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ stat.title }}</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-3xl font-bold text-highlighted">
             {{ stat.value }}
           </span>
 
@@ -68,12 +64,12 @@ const loading = computed(() => status.value === 'pending')
             v-if="stat.variation !== 0"
             :color="stat.inverseTrend ? (stat.variation > 0 ? 'error' : 'success') : (stat.variation > 0 ? 'success' : 'error')"
             variant="subtle"
-            class="text-xs"
+            size="xs"
           >
             {{ stat.variation > 0 ? '+' : '' }}{{ stat.variation }}%
           </UBadge>
         </div>
-      </UPageCard>
+      </UCard>
     </template>
-  </UPageGrid>
+  </div>
 </template>

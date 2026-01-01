@@ -2,7 +2,7 @@
 const toast = useToast()
 
 const { data: _org, refresh } = await useFetch('/api/settings/organization')
-const { data: _categories } = await useFetch('/api/assets/categories')
+const { data: _categories } = await useFetch<any[]>('/api/assets/categories')
 
 interface CertRule {
   categoryId: string
@@ -94,21 +94,19 @@ function getCategoryName(id: string) {
 
 <template>
   <div class="space-y-6">
-    <UPageCard
-      title="Organisation Settings"
-      description="Manage your company profile and system-wide defaults."
-      variant="naked"
-    >
-      <template #right>
-        <UButton
-          label="Save Changes"
-          :loading="_isSaving"
-          @click="_saveSettings"
-        />
-      </template>
-    </UPageCard>
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-2xl font-bold">Organisation Settings</h2>
+        <p class="text-gray-500">Manage your company profile and system-wide defaults.</p>
+      </div>
+      <UButton
+        label="Save Changes"
+        :loading="_isSaving"
+        @click="_saveSettings"
+      />
+    </div>
 
-    <UPageCard variant="subtle" class="space-y-4">
+    <UCard class="space-y-4">
       <UFormField label="Organisation Name" required>
         <UInput v-model="_state.name" placeholder="e.g. Acme Fleet" />
       </UFormField>
@@ -123,15 +121,15 @@ function getCategoryName(id: string) {
       
       <div class="grid grid-cols-2 gap-4">
         <UFormField label="Distance Unit">
-          <USelect v-model="_state.settings.units.distance" :options="['km', 'miles']" />
+          <USelect v-model="_state.settings.units.distance" :items="['km', 'miles']" />
         </UFormField>
         <UFormField label="Fuel Unit">
-          <USelect v-model="_state.settings.units.fuel" :options="['litres', 'gallons']" />
+          <USelect v-model="_state.settings.units.fuel" :items="['litres', 'gallons']" />
         </UFormField>
       </div>
 
       <UFormField label="Default Timezone">
-        <USelect v-model="_state.settings.timezone" :options="_timezones" />
+        <USelect v-model="_state.settings.timezone" :items="_timezones" />
       </UFormField>
 
       <USeparator />
@@ -198,9 +196,9 @@ function getCategoryName(id: string) {
          <UFormField label="Asset Category" class="flex-1">
             <USelect 
               v-model="newCertRule.categoryId" 
-              :options="_categories || []" 
-              option-attribute="name" 
-              value-attribute="id"
+              :items="_categories || []" 
+              label-key="name" 
+              value-key="id"
               placeholder="Select category"
             />
          </UFormField>
@@ -210,6 +208,6 @@ function getCategoryName(id: string) {
          <UButton label="Add Rule" @click="addCertRule" color="neutral" variant="soft" />
       </div>
 
-    </UPageCard>
+    </UCard>
   </div>
 </template>

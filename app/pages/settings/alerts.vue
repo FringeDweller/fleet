@@ -119,21 +119,19 @@ function toggleChannel(value: string) {
 
 <template>
   <div class="space-y-6">
-    <UPageCard
-      title="Alert Rules"
-      description="Configure custom rules to trigger alerts based on asset conditions."
-      variant="naked"
-    >
-      <template #right>
-        <UButton
-          label="New Rule"
-          icon="i-lucide-plus"
-          @click="openCreateModal"
-        />
-      </template>
-    </UPageCard>
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-2xl font-bold">Alert Rules</h2>
+        <p class="text-gray-500">Configure custom rules to trigger alerts based on asset conditions.</p>
+      </div>
+      <UButton
+        label="New Rule"
+        icon="i-lucide-plus"
+        @click="openCreateModal"
+      />
+    </div>
 
-    <UPageCard variant="subtle" :ui="{ body: 'p-0' }">
+    <UCard :ui="{ body: 'p-0' }">
       <UTable
         :data="rules || []"
         :columns="[
@@ -189,11 +187,11 @@ function toggleChannel(value: string) {
           </div>
         </template>
       </UTable>
-    </UPageCard>
+    </UCard>
 
     <UModal v-model:open="isModalOpen" title="Alert Rule">
       <template #body>
-        <UForm :state="state" class="space-y-4" @submit="saveRule">
+        <form class="space-y-4" @submit.prevent="saveRule">
           <UFormField label="Rule Name" required>
             <UInput v-model="state.name" placeholder="e.g. High Mileage Alert" />
           </UFormField>
@@ -204,10 +202,20 @@ function toggleChannel(value: string) {
 
           <div class="grid grid-cols-3 gap-4">
             <UFormField label="Field">
-              <USelect v-model="state.condition.field" :options="fields" />
+              <USelect 
+                v-model="state.condition.field" 
+                :items="fields" 
+                label-key="label" 
+                value-key="value" 
+              />
             </UFormField>
             <UFormField label="Operator">
-              <USelect v-model="state.condition.operator" :options="operators" />
+              <USelect 
+                v-model="state.condition.operator" 
+                :items="operators" 
+                label-key="label" 
+                value-key="value" 
+              />
             </UFormField>
             <UFormField label="Value">
               <UInput v-model.number="state.condition.value" type="number" />
@@ -239,7 +247,7 @@ function toggleChannel(value: string) {
               :loading="isSaving"
             />
           </div>
-        </UForm>
+        </form>
       </template>
     </UModal>
   </div>

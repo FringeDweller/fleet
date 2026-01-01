@@ -56,18 +56,17 @@ function isPermissionEnabled(role: string, permissionKey: string) {
 
 <template>
   <div class="space-y-6">
-    <UPageCard
-      title="Roles & Permissions"
-      description="Configure what each role can see and do in the system."
-      variant="naked"
-    />
+    <div>
+      <h2 class="text-2xl font-bold">Roles & Permissions</h2>
+      <p class="text-gray-500">Configure what each role can see and do in the system.</p>
+    </div>
 
-    <UPageCard variant="subtle" :ui="{ body: 'p-0' }">
+    <UCard :ui="{ body: 'p-0' }">
       <div class="overflow-x-auto">
         <table class="w-full text-sm text-left">
           <thead>
             <tr class="border-b border-default text-xs uppercase text-dimmed">
-              <th class="py-3 px-4 font-semibold">Permission</th>
+              <th class="py-3 px-4 font-semibold text-left">Permission</th>
               <th v-for="role in roles" :key="role" class="py-3 px-4 font-semibold text-center">
                 {{ role }}
               </th>
@@ -75,7 +74,7 @@ function isPermissionEnabled(role: string, permissionKey: string) {
           </thead>
           <tbody class="divide-y divide-default">
             <tr v-for="perm in availablePermissions" :key="perm.key">
-              <td class="py-4 px-4">
+              <td class="py-4 px-4 text-left">
                 <div class="font-medium text-highlighted">{{ perm.label }}</div>
                 <div class="text-xs text-dimmed">{{ perm.key }}</div>
               </td>
@@ -91,7 +90,7 @@ function isPermissionEnabled(role: string, permissionKey: string) {
           </tbody>
         </table>
       </div>
-    </UPageCard>
+    </UCard>
 
     <div class="text-xs text-dimmed italic px-4">
       * Owners have full access to all system features by default and their permissions cannot be modified.

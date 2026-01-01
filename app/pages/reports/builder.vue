@@ -16,8 +16,59 @@ const _dataSources = [
   { label: 'Assets', value: 'assets' },
   { label: 'Work Orders', value: 'workOrders' },
   { label: 'Inspections', value: 'inspections' },
-  { label: 'Inventory', value: 'inventory' }
+  { label: 'Inventory', value: 'inventory' },
+  { label: 'Users', value: 'users' }
 ]
+
+const _availableColumns = computed(() => {
+  switch (definition.value.dataSource) {
+    case 'assets':
+      return [
+        { label: 'Asset Number', value: 'assetNumber' },
+        { label: 'VIN', value: 'vin' },
+        { label: 'Make', value: 'make' },
+        { label: 'Model', value: 'model' },
+        { label: 'Year', value: 'year' },
+        { label: 'Status', value: 'status' },
+        { label: 'Current Mileage', value: 'currentMileage' },
+        { label: 'Current Hours', value: 'currentHours' }
+      ]
+    case 'workOrders':
+      return [
+        { label: 'WO Number', value: 'woNumber' },
+        { label: 'Description', value: 'description' },
+        { label: 'Status', value: 'status' },
+        { label: 'Priority', value: 'priority' },
+        { label: 'Due Date', value: 'dueDate' },
+        { label: 'Labor Cost', value: 'laborCost' },
+        { label: 'Parts Cost', value: 'partsCost' },
+        { label: 'Total Cost', value: 'totalCost' }
+      ]
+    case 'inspections':
+      return [
+        { label: 'Status', value: 'status' },
+        { label: 'Start Time', value: 'startTime' },
+        { label: 'End Time', value: 'endTime' }
+      ]
+    case 'inventory':
+      return [
+        { label: 'SKU', value: 'sku' },
+        { label: 'Name', value: 'name' },
+        { label: 'Unit', value: 'unit' },
+        { label: 'Quantity On Hand', value: 'quantityOnHand' },
+        { label: 'Unit Cost', value: 'unitCost' }
+      ]
+    case 'users':
+      return [
+        { label: 'First Name', value: 'firstName' },
+        { label: 'Last Name', value: 'lastName' },
+        { label: 'Email', value: 'email' },
+        { label: 'Role', value: 'role' }
+      ]
+    default:
+      return []
+  }
+})
 
 const results = ref<Record<string, unknown>[]>([])
 const isExecuting = ref(false)
@@ -66,9 +117,9 @@ const _columns = computed(() => {
   if (results.value.length === 0 || !results.value[0]) return []
 
   return Object.keys(results.value[0]).map((key) => ({
-    key,
+    accessorKey: key,
 
-    label: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')
+    header: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')
   }))
 })
 function _exportResults() {
@@ -130,7 +181,19 @@ function _exportResults() {
           <UFormField label="Data Source">
             <USelect
               v-model="definition.dataSource"
-              :options="_dataSources"
+              :items="_dataSources"
+              @change="definition.columns = []"
+            />
+          </UFormField>
+
+          <UFormField label="Columns">
+            <USelectMenu
+              v-model="definition.columns"
+              :items="_availableColumns"
+              multiple
+              placeholder="Select columns"
+              value-attribute="value"
+              option-attribute="label"
             />
           </UFormField>
 

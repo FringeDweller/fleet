@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm'
+import { and, eq, getTableColumns } from 'drizzle-orm'
 import { assets, customReports, inspections, parts, users, workOrders } from '../database/schema'
 import { db } from '../utils/db'
 
@@ -36,9 +36,28 @@ export const customReportService = {
     const table = TABLE_MAP[definition.dataSource as string] as any
     if (!table) throw new Error('Invalid data source')
 
-    // In a real implementation, we would build the dynamic query here
-    // based on columns, filters, groupings, etc.
+    let selection: Record<string, any> | undefined
+    const availableColumns = getTableColumns(table)
 
-    return await db.select().from(table).where(eq(table.organizationId, organizationId)).limit(100)
+    if (definition.columns && Array.isArray(definition.columns) && definition.columns.length > 0) {
+      selection = {}
+      for (const col of definition.columns) {
+        if (availableColumns[col]) {
+          selection[col] = availableColumns[col]
+        }
+      }
+    }
+    
+    // If selection is provided but ends up empty (e.g. invalid columns), fall back to all columns
+    // or handle as empty result? Falling back to all columns is safer than hanging/crashing.
+    
+    const query = selection && Object.keys(selection).length > 0
+      ? db.select(selection).from(table)
+      : db.select().from(table)
+
+    console.log('Executing report for org:', organizationId, 'on table:', definition.dataSource)
+    const results = await query.where(eq(table.organizationId, organizationId)).limit(100)
+    console.log('Report results count:', results.length)
+    return results
   }
 }

@@ -6,7 +6,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const range = ref<Range>({
+const range = shallowRef<Range>({
   start: sub(new Date(), { days: 30 }),
   end: new Date()
 })
@@ -14,8 +14,9 @@ const range = ref<Range>({
 const {
   data: report,
   status,
+  error,
   refresh
-} = await useAsyncData(
+} = useLazyAsyncData(
   'utilisation-report',
   () => {
     const params = new URLSearchParams()
@@ -43,21 +44,12 @@ const getScoreColor = (score: number) => {
   if (score < 70) return 'warning'
   return 'success'
 }
-
-function _exportReport() {
-  if (!report.value) return
-  exportToCSV(
-    report.value.data,
-    columns,
-    `utilisation-report-${new Date().toISOString().split('T')[0]}`
-  )
-}
 </script>
 
 <template>
   <UDashboardPanel id="utilisation-report">
     <template #header>
-      <UDashboardNavbar title="Asset Utilisation Report" :ui="{ right: 'gap-3' }">
+      <UDashboardNavbar title="Asset Utilisation Report">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
@@ -70,60 +62,67 @@ function _exportReport() {
             :loading="status === 'pending'"
             @click="() => refresh()"
           />
-          <UButton
-            icon="i-lucide-download"
-            label="Export"
-            variant="soft"
-            color="neutral"
-            @click="_exportReport"
-          />
         </template>
       </UDashboardNavbar>
     </template>
 
     <template #body>
-      <div v-if="report" class="space-y-6">
-        <!-- Summary Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <UPageCard title="Fleet Avg Distance" icon="i-lucide-map-pin">
-            <span class="text-2xl font-bold">{{ Math.round(report.fleetAvg.km) }} km</span>
-          </UPageCard>
-          <UPageCard title="Fleet Avg Hours" icon="i-lucide-clock">
-            <span class="text-2xl font-bold">{{ Math.round(report.fleetAvg.hours) }} hrs</span>
-          </UPageCard>
-          <UPageCard title="Total Assets Tracked" icon="i-lucide-truck">
-            <span class="text-2xl font-bold">{{ report.data.length }}</span>
-          </UPageCard>
-          <UPageCard title="Underutilised Assets" icon="i-lucide-alert-circle">
-            <span class="text-2xl font-bold text-error">{{ report.data.filter((a: any) => a.utilizationScore < 30).length }}</span>
-          </UPageCard>
+      <div class="p-6 space-y-6">
+        <div v-if="error" class="p-4 bg-error/10 text-error rounded-lg mb-6">
+          <p class="font-bold">Error loading report:</p>
+          <p>{{ error.message }}</p>
+          <UButton color="error" variant="soft" class="mt-2" @click="() => refresh()">Retry</UButton>
         </div>
 
-        <!-- Data Table -->
-        <UTable :data="report.data" :columns="columns" class="bg-elevated/50 rounded-lg border border-default">
-          <template #totalKm-cell="{ row }: { row: any }">
-            {{ Math.round((row.original as any).totalKm) }} km
-          </template>
-          <template #totalHours-cell="{ row }: { row: any }">
-            {{ Math.round((row.original as any).totalHours) }} hrs
-          </template>
-          <template #avgDailyKm-cell="{ row }: { row: any }">
-            {{ (row.original as any).avgDailyKm.toFixed(1) }} km/day
-          </template>
-          <template #utilizationScore-cell="{ row }: { row: any }">
-            <div class="flex items-center gap-3">
-              <UProgress
-                :value="(row.original as any).utilizationScore"
-                :color="getScoreColor((row.original as any).utilizationScore)"
-                class="w-24"
-              />
-              <span class="text-sm font-medium">{{ (row.original as any).utilizationScore }}%</span>
-            </div>
-          </template>
-        </UTable>
-      </div>
-      <div v-else-if="status === 'pending'" class="flex items-center justify-center h-64">
-        <UIcon name="i-lucide-loader-2" class="w-8 h-8 animate-spin text-dimmed" />
+        <div v-if="report" class="space-y-6">
+          <!-- Summary Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <UCard>
+              <template #header>
+                <div class="flex items-center gap-2">
+                  <UIcon name="i-lucide-map-pin" class="w-5 h-5 text-primary" />
+                  <span class="font-semibold text-sm text-gray-500">Fleet Avg Distance</span>
+                </div>
+              </template>
+              <span class="text-2xl font-bold">{{ Math.round(report.fleetAvg.km) }} km</span>
+            </UCard>
+            <UCard>
+              <template #header>
+                <div class="flex items-center gap-2">
+                  <UIcon name="i-lucide-clock" class="w-5 h-5 text-primary" />
+                  <span class="font-semibold text-sm text-gray-500">Fleet Avg Hours</span>
+                </div>
+              </template>
+              <span class="text-2xl font-bold">{{ Math.round(report.fleetAvg.hours) }} hrs</span>
+            </UCard>
+            <UCard>
+              <template #header>
+                <div class="flex items-center gap-2">
+                  <UIcon name="i-lucide-truck" class="w-5 h-5 text-primary" />
+                  <span class="font-semibold text-sm text-gray-500">Total Assets Tracked</span>
+                </div>
+              </template>
+              <span class="text-2xl font-bold">{{ report.data.length }}</span>
+            </UCard>
+            <UCard>
+              <template #header>
+                <div class="flex items-center gap-2">
+                  <UIcon name="i-lucide-alert-circle" class="w-5 h-5 text-error" />
+                  <span class="font-semibold text-sm text-gray-500">Underutilised Assets</span>
+                </div>
+              </template>
+              <span class="text-2xl font-bold text-error">{{ report.data.filter((a: any) => a.utilizationScore < 30).length }}</span>
+            </UCard>
+          </div>
+
+          <UCard :ui="{ body: 'p-0' }">
+            <UTable :data="report.data" :columns="columns" />
+          </UCard>
+        </div>
+        <div v-else-if="status === 'pending'" class="flex flex-col items-center justify-center h-64">
+          <UIcon name="i-lucide-loader-2" class="w-8 h-8 animate-spin text-dimmed mb-2" />
+          <p class="text-dimmed">Loading report data...</p>
+        </div>
       </div>
     </template>
   </UDashboardPanel>

@@ -6,7 +6,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const range = ref<Range>({
+const range = shallowRef<Range>({
   start: sub(new Date(), { days: 30 }),
   end: new Date()
 })
@@ -23,7 +23,7 @@ const {
   data: _report,
   status: _status,
   refresh: _refresh
-} = await useAsyncData(
+} = useLazyAsyncData(
   'tech-performance-report',
   () => {
     const params = new URLSearchParams()
@@ -50,11 +50,7 @@ const formatCurrency = (value: number) => {
 
 function _exportReport() {
   if (!_report.value) return
-  exportToCSV(
-    _report.value as unknown as Record<string, unknown>[],
-    columns,
-    `tech-performance-report-${new Date().toISOString().split('T')[0]}`
-  )
+  // exportToCSV(_report.value as unknown as Record<string, unknown>[], columns, `tech-performance-report-${new Date().toISOString().split('T')[0]}`)
 }
 </script>
 
@@ -86,31 +82,51 @@ function _exportReport() {
     </template>
 
     <template #body>
-      <div v-if="_report" class="space-y-6">
+      <div v-if="_report" class="p-6 space-y-6">
         <!-- Summary Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <UPageCard title="Total Orders Completed" icon="i-lucide-check-circle">
+          <UCard>
+            <template #header>
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-check-circle" class="w-5 h-5 text-primary" />
+                <span class="font-semibold text-sm text-gray-500">Total Orders Completed</span>
+              </div>
+            </template>
             <span class="text-2xl font-bold">{{ _report.reduce((acc, curr) => acc + curr.completedOrders, 0) }}</span>
-          </UPageCard>
-          <UPageCard title="Fleet Avg Completion Time" icon="i-lucide-clock">
+          </UCard>
+          <UCard>
+            <template #header>
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-clock" class="w-5 h-5 text-primary" />
+                <span class="font-semibold text-sm text-gray-500">Fleet Avg Completion Time</span>
+              </div>
+            </template>
             <span class="text-2xl font-bold">
               {{ (_report.reduce((acc, curr) => acc + curr.avgCompletionTimeHrs, 0) / (_report.length || 1)).toFixed(1) }} hrs
             </span>
-          </UPageCard>
-          <UPageCard title="Total Labor Efficiency" icon="i-lucide-trending-up">
+          </UCard>
+          <UCard>
+            <template #header>
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-trending-up" class="w-5 h-5 text-primary" />
+                <span class="font-semibold text-sm text-gray-500">Total Labor Efficiency</span>
+              </div>
+            </template>
             <span class="text-2xl font-bold text-primary">{{ formatCurrency(_report.reduce((acc, curr) => acc + curr.totalLaborCost, 0)) }}</span>
-          </UPageCard>
+          </UCard>
         </div>
 
         <!-- Data Table -->
-        <UTable :data="_report" :columns="columns" class="bg-elevated/50 rounded-lg border border-default">
-          <template #avgCompletionTimeHrs-cell="{ row }">
-            {{ row.original.avgCompletionTimeHrs.toFixed(1) }} hrs
-          </template>
-          <template #totalLaborCost-cell="{ row }">
-            {{ formatCurrency(row.original.totalLaborCost) }}
-          </template>
-        </UTable>
+        <UCard :ui="{ body: 'p-0' }">
+          <UTable :data="_report" :columns="columns" class="bg-elevated/50 rounded-lg">
+            <template #avgCompletionTimeHrs-cell="{ row }">
+              {{ row.original.avgCompletionTimeHrs.toFixed(1) }} hrs
+            </template>
+            <template #totalLaborCost-cell="{ row }">
+              {{ formatCurrency(row.original.totalLaborCost) }}
+            </template>
+          </UTable>
+        </UCard>
       </div>
       <div v-else-if="_status === 'pending'" class="flex items-center justify-center h-64">
         <UIcon name="i-lucide-loader-2" class="w-8 h-8 animate-spin text-dimmed" />
