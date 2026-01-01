@@ -24,6 +24,6 @@ test.describe('Authentication', () => {
     await page.getByRole('button', { name: 'Sign In' }).click()
 
     // Should show error toast
-    await expect(page.getByText('Failed to login')).toBeVisible()
+    await expect(page.getByText('Invalid email or password').first()).toBeVisible()
   })
 })
